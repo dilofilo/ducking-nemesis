@@ -39,6 +39,9 @@ class Ball {
 				mass = ball.getMass();
 
 			}
+		///Destructor
+			~Ball();
+
 		///get and set methods!
 			void setxCentre(float _x) { xCentre = _x; }
 			void setyCentre(float _y) { yCentre = _y; }
@@ -56,8 +59,6 @@ class Ball {
 
 			void setIdx(int _id) { idx = _id;}
 			int getIdx() { 	return idx;	}
-		///Destructor
-			~Ball();
 		///display() function will be called by the ScreenSaver's display()
 			void display();
 		///check for collisions and update this ball if needed.
