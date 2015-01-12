@@ -10,13 +10,11 @@ class ScreenSaver {
 private:
 	int numThreads;
 	void init();
-	void reshape(int w , int h);
+	void reshape();
 	void keyHandler(unsigned char key, int x , int y);
 	void display();
 public:
-	ScreenSaver(int n) {
-		numThreads = n;
-	};
+	ScreenSaver(int n);
 	void ballThread(void* ballIdx);	
 	void execute();
 };
