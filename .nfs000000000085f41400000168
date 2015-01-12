@@ -1,0 +1,16 @@
+#include <pthread>
+#include <GL/glut.h>
+
+#include <math.h>
+#include <iostream>
+
+#include <screenSaver.h>
+#include <screenSaver.cpp>
+#include <ball.h>
+#include <ball.cpp>
+#include <table.h>
+#include <table.cpp>
+
+
+
+using namespace std;

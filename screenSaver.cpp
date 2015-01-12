@@ -1,0 +1,5 @@
+#ifndef SCREEN_SAVER_CPP
+	#define SCREEN_SAVER_CPP
+
+//CODE GOES HERE
+#endif
