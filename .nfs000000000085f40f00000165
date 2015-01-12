@@ -1,7 +1,0 @@
-#ifndef BALL_CPP
-	#define BALL_CPP
-
-//ball.cpp
-#include "ball.h"
-
-void Ball::
