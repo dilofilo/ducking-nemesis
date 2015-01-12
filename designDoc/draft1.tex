@@ -1,25 +1,45 @@
-\documentclass[12pt]{article}
+\documentclass[]{article}
+\usepackage{sectsty}
 \usepackage{hyperref}
+\sectionfont{\fontsize{10}{10}\selectfont}
 
 \begin{document}
 
-\title{COP290 Assignment1 Screen Saver}
-\author{Harman Kumar , Haroun Habeeb and Kabir Chhabra}
+\title{COP 290 Assignment 1}
+\author{Kabir Chhabra , Harman Kumar , Haroun Habeeb}
 \maketitle
 
 \begin{abstract}
 \begin{flushleft}
-Problem Statement : \href{http://www.cse.iitd.ac.in/~prathmesh/ta/COP290/ass1.html}{Assignment Link} \par
+Problem Statement : \href { http://www.cse.iitd.ac.in/~prathmesh/ta/COP290/ass1.html }{Assignment Link}
+\end{flushleft}
 
+\begin{flushleft}
+The project was written in C++ using OpenGL, pthreads, mutex locks and it is aimed at ubuntu operating system. The collisions between the balls were considered to be perfectly elastic and the table was considered to be frictionless.
+\end{flushleft}
 
+\end{abstract}
 
 \section{Overall Design}
+\begin{flushleft}
+In the project three classes have been used namely Ball, Table and Screensaver. The user enters the number of balls and the radius and velocity corresponding to each ball. Every ball runs on a thread and collisions between two balls and between the balls and the boundary were handled.
+\end{flushleft} 
+
 \section{Sub Components}
-\section{Testing}
-\section{Component Iteraction}
-\section{InterThread Communication}
-\section{Variable Ball Speeds}
+\begin{flushleft}
+GUI : Display functions
+Physics : The Equation .. etc.
+
 \end{flushleft}
-\end{abstract}
+
+\section{Testing}
+
+\section{Sub-component Interaction}
+
+\section{Interthread Communication}
+
+\section{Ball Speed}
+
+
 
 \end{document}
