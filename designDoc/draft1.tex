@@ -1,5 +1,6 @@
 \documentclass[]{article}
 \usepackage{sectsty}
+\usepackage[parfill]{parskip}
 \usepackage{hyperref}
 \sectionfont{\fontsize{10}{10}\selectfont}
 
@@ -7,39 +8,137 @@
 
 \title{COP 290 Assignment 1}
 \author{Kabir Chhabra , Harman Kumar , Haroun Habeeb}
+
 \maketitle
 
-\begin{abstract}
-\begin{flushleft}
+
+\begin{center}
 Problem Statement : \href { http://www.cse.iitd.ac.in/~prathmesh/ta/COP290/ass1.html }{Assignment Link}
-\end{flushleft}
-
-\begin{flushleft}
-The project was written in C++ using OpenGL, pthreads, mutex locks and it is aimed at ubuntu operating system. The collisions between the balls were considered to be perfectly elastic and the table was considered to be frictionless.
-\end{flushleft}
-
-\end{abstract}
+\end{center}
 
 \section{Overall Design}
 \begin{flushleft}
-In the project three classes have been used namely Ball, Table and Screensaver. The user enters the number of balls and the radius and velocity corresponding to each ball. Every ball runs on a thread and collisions between two balls and between the balls and the boundary were handled.
+In the project three classes have been used namely Ball, Table and Screensaver.The number of balls is accepted from the user and the velocity corresponding to the balls can be increased or decreased by the user using predefined keys. The motion of every ball is controlled by a separate thread and collisions between two balls or between the balls and the boundary are handled.
 \end{flushleft} 
 
 \section{Sub Components}
+\begin{itemize}
+\item \textbf{Class Ball :}
 \begin{flushleft}
-GUI : Display functions
-Physics : The Equation .. etc.
-
+The Class Ball has data members for storing the radius of the ball and the X and Y co-ordinates of it's centre and its velocity. The mass of the ball is assumed to be proportional to the cube of it's radius. 
+\\
+The member functions of the class Ball include the set and get functions, a display function and a reshape function. The set and get functions are used to access the aforementioned data members and modify their values respectively. The display function is used to display the ball and the reshape function is used to handle the case when the window is resized by the user.
+\\ 
+When an object of type ball is created, it is randomly assigned a centre, a radius, and a velocity. It is also ensured that the balls do not overlap at the time of creation.
 \end{flushleft}
 
-\section{Testing}
+\item \textbf{Class Table :}
+\begin{flushleft}
+The Class Table has data members corresponding to the coordinates of the vertices of the table and a vector for storing the colour of the table. The member function display is used to display the table and the function reshape is used to resize the table if the screen size is changed.  
+\end{flushleft}
 
+\item \textbf{Class ScreenSaver :}
+\begin{flushleft}
+An object of the Class ScreenSaver is created when the program starts executing. It creates N (Number of balls entered at the time of execution) objects of the class Ball, N pthreads, one to control the motion of each ball, N mutex locks and one object of the class table. \\
+The data members are as follows: \\
+\begin{enumerate}
+\item \textbf{isPaused} (Boolean) : To check whether the screensaver has been paused or is running.
+\item \textbf{isFullScreen} (Boolean) : To check whether the screen is in fullscreen mode or not.
+\item \textbf{numThreads} (Integer) : To store the number of balls the user wants on the screen.
+\item \textbf{windowID} (Integer) : To store the ID of the window corresponding to the object of the Class ScreenSaver.
+\item \textbf{table} (Table) : To store the table in the background of the window.
+\item \textbf{balls} (Array of type Ball) : To store the N balls that move on the table.
+\item \textbf{threads} (vector of pthread\_t) : These are the N threads that control one ball each.
+\item \textbf{threadUpdate} (Vector of Boolean) : This controls the individualThread function.
+\item \textbf{vecMutex} (vector of mutex locks): It's used to lock the parameters of each ball so that only one thread can access it at a certain point of time. 
+\end{enumerate}
+
+The member functions of the class are the following:
+\begin{enumerate}
+\item \textbf{ void* individualThread(void*)} : This function is what each of the n-pthreads executes. It is triggered after every iteration of the display() function. The purpose of this function is to update the position of the ball by updating the xCentre and the yCentre. It also checks for collisions and in case of one, it updates the velocities of the balls. 
+\item \textbf{void exitter()} : The exitter function is called upon pressing the Escape key. It joins the threads, closes the window and ensures that there are no memory leaks.
+\item \textbf{void init()} : The init() function handles the initialization of the glut window. It takes care of one-time statements for the GUI to run.
+\item \textbf{void makeObjects( args )} : The args are references to the locations where objects will be made. The objects we are talking about are the table and the balls. 
+\item \textbf{void reshape(int,int)} : This function handles the reshaping of the window.
+\item \textbf{void keyHandler(char,int,int)} : This function handles the inputs from the user in the form of pressing of keys. For example, the Escape key quits the screenSaver.
+\item \textbf{void display()} : The display function is called by glut's mainLoop . It calls the display function of the balls and the table, then proceeds to tell each individual thread to update its variables. It also posts a redisplay request.
+\item \textbf{void execute()} : This is where the flow of the program is controlled. It calls functions in the right order, initializes variables and then starts the glutMainLoop.
+\end{enumerate}
+
+\textbf{The subcomponents, segregated by functionality, are :}
+\begin{itemize}
+\item \textbf{GUI} : The GUI is handled by giving the initialization part to one class, and then allowing the balls and the table to display themselves.
+\item \textbf{Physics} : The physics are handled by the threads. The threads call a solve() function which accepts as parameters velocities, masses and co-ordinates. It then returns the same values AFTER collision.
+\item \textbf{Threading} : The updates of the co-ordinates and velocities of balls are handled by threads. They communicate through barrier communication ( accessing static global variables ). Mutex is applied at appropirate locatons.
+\end{itemize}
+ 
+\end{flushleft}
+\end{itemize}
+\section{Testing}
+The components that require testing are :
+\begin{enumerate}
+\item \textbf{GUI} : Because the display() functions are modular, we just need to test the display function of the ball and that of the table.
+\item \textbf{Physics} : Since the physics is put into a function, testing the correctness of the function is easy, using dry runs.
+\item \textbf{Collision Handling} : Perfected by eyesight and physics.
+\item \textbf{Memory Handling} : Valgrind will be used to ensure that there are no memory leaks.
+\end{enumerate}
 \section{Sub-component Interaction}
+\begin{flushleft}
+This heading could be divided into the following sub-components:
+\begin{itemize}
+
+\item \textbf{Collision between two Balls :}\\
+
+\begin{flushleft}
+If the distance between the centres of twoballs is less than or equal to the sum of their radii then the collision condition for the two balls is satisfied else not. If there was a collision between two balls then the solveBallCollision function was called that took two objects of type Ball and computed their new velocities based on the equations of motion and assuming perfectly elastic collision.
+\end{flushleft}
+
+\item \textbf{Collision between a Ball and a Wall :} \\
+
+\begin{flushleft}
+In this type of collision the wall is assumed to have infinite mass.\\
+If the perpendicular distance between the centre of the ball and the wall is less than the radius of the ball then this collision occours else not. This collison was also handled by the solveWallCollision function that took an object of type Ball as parameter and modified its velocity using the equations of motion and assuming perfectly elastic collision.
+\end{flushleft}  
+\end{itemize}
+\end{flushleft}
 
 \section{Interthread Communication}
+Interthread communication is done through barrier communication. Threads modify global static variables, namely, the state variables of the balls.
+To ensure that this part doesn't face issues, we lock the portion of code where the thread is modifying the values.
+\begin{flushleft}
 
+\end{flushleft}
 \section{Ball Speed}
+\begin{flushleft}
+The X and Y components of the velocity corresponding to each ball are stored in the  object of the class Ball and can lie in a certain range. When a collision between two balls or between a ball and the wall occours, these parameters are modified in accordance with the equations derived from Newton's Laws of Motion.  
+\end{flushleft}
 
+\section{Future Endeavours :}
+\begin{flushleft} 
+During the execution of the screensaver, the user would be provided with the following options:
+\begin{itemize}
+\item \textbf{Selection of a ball:}
+The user would be given the option of selecting a ball using the left and right arrow keys. Once the desired ball has been selected, the following operations could be performed :
+\begin{enumerate}
+
+\item The user can increase or decrease the speed of the ball using the up and down arrow keys. 
+
+\item The user can delete the ball by pressing the 'D' character key. 
+
+\item The user can change the colour of the ball by pressing the 'C' character key.
+\end{enumerate}
+
+\item \textbf{Adding a ball :}
+The user can add a ball by pressing the 'A' character key.
+
+\item\textbf{Pause :}
+The user can pause and unpause the screensaver by pressing 'Spacebar'.
+
+\item \textbf{FullScreen Mode :}
+The user can toggle between fullscreen mode by pressing the 'F' character key.
+
+\end{itemize}
+\end{flushleft}
 
 
 \end{document}
