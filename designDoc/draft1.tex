@@ -2,13 +2,24 @@
 \usepackage{sectsty}
 \usepackage[parfill]{parskip}
 \usepackage{hyperref}
+\usepackage[T1]{fontenc}
 \sectionfont{\fontsize{10}{10}\selectfont}
 
 \begin{document}
 
-\title{COP 290 Assignment 1}
-\author{Kabir Chhabra , Harman Kumar , Haroun Habeeb}
 
+\author{
+  Haroun Habeeb\\
+  \texttt{2013CS10225}
+  \and
+  Kabir Chhabra\\
+  \texttt{2013CS50287}
+  \and
+  Harman Kumar\\
+  \texttt{2013CS10224}
+}
+
+\title{COP 290 Assignment 1}
 \maketitle
 
 
@@ -75,13 +86,22 @@ The member functions of the class are the following:
 \end{flushleft}
 \end{itemize}
 \section{Testing}
-The components that require testing are :
-\begin{enumerate}
-\item \textbf{GUI} : Because the display() functions are modular, we just need to test the display function of the ball and that of the table.
-\item \textbf{Physics} : Since the physics is put into a function, testing the correctness of the function is easy, using dry runs.
-\item \textbf{Collision Handling} : Perfected by eyesight and physics.
-\item \textbf{Memory Handling} : Valgrind will be used to ensure that there are no memory leaks.
-\end{enumerate}
+We intend to use gdb for testing. The components that require testing are :
+\begin{itemize}
+
+
+\item \textbf{Table :}
+An object of type table was created by passing 4 points to it's parameterized constructor and was then displayed on the window. Then the window was then resized in order to check the correctness of the reshape member function.
+\item \textbf{Ball :}
+The ball provides most of the functionality to our application. Hence we test it by testing various tiny portions.
+First, we start by checking if we can a ball on the screen. A stationary ball is the first checkpoint. Then, we test whether we can make it move. These tests are done visually. We then check if it can collide with a boundary. The next step is to allow a thread to handle the movement of the ball. A rough test is done. \\
+The next phase is to introduce multiple balls on the table. Each handled by its own thread. The next thing to test is the collisions, to ensure that there are no floating point errors.
+To test for threads' funtioning, we will allow the display loop to run once while the thread controls the ball's state parameters. We will then ensure that the ball's variables have changed as expected. This is to identify potential issues with thread synchronization.
+\item \textbf{Physics :} Since our physics part is a set of equations in a seperate function, we execute this function for a set of values to ensure that the output is correct, afterwhich, we ensure that all corner-cases are handled.
+\item \textbf{Memory Handling} : Valgrind will be used to ensure that there are no memory leaks i.e. to ensure that all dynamically allocated memory is released by the time the program is terminated.
+\item \textbf{Thread Synchronization} : We check the number of active threads at a given point of time and ensure that its always one.
+
+\end{itemize}
 \section{Sub-component Interaction}
 \begin{flushleft}
 This heading could be divided into the following sub-components:
