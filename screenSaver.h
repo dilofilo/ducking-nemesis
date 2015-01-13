@@ -17,13 +17,22 @@ private:
 	Table* table;
 	vector<Ball*> balls;
 	vector<pthread_t> threads;
+	vector<bool> threadUpdate;
+	vector<pthread_mutex_t> vecMutex;
 public:
 	ScreenSaver(int n) {
 		numThreads = n;
 		windowID = -1;
 		isFullScreen = false;
 		isPaused = false;
+		threads.resize(numThreads);
+		threadUpdate.resize(numThreads);
+			for(int i=0; i<threadUpdate.size(); i++) threadUpdate[i] = false; //Initialization
+		balls.resize(numThreads);
 	};
+
+	
+	void* individualThread(void* threadID); ///Function handles the individual threads' functions. The threads function updates for collisions etc.
 	void exitter(); ///Closes windows and destroys objects.
 	void init(); /// function to initialize views, camera etc for glut.
 	void makeObjects(Table* table, vector<Ball*>& ballList); ///function to make the table and the objects which will be displayed.

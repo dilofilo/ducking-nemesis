@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 	buffer >> numThreads;
 	//Code to convert numThreads to int is complete.
 
-	screenSaver obj = new screenSaver(numThreads);
-	obj.execute();
+	screenSaver* obj = new screenSaver(numThreads);
+	obj->execute(); //execute should not return.
 	return 0;
 }

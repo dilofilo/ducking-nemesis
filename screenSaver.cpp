@@ -3,6 +3,19 @@
 
 #include <screenSaver.h>
 
+///Function that declares all the threads and initializes them.
+void screenSaver::makeObjects(Table* table, vector<Ball*>& ballList , vector<pthread_t>& threads , vector<bool>& threadUpdate , vecMutex , int& numThreads) { //Makes Objects and threads.
+	table = new Table(XLL,YLL , XLR,YLR , XTR,YTR , XTL,YTL);
+	for(int i=0; i<numThreads;i++) {
+
+		//TODO : newBall declaration and setting variables.
+		ballList[i]=newBall;
+	}
+	
+
+}
+
+
 /// function to initialize views, camera etc for glut.
 void screenSaver::init() {
 	
@@ -26,11 +39,7 @@ void screenSaver::init() {
 	glCLearColor( 0.54 , 0.49 , 0.41 , 1.0);
 }
 
-void screenSaver::makeObjects(Table* table, vector<Ball*>& ballList , vector<pthread_t>& threads , int& numThreads) { //Makes Objects and threads.
-	table = new Table(XLL,YLL , XLR,YLR , XTR,YTR , XTL,YTL);
-
-}
-
+///Function that is called if the user Escapes. handle all 
 void screenSaver::exitter() {
 	//TODO
 }
@@ -113,11 +122,11 @@ void screenSaver::reshape(int w, int h) {
 }
 
 
-
+void* individualThread(void* threadID)
 
 void screenSaver::execute() {
 
-	makeObjects(table, balls);
+	makeObjects(table, balls , threads , threadUpdate , vecMutex , numThreads);
 	//Make glut window
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
@@ -125,7 +134,7 @@ void screenSaver::execute() {
 	glutInitWindowPosition(50,50); //50,50 are arbitrary coordinates.
 	windowID = glutCreateWindow();
 	//TODO : MENU WALI THINGS.
-	init(  table, ballList , threads , numThreads);
+	init( );
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutSpecialFunc(keyHandler);

@@ -62,9 +62,7 @@ class Ball {
 		///display() function will be called by the ScreenSaver's display()
 			void display();
 		///check for collisions and update this ball if needed.
-			void checkCollisions();
-		///this ball collides with ball2.
-			void update(Ball &ball2);
+			//void checkCollisions(); Actually present in the screen saver ka code.
 		///draw() draws the ball on the screen.
 			void draw(); //3d drawing.
 		///reshape() function for if reshapes are required.
