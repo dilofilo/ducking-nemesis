@@ -4,13 +4,36 @@
 #include <screenSaver.h>
 
 ///Function that declares all the threads and initializes them.
-void screenSaver::makeObjects(Table* table, vector<Ball*>& ballList , vector<pthread_t>& threads , vector<bool>& threadUpdate , vecMutex , int& numThreads) { //Makes Objects and threads.
+void screenSaver::makeObjects(Table* table, vector<Ball*>& ballList , vector<pthread_t>& threads , vector<bool>& threadUpdate , vector<pthread_mutex_t> vecMutex  , int& numThreads) { //Makes Objects and threads.
 	table = new Table(XLL,YLL , XLR,YLR , XTR,YTR , XTL,YTL);
 	for(int i=0; i<numThreads;i++) {
-
 		//TODO : newBall declaration and setting variables.
+		float _xCentre=rand() % (WIDTH/numThreads) + i*WIDTH/numThreads - WIDTH/2;  
+		float _yCentre=rand() % HEIGHT-HEIGHT/2;
+		float radius=rand() % (WIDTH/(2*numThreads));
+		Ball *newBall= new Ball(_xCentre,_yCentre,radius);
+
+
+
+			//Cut table into n sections( columns/rows ) and then spawn one ball in each section, with random velocity, radius (with limit) 
+			//Set its colors too.
 		ballList[i]=newBall;
 	}
+	for(int i =0; i<numThreads; i++) {
+		int rc = pthread_create() //TODO make thread syntax
+		threadUpdate[i] = false;
+		if(rc) {
+			cout << "\n\n\n\n\n Fatal Weird Error Happened. \n\n\n\n\n\n If This message is ever displayed, you're in deep trouble.";
+		}
+	}
+	for (int i=0; i<numThreads; i++) {
+		threadUpdate[i]=false;
+
+	}
+	for (int i=0; i<numThreads; i++){
+		pthread_mutex_init(&vecMutex[i], NULL);
+	}
+
 	
 
 }
@@ -107,22 +130,27 @@ void screenSaver::keyHandler(unsigned char key , int x , int y) {
 
 ///function to handle reshaping of windows
 void screenSaver::reshape(int w, int h) {
+	WIDTH = w;
+	HEIGHT = h;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	table->reshape(w,h);
 	for(int i=0; i<numThreads ; i++) {
 		balls[i]->reshape(w,h);
 	}
-	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+	glViewport(0, 0, (GLsizei)WIDTH, (GLsizei)HEIGHT);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(45.0f, (GLfloat)w / (GLfloat)h, 0.1f, 100000.0f);
+	gluPerspective(45.0f, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100000.0f);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glFlush();
 }
 
 
-void* individualThread(void* threadID)
+///
+void* individualThread(void* threadID) {
+
+}
 
 void screenSaver::execute() {
 
