@@ -23,7 +23,7 @@ void screenSaver::init() {
 	glLoadIdentity();
 
 	///Set background to brown. TODO
-	glCLearColor( 0.54 , 0.49 , 0.41 , 1.0); 
+	glCLearColor( 0.54 , 0.49 , 0.41 , 1.0);
 }
 
 void screenSaver::makeObjects(Table* table, vector<Ball*>& ballList , vector<pthread_t>& threads , int& numThreads) { //Makes Objects and threads.
