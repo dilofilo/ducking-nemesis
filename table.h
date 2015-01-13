@@ -5,9 +5,10 @@
 class Table{
 	private:
 		float xll,yll , xlr,ylr , xtr,ytr , xtl,ytl , z;
+		float oldWidth,oldHeight;
 		float color[4];
 	public:
-		Table( float _xll,float _yll , float _xlr,float _ylr , float _xtr,float _ytr , float _xtl,float _ytl , float _z , float R , float G , float B) {
+		Table( float _xll,float _yll , float _xlr,float _ylr , float _xtr,float _ytr , float _xtl,float _ytl , float _z , float R , float G , float B , float _oldWidth , float _oldHeight) {
 			xll = _xll;
 			yll = _yll;
 
@@ -26,6 +27,9 @@ class Table{
 			color[1] = G;
 			color[2] = B;
 			color[3] = 1.0;
+
+			oldWidth = _oldWidth;
+			oldHeight = _oldHeight;
 		} //Constructor complete.
 		~Table();
 		

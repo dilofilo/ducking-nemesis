@@ -18,20 +18,28 @@ class Ball {
 		///BallList needed to allow for checking collisions etc;
 		int idx; //The index of the ball in the balllist.
 		static vector<Ball*> BallList;
+		float oldWidth , oldHeight;
+		bool isSelected;
 	public:
 		///Constructor
-			Ball(float _xCentre , float _yCentre , float radius)  {
+			Ball(float _xCentre , float _yCentre , float _radius , float R , float G , float B , float _oldW , float _oldH)  {
+				oldWidth = _oldW;
+				oldHeight = _oldH;
 				velocityLimit = MAX_VELOCITY;
 				xCentre = _xCentre;
 				yCentre = _yCentre;
-				color[0] = ((float)(rand()%100))/100.0; //randomising colour
-				color[1] = ((float)(rand()%100))/100.0;
-				color[2] = ((float)(rand()%100))/100.0;
+				radius = _radius;
+				color[0] = R; 
+				color[1] = G;
+				color[2] = B;
 				color[3] = 1.0;
 				mass = pow(radius,3); 
+				isSelected = false;
+				xVelocity = 0.0;
+				yVelocity = 0.0;
 			}
 		///Copy Constructor because good practice
-			Ball(const Ball& ball) {
+			Ball(Ball& ball) {
 				xCentre = ball.getxCentre();
 				yCentre = ball.getyCentre();
 				radius = ball.getRadius();
@@ -52,7 +60,10 @@ class Ball {
 			// void setMass(float _m) { mass = _m; }
 			void setColor( float* _color ) { color[0] = _color[0]; color[1] = _color[1]; color[2] = _color[2]; color[3] = _color[3];}
 			void setIdx(int _id) { idx = _id;}
+			void setIsSelected(bool _x) { isSelected = _x; }
 
+			bool getIsSelected() { return isSelected; }
+			float getRadius() { return radius; }
 			float getxCentre() {return xCentre;}
 			float getyCentre() {return yCentre;}
 			float getxVelocity() {return xVelocity;}
@@ -64,10 +75,8 @@ class Ball {
 			void display();
 		///check for collisions and update this ball if needed.
 			//void checkCollisions(); Actually present in the screen saver ka code.
-		///draw() draws the ball on the screen.
-			void draw(); //3d drawing.
 		///reshape() function for if reshapes are required.
-			void reshape();
+			void reshape(int w , int h);
 
 };
 

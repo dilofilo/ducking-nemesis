@@ -9,10 +9,11 @@ void screenSaver::makeObjects(Table* table, vector<Ball*>& ballList , vector<pth
 	srand(time(NULL));
 	for(int i=0; i<numThreads;i++) {
 		//TODO : newBall declaration and setting variables.
-			float _xCentre= (float)(rand() % (WIDTH/numThreads)) + i*WIDTH/numThreads - WIDTH/2; //the width of each column is width/numthreads  
-			float _yCentre= (float)(rand() % HEIGHT)-HEIGHT/2;
-			float radius= (float)(rand() % (WIDTH/(6*numThreads)));// radius is at max half of width of column
-		Ball *newBall= new Ball(_xCentre,_yCentre,radius);//initializing ball with random properties
+			float radius= (float)(rand() % (WIDTH/((float)(6*numThreads))));// radius is at max half of width of column
+			float _xCentre= (float)(rand() % (WIDTH/numThreads)) + i*WIDTH/numThreads - (WIDTH/2.0); //the width of each column is width/numthreads  
+			float _yCentre= (float)(rand() % (HEIGHT- (int)(2.0*radius))) + radius - (HEIGHT/2.0);
+			
+		Ball *newBall= new Ball(_xCentre,_yCentre,radius, 0.0, 0.0, 0.5, WIDTH , HEIGHT);//initializing ball with random properties //TODO
 			float xVelo = (float)(rand()%(int)(newball->velocityLimit));
 			float yVelo = (float)(rand()%(int)(newball->velocityLimit));
 			newball->setxVelocity(xVelo);
