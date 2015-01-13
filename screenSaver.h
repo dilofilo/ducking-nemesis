@@ -12,6 +12,7 @@ class ScreenSaver {
 private:
 	bool isPaused;
 	bool isFullScreen;
+	bool isExit;
 	int windowID;
 	int numThreads; ///Contains the number of threads requested by the make command.
 	Table* table;

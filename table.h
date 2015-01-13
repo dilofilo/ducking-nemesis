@@ -1,5 +1,7 @@
 #ifndef TABLE_H
 	#define TABLE_H
+#include <GL/glut.h>
+
 class Table{
 	private:
 		float xll,yll , xlr,ylr , xtr,ytr , xtl,ytl;

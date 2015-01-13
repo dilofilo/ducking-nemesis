@@ -6,7 +6,7 @@
 #include <math.h>
 #define PI 3.1415926535897932384626433832795
 #define Z_CAMERA  10.0
-
+#include <time.h>
 #include <iostream>
 #include <string>
 #include <stringstream>
@@ -33,6 +33,15 @@ static int HEIGHT = 480;
 
 
 using namespace std;
+
+float* solveBallCollision(float vXBallA , float vYBallB , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
+{
+	/// Returns an array of four float numbers corresponding to VXA, VYA, VXB, VYB
+
+	float 
+
+}
+
 
 int main(int argc, char** argv) {
 	

@@ -5,7 +5,7 @@
 /**
 	The main loop will create an array of balls which will handle their respective graphics and update their own positions etc. The main loop will merely handle the checking for collisions.
 */
-
+#define MAX_VELOCITY 10.0
 class Ball {
 	private:
 		///Ordinary ball measurements (physical)
@@ -14,18 +14,19 @@ class Ball {
 		float xVelocity, yVelocity;
 		float color[4];
 		float mass;
-
+		float velocityLimit;
 		///BallList needed to allow for checking collisions etc;
 		int idx; //The index of the ball in the balllist.
 		static vector<Ball*> BallList;
 	public:
 		///Constructor
 			Ball(float _xCentre , float _yCentre , float radius)  {
+				velocityLimit = MAX_VELOCITY;
 				xCentre = _xCentre;
 				yCentre = _yCentre;
-				color[0] = rand()%1.0; //randomising colour
-				color[1] = rand()%1.0;
-				color[2] = rand()%1.0;
+				color[0] = ((float)(rand()%100))/100.0; //randomising colour
+				color[1] = ((float)(rand()%100))/100.0;
+				color[2] = ((float)(rand()%100))/100.0;
 				color[3] = 1.0;
 				mass = pow(radius,3); 
 			}

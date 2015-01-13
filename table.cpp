@@ -1,7 +1,8 @@
 #ifndef TABLE_CPP
 	#define TABLE_CPP
+#include <GL/glut.h>
 
-#include <table.h>
+#include "table.h"
 
 ///function to display the table.
 void Table::display() {

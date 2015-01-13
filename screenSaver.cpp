@@ -6,21 +6,22 @@
 ///Function that declares all the threads and initializes them.
 void screenSaver::makeObjects(Table* table, vector<Ball*>& ballList , vector<pthread_t>& threads , vector<bool>& threadUpdate , vector<pthread_mutex_t> vecMutex  , int& numThreads) { //Makes Objects and threads.
 	table = new Table(XLL,YLL , XLR,YLR , XTR,YTR , XTL,YTL);
+	srand(time(NULL));
 	for(int i=0; i<numThreads;i++) {
 		//TODO : newBall declaration and setting variables.
-		float _xCentre=rand() % (WIDTH/numThreads) + i*WIDTH/numThreads - WIDTH/2;  
-		float _yCentre=rand() % HEIGHT-HEIGHT/2;
-		float radius=rand() % (WIDTH/(2*numThreads));
-		Ball *newBall= new Ball(_xCentre,_yCentre,radius);
+			float _xCentre= (float)(rand() % (WIDTH/numThreads)) + i*WIDTH/numThreads - WIDTH/2; //the width of each column is width/numthreads  
+			float _yCentre= (float)(rand() % HEIGHT)-HEIGHT/2;
+			float radius= (float)(rand() % (WIDTH/(6*numThreads)));// radius is at max half of width of column
+		Ball *newBall= new Ball(_xCentre,_yCentre,radius);//initializing ball with random properties
+			float xVelo = (float)(rand()%(int)(newball->velocityLimit));
+			float yVelo = (float)(rand()%(int)(newball->velocityLimit));
+			newball->setxVelocity(xVelo);
+			newBall->setyVelocity(yVelo);
 
-
-
-			//Cut table into n sections( columns/rows ) and then spawn one ball in each section, with random velocity, radius (with limit) 
-			//Set its colors too.
 		ballList[i]=newBall;
 	}
 	for(int i =0; i<numThreads; i++) {
-		int rc = pthread_create() //TODO make thread syntax
+		int rc = pthread_create(&threads[i],NULL, individualThread , (void*)(i) );
 		threadUpdate[i] = false;
 		if(rc) {
 			cout << "\n\n\n\n\n Fatal Weird Error Happened. \n\n\n\n\n\n If This message is ever displayed, you're in deep trouble.";
@@ -28,7 +29,6 @@ void screenSaver::makeObjects(Table* table, vector<Ball*>& ballList , vector<pth
 	}
 	for (int i=0; i<numThreads; i++) {
 		threadUpdate[i]=false;
-
 	}
 	for (int i=0; i<numThreads; i++){
 		pthread_mutex_init(&vecMutex[i], NULL);
@@ -93,6 +93,10 @@ void screenSaver::display() {
 	glFlush();
 	glSwapBuffers();
 	//for all threads, add item to jobQueue of thread
+	for(int i = 0; i<numThreads ; i++) {
+		//TODO : Insert locks.
+		threadUpdate[i] = true;
+	}
 	glutPostRedisplay();
 }
 
@@ -121,8 +125,13 @@ void screenSaver::keyHandler(unsigned char key , int x , int y) {
 
 		}
 		case 27 : { //Escape handling.
+			isExit = true;
 			exitter();
 		}
+		case 'A': { //Add ball?
+
+		}
+		//TODO : Ball Selection keys.
 	}
 }
 
@@ -149,7 +158,36 @@ void screenSaver::reshape(int w, int h) {
 
 ///
 void* individualThread(void* threadID) {
+	int* _tID = (int*) threadID; //_tID is the pointer to the thread id.
+	int tID = *_tID;
+	while(true) {
+		if(!isExit) {
+			if(!isPaused) {
 
+				//AcquireLock
+				if(threadUpdate[tID]) {
+
+					//Check for collision with boundary.
+					
+					//Check for collision with other balls.
+					for(int ballID = tID + 1; ballID < numThreads; ballID++) {
+						//Check if a collision occurs. if it does, solve for it and update the variables.
+							//TODO
+						//Acquire ball[bID] ka lock,
+
+						//Release ball[bID] ka lock.
+					}
+
+				}
+				//ReleaseLock
+			}
+			else {
+				contiue;
+			}
+		} else {
+			break;
+		}
+	}
 }
 
 void screenSaver::execute() {
