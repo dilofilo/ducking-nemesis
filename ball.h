@@ -23,13 +23,13 @@ class Ball {
 			Ball(float _xCentre , float _yCentre , float radius)  {
 				xCentre = _xCentre;
 				yCentre = _yCentre;
-				color[0] = 1.0;
-				color[1] = 0.0;
-				color[2] = 0.0;
+				color[0] = rand()%1.0; //randomising colour
+				color[1] = rand()%1.0;
+				color[2] = rand()%1.0;
 				color[3] = 1.0;
 				mass = pow(radius,3); 
 			}
-		///Copy Constructor becaus good practice
+		///Copy Constructor because good practice
 			Ball(const Ball& ball) {
 				xCentre = ball.getxCentre();
 				yCentre = ball.getyCentre();

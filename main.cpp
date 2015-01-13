@@ -12,6 +12,9 @@
 #include <stringstream>
 
 
+static int WIDTH = 640;
+static int HEIGHT = 480;
+
 #include <ball.h>
 #include <ball.cpp>
 #include <table.h>
@@ -28,8 +31,6 @@
 #define XTL -1.0
 #define YTL 1.0
 
-#define WIDTH 640
-#define HEIGHT 480
 
 using namespace std;
 
