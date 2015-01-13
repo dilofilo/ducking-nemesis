@@ -34,15 +34,6 @@ static int HEIGHT = 480;
 
 using namespace std;
 
-float* solveBallCollision(float vXBallA , float vYBallB , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
-{
-	/// Returns an array of four float numbers corresponding to VXA, VYA, VXB, VYB
-
-	float 
-
-}
-
-
 int main(int argc, char** argv) {
 	
 	//Code to convert string to int
