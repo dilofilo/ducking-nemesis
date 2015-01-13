@@ -4,10 +4,10 @@
 
 class Table{
 	private:
-		float xll,yll , xlr,ylr , xtr,ytr , xtl,ytl;
+		float xll,yll , xlr,ylr , xtr,ytr , xtl,ytl , z;
 		float color[4];
 	public:
-		Table( float _xll,float _yll , float _xlr,float _ylr , float _xtr,float _ytr , float _xtl,float _ytl) {
+		Table( float _xll,float _yll , float _xlr,float _ylr , float _xtr,float _ytr , float _xtl,float _ytl , float _z , float R , float G , float B) {
 			xll = _xll;
 			yll = _yll;
 
@@ -19,6 +19,13 @@ class Table{
 
 			xtl = _xtl;
 			ytl = _ytl;
+
+			z = _z ;
+			
+			color[0] = R;
+			color[1] = G;
+			color[2] = B;
+			color[3] = 1.0;
 		} //Constructor complete.
 		~Table();
 		
@@ -43,6 +50,7 @@ class Table{
 
 		void reshape(int w , int h); ///function to handle reshaping of table
 		void display(); /// function to handle displaying the table
+		void print();
 };
 
 #endif

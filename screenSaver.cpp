@@ -91,7 +91,7 @@ void screenSaver::display() {
 	glPopMatrix();
 
 	glFlush();
-	glSwapBuffers();
+	glutSwapBuffers();
 	//for all threads, add item to jobQueue of thread
 	for(int i = 0; i<numThreads ; i++) {
 		//TODO : Insert locks.

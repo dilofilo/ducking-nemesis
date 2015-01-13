@@ -1,13 +1,15 @@
 #include <GL/glut.h>
 #include <vector>
+#include <iostream>
+using namespace std;
 
 #include "table.h"
 #include "table.cpp"
+//#include "ball.h"
+//#include "ball.cpp"
 
-using namespace std;
-
-static Ball* ball;
-static Table* table;
+Table * mytable ;
+//Ball* balls;
 
 static float WIDTH;
 static float HEIGHT;
@@ -23,16 +25,49 @@ void init() {
 	glLoadIdentity();
 	gluPerspective( 45.0f , //FOV in yz plane.
 			(float)WIDTH/(float)HEIGHT , //ratio
-			0.1f , //Near clipping distance
+			1.0f , //Near clipping distance
 			10000000.0f //Far clipping distance.
-		)
+		);
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
 
-	///Set background to brown. TODO
-	glCLearColor( 0.54 , 0.49 , 0.41 , 1.0);
+	///Set background to black. TODO
+	glClearColor( 0.0 , 0.0 , 0.0 , 1.0);
 
 }
+
+void display() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glLoadIdentity();
+	glPushMatrix();
+	gluLookAt( 0.0 , 0.0 , 5.0 , 0.0 , 0.0 , 0.0 , 0.0 , 1.0 ,0.0); // Focus camera at 0,0,0. Z_CAMERA defined in main.cpp
+	glPushMatrix();
+
+	
+	mytable->display();
+	
+
+	glPopMatrix();
+	glPopMatrix();
+	glFlush();
+	glutSwapBuffers();
+}
+
+void reshape(int w , int h) {
+	WIDTH = w;
+	HEIGHT = h;
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, (GLsizei)WIDTH, (GLsizei)HEIGHT);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(45.0f, (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100000.0f);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glFlush();
+
+}
+
+
 int main(int argc, char** argv) {
 	WIDTH = 600;
 	HEIGHT = 600;
@@ -42,8 +77,11 @@ int main(int argc, char** argv) {
 	glutInitWindowPosition(50,50);
 	glutCreateWindow("testing");
 	init();
-	table = new Table( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+	mytable= new Table(-0.9, -0.90, 0.90, -0.90, 0.90, 0.90, -0.90, 0.90, 0.0 , 0.0 , 1.0, 0.0);
+	//mytable->print();
+
 	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
 	glutMainLoop();
 	return 0;
 
