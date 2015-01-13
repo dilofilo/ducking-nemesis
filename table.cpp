@@ -6,7 +6,7 @@
 
 ///function to display the table.
 void Table::display() {
-	glMatrixMode(GL_MATRIXVIEW); //Now renders object space to 3d space
+	glMatrixMode(GL_MODELVIEW); //Now renders object space to 3d space
 }
 
 
