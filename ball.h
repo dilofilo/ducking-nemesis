@@ -46,19 +46,19 @@ class Ball {
 			void setxCentre(float _x) { xCentre = _x; }
 			void setyCentre(float _y) { yCentre = _y; }
 			void setRadius(float _r) { radius = _r; }
-			void setyVelocity(float _y) { yCentre = _y; }
+			void setyVelocity(float _y) { yVelocity = _y; }
 			void setxVelocity(float _x) { xVelocity = _x; }
-			void setMass(float _m) { mass = _m; }
+			// void setMass(float _m) { mass = _m; }
 			void setColor( float* _color ) { color[0] = _color[0]; color[1] = _color[1]; color[2] = _color[2]; color[3] = _color[3];}
+			void setIdx(int _id) { idx = _id;}
 
 			float getxCentre() {return xCentre;}
 			float getyCentre() {return yCentre;}
 			float getxVelocity() {return xVelocity;}
 			float getyVelocity() {return yVelocity;}
 			float getMass() {return mass;}
-
-			void setIdx(int _id) { idx = _id;}
 			int getIdx() { 	return idx;	}
+
 		///display() function will be called by the ScreenSaver's display()
 			void display();
 		///check for collisions and update this ball if needed.
