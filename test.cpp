@@ -13,11 +13,16 @@ using namespace std;
 Table* table;
 vector<Ball*> ball;
 
+
+
 //GL stuff
 #define Z_CAMERA 10.0
 #define DELTA_T 1.0
 static int WIDTH = 640;
 static int HEIGHT = 480;
+#define NUM_BALLS 2
+
+
 
 void init() {
 	glEnable(GL_DEPTH_TEST); //Ensure that 3d figures are drawn in the correct order.
@@ -47,14 +52,15 @@ void display() {
 	gluLookAt( 0.0 , 0.0 , Z_CAMERA , 0.0 , 0.0 , 0.0 , 0.0 , 1.0 ,0.0); // Focus camera at 0,0,0. ZCAMERA defined in main.cpp
 	glPushMatrix();
 	table->display();
-	ball->display();
+	for(int i=0; i<NUM_BALLS; i++) ball[i]->display();
 	glPopMatrix();
 	glPopMatrix();
 	glutSwapBuffers();
 }
 
 void timer(int val) {
-	//Calculations	
+	//Calculations
+	ball[0]->setxCentre( ball[0]->getxCentre() + DELTA_T*(ball[0]->getxVelocity()));	
 	glutTimerFunc(DELTA_T , timer , 0);
 	glutPostRedisplay();
 }
@@ -69,7 +75,7 @@ void reshape(int w, int h) {
 	glLoadIdentity();
 
 	table->reshape(w , h, WIDTH , HEIGHT);
-	ball->reshape(w , h, WIDTH , HEIGHT);
+	for(int i=0; i< NUM_BALLS; i++) ball[i]->reshape(w , h, WIDTH , HEIGHT);
 
 	WIDTH = w;
 	HEIGHT = h;
@@ -90,11 +96,14 @@ int main(int argc, char** argv) {
 		tableCorners.push_back(TR);
 		tableCorners.push_back(TL);
 	table = new Table( tableCorners , color );
+	ball.resize(NUM_BALLS);
 	color[0] = 1.0 ; color[1] = 0.2; color[2] = 0.3;
 	for(int i=0; i< NUM_BALLS; i++) {
-		ball = new Ball();
-		ball->setColor(color);
+		ball[i] = new Ball();
+		ball[i]->setxCentre(-1.0 + (float)i);
+		ball[i]->setColor(color);
 	}
+	ball[0]->setxVelocity(0.1);
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
 	glutInitWindowSize(WIDTH , HEIGHT);

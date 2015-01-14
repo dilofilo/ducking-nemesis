@@ -71,7 +71,7 @@ vector<float> ScalarMult(vector<float> vec , float x) {
 
 
 //
-pair< vector<float> , vector<float> > solveCollision( vector<float>& velocityA , vector<float>& velocityB , vector<float>& posA , vector<float>& posB , float massA , float massB , float e = 1.0) {
+pair< vector<float> , vector<float> > solveBallCollision( vector<float>& velocityA , vector<float>& velocityB , vector<float>& posA , vector<float>& posB , float massA , float massB , float e = 1.0) {
 	pair< vector<float>  , vector<float> > velocities;
 	velocities.first.resize(velocityA.size());
 	velocities.second.resize(velocityB.size());

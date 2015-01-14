@@ -131,7 +131,19 @@ The member functions of the class are the following:
 
 \item \textbf{GUI} : The GUI is handled by giving the initialization part to one class, and then allowing the balls and the table to display themselves.
 
-\item \textbf{Physics} : The physics are handled by the threads. The threads call a solve() function which accepts as parameters velocities, masses and co-ordinates. It then returns the same values AFTER collision.
+\item \textbf{Physics} : The physics are handled by the threads. The threads call a solver function which accepts as parameters velocities, masses and co-ordinates. It then returns the same values after collision.
+
+The following equations were solved to obtain 
+\begin{equation}
+\hat{n} = \frac{\vec{R_{1}} - \vec{R_{2}}}{ \parallel \vec{R_{1}} - \vec{R_{2}} \parallel}
+\end{equation}
+\begin{equation}
+\vec{V_{1}^{'}} := \vec{V_{1}} + (\frac{m_{2}}{m_{1} + m_{2}}((1-e)\vec{V_{1}} - (1+e)\vec{V_{2}})\cdotp\hat{n})\hat{n}
+\end{equation}
+\begin{equation}
+\vec{V_{2}^{'}} := \vec{V_{2}} + (\frac{m_{1}}{m_{1} + m_{2}}((1-e)\vec{V_{2}} - (1+e)\vec{V_{1}})\cdotp\hat{n})\hat{n}
+\end{equation}
+
 
 \item \textbf{Threading} : The updates of the co-ordinates and velocities of balls are handled by threads. They communicate through barrier communication ( accessing static global variables ). Mutex is applied at appropirate locatons.
 
@@ -164,16 +176,6 @@ The ball can be tested in progressive steps , such as drawing it, moving it, mul
 To test for threads' funtioning, we will allow the display loop to run once while the thread controls the ball's state parameters. We will then ensure that the ball's variables have changed as expected. This is to identify potential issues with thread synchronization.
 
 \item \textbf{Physics :} Since our physics part is a set of equations in a seperate function, we execute this function for a set of values to ensure that the output is correct, afterwhich, we ensure that all corner-cases are handled.
-The following equations were solved to obtain 
-\begin{equation}
-\hat{n} = \frac{\vec{R_{1}} - \vec{R_{2}}}{ \parallel \vec{R_{1}} - \vec{R_{2}} \parallel}
-\end{equation}
-\begin{equation}
-\vec{V_{1}^{'}} := \vec{V_{1}} + (\frac{m_{2}}{m_{1} + m_{2}}((1-e)\vec{V_{1}} - (1+e)\vec{V_{2}})\cdotp\hat{n})\hat{n}
-\end{equation}
-\begin{equation}
-\vec{V_{2}^{'}} := \vec{V_{2}} + (\frac{m_{1}}{m_{1} + m_{2}}((1-e)\vec{V_{2}} - (1+e)\vec{V_{1}})\cdotp\hat{n})\hat{n}
-\end{equation}
 
 
 
