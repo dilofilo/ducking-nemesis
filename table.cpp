@@ -1,41 +1,24 @@
 #ifndef TABLE_CPP
 	#define TABLE_CPP
-#include <GL/glut.h>
-
 #include "table.h"
 
-///function to display the table.
 void Table::display() {
-	//cout << color[0];
-	glColor3f(color[0] , color[1], color[2]);
+	glColor3f(color[0] , color[1] , color[2]);
 	glBegin(GL_POLYGON);
-		glVertex3f(xll , yll , z);
-		glVertex3f(xlr , ylr , z);
-		glVertex3f(xtr , ytr , z);
-		glVertex3f(xtl , ytl , z);
+		glVertex3f( corners[0][0] , corners[0][1] , corners[0][2]);
+		glVertex3f( corners[1][0] , corners[1][1] , corners[1][2]);
+		glVertex3f( corners[2][0] , corners[2][1] , corners[2][2]);
+		glVertex3f( corners[3][0] , corners[3][1] , corners[3][2]);
 	glEnd();
 }
 
-void Table::print() {
-	cout<<"Hello";
+void Table::reshape(int w , int h , int oldWidth , int oldHeight) {
+	float xRatio = w/oldWidth;
+	float yRatio = h/oldHeight;
 
-	cout<<xll<<yll<<endl;
-
-}
-
-///function to handle reshaping the table.
-void Table::reshape(int w , int h) {
-	xll *= w/oldWidth;
-	xlr *= w/oldWidth;
-	xtl *= w/oldWidth;
-	xtr *= w/oldWidth;
-
-	yll *= h/oldHeight;
-	ylr *= h/oldHeight;
-	ytl *= h/oldHeight;
-	ytr *= h/oldHeight;
-
-	oldWidth = w;
-	oldHeight = h;
+	for(int i=0; i<4;i++) {
+		corners[i][0] *= xRatio;
+		corners[i][1] *= yRatio;
+	}
 }
 #endif

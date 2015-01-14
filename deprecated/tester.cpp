@@ -21,7 +21,7 @@ Table * table ;
 vector<Ball*> balls;
 vector<pthread_t> threads;
 vector<bool> shouldThreadUpdate;
-
+int nUpdatesToBeDone;
 static float WIDTH;
 static float HEIGHT;
 
@@ -147,7 +147,6 @@ void* threadFunction(void* _tid) {
 			shouldThreadUpdate[tID] = false;
 		}
 	}
-
 }
 
 

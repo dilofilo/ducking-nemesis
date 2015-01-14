@@ -1,3 +1,5 @@
+#ifndef SOLVER_CPP
+	#define SOLVER_CPP
 float* old_solveBallCollision(float vXBallA , float vYBallA , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
 {
 	/// Returns an array of four float numbers corresponding to VXA, VYA, VXB, 
@@ -35,7 +37,55 @@ float* old_solveBallCollision(float vXBallA , float vYBallA , float massA ,  flo
 
 }
 
-#include <vector>
-class Vector {
-	
+
+/**
+Some vector based functions needed to solve the system of equations. 
+*/
+vector<float> addVectors( vector<float> a , vector<float> b) {
+	if (a.size() != b.size()) {
+		cout << "INCORRECT DIMENSIONS ERROR!";
+	} else {
+		vector<float> sum(a.size(),0);
+		for(int i=0; i< a.size() ; i++ ) sum[i] = a[i]+b[i] ;
+		return sum;
+	}
 }
+
+float dotProduct( vector<float> a , vector<float> b ) {
+	if (a.size() != b.size()) {
+		cout << "INCORRECT DIMENSIONS ERROR!";
+	} else {
+		float dot = 0;
+		for(int i=0; i< a.size() ; i++ ) dot += a[i]*b[i] ;
+		return dot;	
+	}
+}
+
+vector<float> ScalarMult(vector<float> vec , float x) {
+	vector<float> result(vec.size() , 0);
+	for(int i=0; i< vec.size() ; i++) result[i] = vec[i]*x;
+
+	return result;
+}
+
+
+
+//
+pair< vector<float> , vector<float> > solveCollision( vector<float>& velocityA , vector<float>& velocityB , vector<float>& posA , vector<float>& posB , float massA , float massB , float e = 1.0) {
+	pair< vector<float>  , vector<float> > velocities;
+	velocities.first.resize(velocityA.size());
+	velocities.second.resize(velocityB.size());
+	vector<float> deltaPos = addVectors( posA , ScalarMult(posB , -1.0)); 
+	float deltaPosMagnitude = sqrt( dotProduct( deltaPos , deltaPos) );
+	deltaPos = ScalarMult( deltaPos, 1.0 / deltaPosMagnitude );
+	///Have fun with this code.
+	//velocities.first  = addVectors(velocityA , ScalarMult( deltaPos , ( ScalarMult( addVectors( ScalarMult( velocityA , 1.0 - e ) , ScalarMult( ScalarMult( velocityB , 1.0 + e) , -1.0) ) ) , (massB/(massA + massB))))));
+	//velocities.second = addVectors(velocityB , ScalarMult( deltaPos , ( ScalarMult( addVectors( ScalarMult( velocityB , 1.0 - e ) , ScalarMult( ScalarMult( velocityA , 1.0 + e) , -1.0) ) , (massA/(massA + massB))))));
+	
+	velocities.first  = addVectors( velocityA , ScalarMult( deltaPos , dotProduct( deltaPos , addVectors(ScalarMult( velocityA , 1.0-e) , ScalarMult( velocityB , -1.0 - e ) ) )*( massB/(massA+massB) ) ));
+	velocities.second = addVectors( velocityB , ScalarMult( deltaPos , dotProduct( deltaPos , addVectors(ScalarMult( velocityA , -1.0-e) , ScalarMult( velocityB , 1.0 - e ) ) )*( massA/(massA+massB) ) ));
+
+	return velocities;
+}
+
+#endif
