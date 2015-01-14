@@ -82,7 +82,7 @@ pair< vector<float> , vector<float> > solveBallCollision( vector<float>& velocit
 	//velocities.first  = addVectors(velocityA , ScalarMult( deltaPos , ( ScalarMult( addVectors( ScalarMult( velocityA , 1.0 - e ) , ScalarMult( ScalarMult( velocityB , 1.0 + e) , -1.0) ) ) , (massB/(massA + massB))))));
 	//velocities.second = addVectors(velocityB , ScalarMult( deltaPos , ( ScalarMult( addVectors( ScalarMult( velocityB , 1.0 - e ) , ScalarMult( ScalarMult( velocityA , 1.0 + e) , -1.0) ) , (massA/(massA + massB))))));
 	
-	velocities.first  = addVectors( velocityA , ScalarMult( deltaPos , dotProduct( deltaPos , addVectors(ScalarMult( velocityA , 1.0-e) , ScalarMult( velocityB , -1.0 - e ) ) )*( massB/(massA+massB) ) ));
+	velocities.first  = addVectors( velocityA , ScalarMult( deltaPos , dotProduct( deltaPos , addVectors(ScalarMult( velocityA , 1.0-e ) , ScalarMult( velocityB , -1.0 - e ) ) )*( massB/(massA+massB) ) ));
 	velocities.second = addVectors( velocityB , ScalarMult( deltaPos , dotProduct( deltaPos , addVectors(ScalarMult( velocityA , -1.0-e) , ScalarMult( velocityB , 1.0 - e ) ) )*( massA/(massA+massB) ) ));
 
 	return velocities;
