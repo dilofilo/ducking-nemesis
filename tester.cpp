@@ -10,19 +10,17 @@ using namespace std;
 #define NUMSTACKS 50
 #define BALL_ZPLANE 0.0
 #define REDUCTIONFACTOR 0.000001
-
+#define deltaT 1.0
+#include "equationSolver.cpp"
 #include "table.h"
 #include "table.cpp"
 #include "ball.h"
 #include "ball.cpp"
 
 Table * table ;
-Ball* ball;
-clock_t oldtime;
-clock_t newtime;
-clock_t deltaT;
-
-
+vector<Ball*> balls;
+vector<pthread_t> threads;
+vector<bool> shouldThreadUpdate;
 
 static float WIDTH;
 static float HEIGHT;
@@ -47,7 +45,7 @@ void init() {
 
 	///Set background to black. TODO
 	glClearColor( 0.0 , 0.0 , 0.0 , 1.0);
-	glutFullScreen();
+	//glutFullScreen();
 }
 
 void display() {
@@ -57,29 +55,22 @@ void display() {
 	gluLookAt( 0.0 , 0.0 , Z_CAMERA , 0.0 , 0.0 , 0.0 , 0.0 , 1.0 ,0.0); // Focus camera at 0,0,0. ZCAMERA defined in main.cpp
 	glPushMatrix();
 
-	newtime=clock();
-	deltaT=  (double)(newtime - oldtime) ;
-	oldtime=newtime;
-	//table->display();
-	ball->display();
-
-	ball->setxCentre( ball->getxCentre() + REDUCTIONFACTOR*deltaT*(ball->getxVelocity()));
-	ball->setyCentre( ball->getyCentre() + REDUCTIONFACTOR*deltaT*(ball->getyVelocity()));
+	table->display();
+	for(int i=0; i<balls.size();i++) {
+		balls[i]->display();
+	}
 
 	glPopMatrix();
 	glPopMatrix();
-
-
 
 	glutSwapBuffers();
-	glutPostRedisplay();
 }
 
 void reshape(int w , int h) {
 	WIDTH = w;
 	HEIGHT = h;
-	//table->reshape(w,h);
-	ball->reshape(w,h);
+	table->reshape(w,h);
+	for(int i=0; i<balls.size();i++) { balls[i]->reshape(w,h); } //reshape for balls.
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, (GLsizei)WIDTH, (GLsizei)HEIGHT);
 	glMatrixMode(GL_PROJECTION);
@@ -89,6 +80,73 @@ void reshape(int w , int h) {
 
 	glLoadIdentity();
 	glFlush();
+
+}
+
+void timerFunc(int val) {
+	
+	if(false) {
+		for(int i = 0; i<balls.size(); i++) {
+			Ball* ball = balls[i];
+			float xNew = ball->getxCentre() + REDUCTIONFACTOR*deltaT*(ball->getxVelocity());
+			float yNew = ball->getyCentre() + REDUCTIONFACTOR*deltaT*(ball->getyVelocity());
+
+			if ( (xNew+(ball->getRadius())>(table->getxlr())) || (xNew-(ball->getRadius()) < (table->getxll())) ) {
+				ball->setxVelocity(-1*ball->getxVelocity());
+			}
+
+
+			if ( (yNew -(ball->getRadius()) < (table->getylr())) || (yNew+(ball->getRadius()) > (table->getytl())) ) {
+				ball->setyVelocity(-1*ball->getyVelocity());
+			}
+
+			xNew =  ball->getxCentre() + deltaT*(ball->getxVelocity());
+			yNew = ball->getyCentre() + deltaT*(ball->getyVelocity());
+			//Collision with walls checked.
+
+			//To check collision with other balls.
+			for(int j=i+1; j<balls.size();j++) {
+				if( ball->willBallCollide(balls[j])) {
+					float* newVelocities = solveBallCollision( ball->getxVelocity(),
+															ball->getyVelocity(),
+															ball->getMass(),
+															balls[j]->getxVelocity(),
+															balls[j]->getyVelocity(),
+															balls[j]->getMass(),
+															ball->getxCentre() - balls[j]->getxCentre(),
+															ball->getyCentre() - balls[j]->getyCentre() );
+					ball->setxVelocity(newVelocities[0]);
+					ball->setyVelocity(newVelocities[1]);
+					balls[j]->setxVelocity(newVelocities[2]);
+					balls[j]->setyVelocity(newVelocities[3]);
+
+				}
+			}
+
+		ball->setxCentre( xNew );
+		ball->setyCentre( yNew );
+		}
+	} else {
+		for(int i=0; i< balls.size() ; i++) {
+		shouldThreadUpdate[i] = true;  //Needs Mutexing.
+		while( !shouldThreadUpdate[i]) { continue; }
+		}
+	}
+
+	glutTimerFunc( deltaT , timerFunc , val);
+	glutPostRedisplay();
+
+}
+
+void* threadFunction(void* _tid) {
+	int tID = *( (int*) _tid);
+	while(true) {
+		if( shouldThreadUpdate[tID] ) {
+			balls[tID]->setxCentre( balls[tID]->getxCentre() + deltaT*(balls[tID]->getxVelocity()) ) ;
+			balls[tID]->setyCentre( balls[tID]->getyCentre() + deltaT*(balls[tID]->getyVelocity()) ) ;
+			shouldThreadUpdate[tID] = false;
+		}
+	}
 
 }
 
@@ -103,15 +161,30 @@ int main(int argc, char** argv) {
 	glutCreateWindow("testing");
 	init();
 	
-	ball = new Ball( 1.0 , 0.0 , 0.02 , 0.6 , 0.0 , 0.0 , WIDTH , HEIGHT);
-		ball->setxVelocity(-10.0);
-		ball->setyVelocity(0.0);
-	table= new Table(-5.0, -5.0, 5.0, -5.0, 5.0, 5.0, -5.0, 5.0, 0.0 , 0.0 , 0.70, 0.20 , WIDTH , HEIGHT); //TODO FIGURE OUT CORRECT PROPORTIONS
+	Ball* ball0 = new Ball( 1.1 , 0.0 , 0.3 , 0.6 , 0.0 , 0.0 , WIDTH , HEIGHT);
+		ball0->setxVelocity(-0.2);
+		ball0->setyVelocity(0.1);
+	Ball* ball1 = new Ball( -1.1 , 0.0 , 0.3 , 0.0 , 0.0 , 0.6 , WIDTH , HEIGHT);
+		ball1->setxVelocity(+0.01);
+		ball1->setyVelocity(-0.02);
+	balls.push_back(ball0);
+	balls.push_back(ball1);
+	
+	threads.resize(balls.size());
+	shouldThreadUpdate.resize(balls.size() , false);
+
+	for(int i=0; i < balls.size(); i++) {
+		int* iptr = &i;
+		int rc = pthread_create( &threads[i] , NULL , threadFunction , (void*)(iptr) );
+		if(rc) { cout << "HOLY MOTHER OF GOD ERROR"; }
+	}
+	table= new Table(-1.5, -1.5, 1.5, -1.5, 1.5, 1.5, -1.5, 1.5, 0.0 , 0.0 , 0.70, 0.20 , WIDTH , HEIGHT); //TODO FIGURE OUT CORRECT PROPORTIONS
 	//mytable->print();
-	oldtime=clock();
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
+	glutTimerFunc(1 , timerFunc , 1); //1000 is an arbitrary constant value
 	glutMainLoop();
+
 	return 0;
 
 }

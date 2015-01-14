@@ -1,4 +1,4 @@
-float* solveBallCollision(float vXBallA , float vYBallA , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
+float* old_solveBallCollision(float vXBallA , float vYBallA , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
 {
 	/// Returns an array of four float numbers corresponding to VXA, VYA, VXB, 
 	float vBallANormal,vBallAPerp,vBallBNormal,vBallBPerp;
@@ -33,4 +33,9 @@ float* solveBallCollision(float vXBallA , float vYBallA , float massA ,  float v
 
 	return vFin;
 
+}
+
+#include <vector>
+class Vector {
+	
 }

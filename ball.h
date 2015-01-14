@@ -71,6 +71,9 @@ class Ball {
 			float getMass() {return mass;}
 			int getIdx() { 	return idx;	}
 
+			bool willBallCollide(Ball* ball) {
+				return ( ( sqrt( pow( this->getxCentre() - ball->getxCentre() ,2) + pow( this->getyCentre() - ball->getyCentre(),2) ) ) < ( this->getRadius() + ball->getRadius() ));
+			}
 		///display() function will be called by the ScreenSaver's display()
 			void display();
 		///check for collisions and update this ball if needed.

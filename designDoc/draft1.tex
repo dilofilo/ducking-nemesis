@@ -159,13 +159,23 @@ An object of type table was created by passing 4 points to it's parameterized co
 
 The ball provides most of the functionality to our application. Hence we test it by testing various tiny portions.
 
-First, we start by checking if we can a ball on the screen. A stationary ball is the first checkpoint. Then, we test whether we can make it move. These tests are done visually. We then check if it can collide with a boundary. The next step is to allow a thread to handle the movement of the ball. A rough test is done. \\
-
-The next phase is to introduce multiple balls on the table. Each handled by its own thread. The next thing to test is the collisions, to ensure that there are no floating point errors.
+The ball can be tested in progressive steps , such as drawing it, moving it, multiple balls, managing them on threads and so on and so forth. \\
 
 To test for threads' funtioning, we will allow the display loop to run once while the thread controls the ball's state parameters. We will then ensure that the ball's variables have changed as expected. This is to identify potential issues with thread synchronization.
 
 \item \textbf{Physics :} Since our physics part is a set of equations in a seperate function, we execute this function for a set of values to ensure that the output is correct, afterwhich, we ensure that all corner-cases are handled.
+The following equations were solved to obtain 
+\begin{equation}
+\hat{n} = \frac{\vec{R_{1}} - \vec{R_{2}}}{ \parallel \vec{R_{1}} - \vec{R_{2}} \parallel}
+\end{equation}
+\begin{equation}
+\vec{V_{1}^{'}} := \vec{V_{1}} + (\frac{m_{2}}{m_{1} + m_{2}}((1-e)\vec{V_{1}} - (1+e)\vec{V_{2}})\cdotp\hat{n})\hat{n}
+\end{equation}
+\begin{equation}
+\vec{V_{2}^{'}} := \vec{V_{2}} + (\frac{m_{1}}{m_{1} + m_{2}}((1-e)\vec{V_{2}} - (1+e)\vec{V_{1}})\cdotp\hat{n})\hat{n}
+\end{equation}
+
+
 
 \item \textbf{Memory Handling} : Valgrind will be used to ensure that there are no memory leaks i.e. to ensure that all dynamically allocated memory is released by the time the program is terminated.
 
@@ -215,6 +225,8 @@ Interthread communication is done through barrier communication. Threads modify 
 
 To ensure that this part doesn't face issues, we lock the portion of code where the thread is modifying the values.
 
+Our intention is to use conditional variables to signal between threads. The same idea should also allow us to implement a one-to-one communication between threads.
+
 \begin{flushleft}
 
 
@@ -249,16 +261,15 @@ The user would be given the option of selecting a ball using the left and right 
 
 \item The user can delete the ball by pressing the 'D' character key. 
 
-
 \item The user can change the colour of the ball by pressing the 'C' character key.
 
 \end{enumerate}
 
+\item \textbf{Efficiency of collision detection :} Presently, the detection is $\mathcal{O}(n^2)$ . Improving it by using pixel hashing is a possiblity.
 
 \item \textbf{Adding a ball :}
 
 The user can add a ball by pressing the 'A' character key.
-
 
 \item\textbf{Pause :}
 
