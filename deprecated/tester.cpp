@@ -178,6 +178,9 @@ int main(int argc, char** argv) {
 	Ball* ball1 = new Ball( -1.1 , 0.0 , 0.3 , 0.0 , 0.0 , 0.6 , WIDTH , HEIGHT);
 		ball1->setxVelocity(+0.01);
 		ball1->setyVelocity(-0.02);
+	Ball* ball2 = new Ball( -1.1 , 0.0 , 0.3 , 0.0 , 0.0 , 0.6 , WIDTH , HEIGHT);
+		ball1->setxVelocity(+0.01);
+		ball1->setyVelocity(-0.02);
 	balls.push_back(ball0);
 	balls.push_back(ball1);
 	
