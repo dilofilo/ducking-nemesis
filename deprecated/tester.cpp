@@ -86,65 +86,56 @@ void reshape(int w , int h) {
 
 void timerFunc(int val) {
 	
-	if(true) {
-		for(int i = 0; i<balls.size(); i++) {
-			Ball* ball = balls[i];
-			float xNew = ball->getxCentre() + deltaT*(ball->getxVelocity());
-			float yNew = ball->getyCentre() + deltaT*(ball->getyVelocity());
+	for(int i = 0; i<balls.size(); i++) {
+		Ball* ball = balls[i];
+		float xNew = ball->getxCentre() + deltaT*(ball->getxVelocity());
+		float yNew = ball->getyCentre() + deltaT*(ball->getyVelocity());
 
-			if ( (xNew+(ball->getRadius())>(table->getxlr())) || (xNew-(ball->getRadius()) < (table->getxll())) ) {
-				ball->setxVelocity(-1*ball->getxVelocity());
-			}
-
-
-			if ( (yNew -(ball->getRadius()) < (table->getylr())) || (yNew+(ball->getRadius()) > (table->getytl())) ) {
-				ball->setyVelocity(-1*ball->getyVelocity());
-			}
-
-			xNew =  ball->getxCentre() + deltaT*(ball->getxVelocity());
-			yNew = ball->getyCentre() + deltaT*(ball->getyVelocity());
-			ball->setxCentre( xNew );
-			ball->setyCentre( yNew );
-
-			//Collision with walls checked.
-
-			//To check collision with other balls.
-			for(int j=i+1; j<balls.size();j++) {
-				if( ball->willBallCollide(balls[j])) {
-					float* newVelocities = solveBallCollision( ball->getxVelocity(),
-															ball->getyVelocity(),
-															ball->getMass(),
-															balls[j]->getxVelocity(),
-															balls[j]->getyVelocity(),
-															balls[j]->getMass(),
-															ball->getxCentre() - balls[j]->getxCentre(),
-															ball->getyCentre() - balls[j]->getyCentre() );
-					ball->setxVelocity(newVelocities[0]);
-					ball->setyVelocity(newVelocities[1]);
-					balls[j]->setxVelocity(newVelocities[2]);
-					balls[j]->setyVelocity(newVelocities[3]);
-
-					do { //
-						if ( ( ball->getxVelocity()*balls[j]->getxVelocity() ) < 0 || ( ball->getyVelocity()*balls[j]->getyVelocity() ) < 0 ) {
-							ball->setxCentre( ball->getxCentre() - DT*ball->getxVelocity());
-							ball->setyCentre( ball->getyCentre() - DT*ball->getyVelocity()); 
-						}else {
-							ball->setxCentre( ball->getxCentre() + DT*ball->getxVelocity());
-							ball->setyCentre( ball->getyCentre() + DT*ball->getyVelocity()); 
-						}
-					}while(ball->willBallCollide(balls[j]));
-
-				}
-			}
-
+		if ( (xNew+(ball->getRadius())>(table->getxlr())) || (xNew-(ball->getRadius()) < (table->getxll())) ) {
+			ball->setxVelocity(-1*ball->getxVelocity());
 		}
-	} else {
-		for(int i=0; i< balls.size() ; i++) {
-		shouldThreadUpdate[i] = true;  //Needs Mutexing.
-		while( !shouldThreadUpdate[i]) { continue; }
+
+
+		if ( (yNew -(ball->getRadius()) < (table->getylr())) || (yNew+(ball->getRadius()) > (table->getytl())) ) {
+			ball->setyVelocity(-1*ball->getyVelocity());
+		}
+
+		xNew =  ball->getxCentre() + deltaT*(ball->getxVelocity());
+		yNew = ball->getyCentre() + deltaT*(ball->getyVelocity());
+		ball->setxCentre( xNew );
+		ball->setyCentre( yNew );
+
+		//Collision with walls checked.
+
+		//To check collision with other balls.
+		for(int j=i+1; j<balls.size();j++) {
+			if( ball->willBallCollide(balls[j])) {
+				float* newVelocities = solveBallCollision( ball->getxVelocity(),
+														ball->getyVelocity(),
+														ball->getMass(),
+														balls[j]->getxVelocity(),
+														balls[j]->getyVelocity(),
+														balls[j]->getMass(),
+														ball->getxCentre() - balls[j]->getxCentre(),
+														ball->getyCentre() - balls[j]->getyCentre() );
+				ball->setxVelocity(newVelocities[0]);
+				ball->setyVelocity(newVelocities[1]);
+				balls[j]->setxVelocity(newVelocities[2]);
+				balls[j]->setyVelocity(newVelocities[3]);
+
+				do { //
+					if ( ( ball->getxVelocity()*balls[j]->getxVelocity() ) < 0 || ( ball->getyVelocity()*balls[j]->getyVelocity() ) < 0 ) {
+						ball->setxCentre( ball->getxCentre() - DT*ball->getxVelocity());
+						ball->setyCentre( ball->getyCentre() - DT*ball->getyVelocity()); 
+					}else {
+						ball->setxCentre( ball->getxCentre() + DT*ball->getxVelocity());
+						ball->setyCentre( ball->getyCentre() + DT*ball->getyVelocity()); 
+					}
+				}while(ball->willBallCollide(balls[j]));
+
+			}
 		}
 	}
-
 	glutTimerFunc( deltaT , timerFunc , val);
 	glutPostRedisplay();
 
@@ -178,20 +169,22 @@ int main(int argc, char** argv) {
 	Ball* ball1 = new Ball( -1.1 , 0.0 , 0.3 , 0.0 , 0.0 , 0.6 , WIDTH , HEIGHT);
 		ball1->setxVelocity(+0.01);
 		ball1->setyVelocity(-0.02);
-	Ball* ball2 = new Ball( -1.1 , 0.0 , 0.3 , 0.0 , 0.0 , 0.6 , WIDTH , HEIGHT);
+	Ball* ball2 = new Ball( 0.0 , 1.0 , 0.3 , 0.0 , 0.0 , 0.6 , WIDTH , HEIGHT);
 		ball1->setxVelocity(+0.01);
 		ball1->setyVelocity(-0.02);
+
 	balls.push_back(ball0);
 	balls.push_back(ball1);
+	balls.push_back(ball2);
 	
 	threads.resize(balls.size());
 	shouldThreadUpdate.resize(balls.size() , false);
 
-	for(int i=0; i < balls.size(); i++) {
-		int* iptr = &i;
-		int rc = pthread_create( &threads[i] , NULL , threadFunction , (void*)(iptr) );
-		if(rc) { cout << "HOLY MOTHER OF GOD ERROR"; }
-	}
+	// for(int i=0; i < balls.size(); i++) {
+	// 	int* iptr = &i;
+	// 	int rc = pthread_create( &threads[i] , NULL , threadFunction , (void*)(iptr) );
+	// 	if(rc) { cout << "HOLY MOTHER OF GOD ERROR"; }
+	// }
 	table= new Table(-1.5, -1.5, 1.5, -1.5, 1.5, 1.5, -1.5, 1.5, 0.0 , 0.0 , 0.70, 0.20 , WIDTH , HEIGHT); //TODO FIGURE OUT CORRECT PROPORTIONS
 	//mytable->print();
 	glutDisplayFunc(display);
