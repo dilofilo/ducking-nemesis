@@ -53,6 +53,7 @@ public:
 
 static int numBallUpdates;
 	vector<pthread_mutex_t> vecMutexBallPthreads;
+	pthread_mutex_t mutexBallPthreads;
 	pthread_cond_t condBallUpdateBegin;
 	pthread_cond_t condBallUpdateComplete;
 	pthread_mutex_t mutexBallShouldUpdate;

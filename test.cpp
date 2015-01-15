@@ -79,7 +79,6 @@ void timer(int val) {
 		pthread_cond_signal(&condBallUpdateBegin);
 	pthread_mutex_unlock(&mutexBallShouldUpdate);
 
-
 	glutTimerFunc(DELTA_T , timer , 0);
 	glutPostRedisplay();
 }
@@ -121,6 +120,7 @@ int main(int argc, char** argv) {
 	shouldBallUpdate.resize(NUM_BALLS , false);
 	vecBallThread.resize(NUM_BALLS);
 
+	pthread_mutex_init(&mutexBallPthreads , NULL);
 	pthread_mutex_init(&mutexBallShouldUpdate , NULL);
 	numBallUpdates = NUM_BALLS;
 	pthread_cond_init(&condBallUpdateComplete , NULL);

@@ -41,7 +41,7 @@ void Ball::reshape(int w , int h , int oldWidth , int oldHeight ) {
 ///This struct can be used to pass more data if ever required.
 struct BallThreadParameters {
 	int ID;
-	BallThreadParameters(int x) : ID(x) {}
+	BallThreadParameters(int x) { ID = x;}
 };
 
 void* ballThread(void* args) {
@@ -49,10 +49,10 @@ void* ballThread(void* args) {
 	int ID = arg->ID;
 	//TODO
 	while(true) {
-		pthread_mutex_lock(&vecMutexBallPthreads[ID]);
+		pthread_mutex_lock(&mutexBallPthreads); // Vector of mutexes
 		while(numBallUpdates == 0)
-			pthread_cond_wait(&condBallUpdateBegin , &vecMutexBallPthreads[ID]);
-		while( (numBallUpdates > 0) && ( shouldBallUpdate[ID] ) ) {
+			pthread_cond_wait(&condBallUpdateBegin , &mutexBallPthreads); // Vector of mutexes
+		while( ( shouldBallUpdate[ID] ) ) {
 			pthread_mutex_lock(&mutexBallShouldUpdate);
 			numBallUpdates--;
 			shouldBallUpdate[ID] = false;
@@ -62,7 +62,7 @@ void* ballThread(void* args) {
 			ball[ID]->setzCentre( ball[ID]->getzCentre() + DELTA_T*ball[ID]->getzVelocity());
 		}
 		pthread_cond_signal(&condBallUpdateComplete);
-		pthread_mutex_lock(&vecMutexBallPthreads[ID]);
+		pthread_mutex_lock(&mutexBallPthreads); // vector of mutexes
 	}
 }
 
