@@ -6,14 +6,18 @@
 #include <math.h>
 #define PI 3.1415926535897932384626433832795
 #define Z_CAMERA  10.0
+#define NUMSLICES 50
+#define NUMSTACKS 50
+#define BALL_ZPLANE 2.0
+
+static int WIDTH = 640;
+static int HEIGHT = 480;
+
 #include <time.h>
 #include <iostream>
 #include <string>
 #include <stringstream>
 
-
-static int WIDTH = 640;
-static int HEIGHT = 480;
 
 #include <ball.h>
 #include <ball.cpp>
@@ -33,15 +37,6 @@ static int HEIGHT = 480;
 
 
 using namespace std;
-
-float* solveBallCollision(float vXBallA , float vYBallB , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
-{
-	/// Returns an array of four float numbers corresponding to VXA, VYA, VXB, VYB
-
-	float 
-
-}
-
 
 int main(int argc, char** argv) {
 	
