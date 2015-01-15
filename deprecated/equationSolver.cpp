@@ -1,6 +1,6 @@
 #ifndef SOLVER_CPP
 	#define SOLVER_CPP
-float* old_solveBallCollision(float vXBallA , float vYBallA , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
+float* solveBallCollision(float vXBallA , float vYBallA , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
 {
 	/// Returns an array of four float numbers corresponding to VXA, VYA, VXB, 
 	float vBallANormal,vBallAPerp,vBallBNormal,vBallBPerp;
@@ -71,7 +71,7 @@ vector<float> ScalarMult(vector<float> vec , float x) {
 
 
 //
-pair< vector<float> , vector<float> > solveBallCollision( vector<float>& velocityA , vector<float>& velocityB , vector<float>& posA , vector<float>& posB , float massA , float massB , float e = 1.0) {
+pair< vector<float> , vector<float> > new_solveBallCollision( vector<float>& velocityA , vector<float>& velocityB , vector<float>& posA , vector<float>& posB , float massA , float massB , float e = 1.0) {
 	pair< vector<float>  , vector<float> > velocities;
 	velocities.first.resize(velocityA.size());
 	velocities.second.resize(velocityB.size());
@@ -83,7 +83,7 @@ pair< vector<float> , vector<float> > solveBallCollision( vector<float>& velocit
 	//velocities.second = addVectors(velocityB , ScalarMult( deltaPos , ( ScalarMult( addVectors( ScalarMult( velocityB , 1.0 - e ) , ScalarMult( ScalarMult( velocityA , 1.0 + e) , -1.0) ) , (massA/(massA + massB))))));
 	
 	velocities.first  = addVectors( velocityA , ScalarMult( deltaPos , dotProduct( deltaPos , addVectors(ScalarMult( velocityA , 1.0-e ) , ScalarMult( velocityB , -1.0 - e ) ) )*( massB/(massA+massB) ) ));
-	velocities.second = addVectors( velocityB , ScalarMult( deltaPos , dotProduct( deltaPos , addVectors(ScalarMult( velocityA , -1.0-e) , ScalarMult( velocityB , 1.0 - e )  ) )*( massA/(massA+massB) ) ));
+	velocities.second = addVectors( velocityB , ScalarMult( deltaPos , dotProduct( deltaPos , addVectors(ScalarMult( velocityA , -1.0-e) , ScalarMult( velocityB , 1.0 - e ) ) )*( massA/(massA+massB) ) ));
 
 	return velocities;
 }

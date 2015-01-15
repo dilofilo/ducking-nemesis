@@ -11,6 +11,7 @@ using namespace std;
 #define BALL_ZPLANE 0.0
 #define REDUCTIONFACTOR 0.000001
 #define deltaT 1.0
+#define DT 0.001
 #include "equationSolver.cpp"
 #include "table.h"
 #include "table.cpp"
@@ -85,11 +86,11 @@ void reshape(int w , int h) {
 
 void timerFunc(int val) {
 	
-	if(false) {
+	if(true) {
 		for(int i = 0; i<balls.size(); i++) {
 			Ball* ball = balls[i];
-			float xNew = ball->getxCentre() + REDUCTIONFACTOR*deltaT*(ball->getxVelocity());
-			float yNew = ball->getyCentre() + REDUCTIONFACTOR*deltaT*(ball->getyVelocity());
+			float xNew = ball->getxCentre() + deltaT*(ball->getxVelocity());
+			float yNew = ball->getyCentre() + deltaT*(ball->getyVelocity());
 
 			if ( (xNew+(ball->getRadius())>(table->getxlr())) || (xNew-(ball->getRadius()) < (table->getxll())) ) {
 				ball->setxVelocity(-1*ball->getxVelocity());
@@ -102,6 +103,9 @@ void timerFunc(int val) {
 
 			xNew =  ball->getxCentre() + deltaT*(ball->getxVelocity());
 			yNew = ball->getyCentre() + deltaT*(ball->getyVelocity());
+			ball->setxCentre( xNew );
+			ball->setyCentre( yNew );
+
 			//Collision with walls checked.
 
 			//To check collision with other balls.
@@ -120,11 +124,19 @@ void timerFunc(int val) {
 					balls[j]->setxVelocity(newVelocities[2]);
 					balls[j]->setyVelocity(newVelocities[3]);
 
+					do { //
+						if ( ( ball->getxVelocity()*balls[j]->getxVelocity() ) < 0 || ( ball->getyVelocity()*balls[j]->getyVelocity() ) < 0 ) {
+							ball->setxCentre( ball->getxCentre() - DT*ball->getxVelocity());
+							ball->setyCentre( ball->getyCentre() - DT*ball->getyVelocity()); 
+						}else {
+							ball->setxCentre( ball->getxCentre() + DT*ball->getxVelocity());
+							ball->setyCentre( ball->getyCentre() + DT*ball->getyVelocity()); 
+						}
+					}while(ball->willBallCollide(balls[j]));
+
 				}
 			}
 
-		ball->setxCentre( xNew );
-		ball->setyCentre( yNew );
 		}
 	} else {
 		for(int i=0; i< balls.size() ; i++) {
@@ -161,8 +173,8 @@ int main(int argc, char** argv) {
 	init();
 	
 	Ball* ball0 = new Ball( 1.1 , 0.0 , 0.3 , 0.6 , 0.0 , 0.0 , WIDTH , HEIGHT);
-		ball0->setxVelocity(-0.2);
-		ball0->setyVelocity(0.1);
+		ball0->setxVelocity(-0.02);
+		ball0->setyVelocity(0.001);
 	Ball* ball1 = new Ball( -1.1 , 0.0 , 0.3 , 0.0 , 0.0 , 0.6 , WIDTH , HEIGHT);
 		ball1->setxVelocity(+0.01);
 		ball1->setyVelocity(-0.02);
