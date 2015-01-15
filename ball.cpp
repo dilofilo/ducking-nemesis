@@ -39,6 +39,13 @@ void Ball::reshape(int w , int h , int oldWidth , int oldHeight ) {
 void* ballThread(void* args) {
 	int ID = *((int*)args);
 	//TODO
+	while(true) {
+		pthread_mutex_lock(&ballPthreads[i]);
+		while( (numBallUpdates > 0) && ( shouldBallUpdate[tID] ) ) {
+			
+		}
+		pthread_mutex_lock(&ballPthreads[i]);
+	}
 }
 
 #endif

@@ -1,10 +1,17 @@
 #include <GL/glut.h>
-
+#include <pthread>
 #include <iostream>
 #include <vector>
 #include <math.h>
 
 using namespace std;
+
+static int numBallUpdates;
+	vector<pthread_mutex_t> ballPthreads;
+	pthread_cond_t condBallUpdateBegin;
+	pthread_cond_t condBallUpdateComplete
+
+
 #include "equationSolver.cpp"
 #include "table.h"
 #include "table.cpp"
@@ -12,8 +19,6 @@ using namespace std;
 #include "ball.cpp"
 Table* table;
 vector<Ball*> ball;
-
-
 
 //GL stuff
 #define Z_CAMERA 10.0
@@ -97,11 +102,16 @@ int main(int argc, char** argv) {
 		tableCorners.push_back(TL);
 	table = new Table( tableCorners , color );
 	ball.resize(NUM_BALLS);
+	vecMutexBallUpdate.resize(NUM_BALLS);
+	pthread_mutex_init(&mutexNumUpdate , NULL);
+	pthread_cond_init(&condBallUpdateComplete , NULL);
+	pthread_cond_init(&condBallUpdateBegin , NULL);
 	color[0] = 1.0 ; color[1] = 0.2; color[2] = 0.3;
 	for(int i=0; i< NUM_BALLS; i++) {
 		ball[i] = new Ball();
 		ball[i]->setxCentre(-1.0 + (float)i);
 		ball[i]->setColor(color);
+		pthread_mutex_init(&vecMutexBallUpdate[i] , NULL);
 	}
 	ball[0]->setxVelocity(0.1);
 	glutInit(&argc,argv);
