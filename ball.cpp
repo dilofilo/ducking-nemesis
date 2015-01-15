@@ -44,14 +44,16 @@ void* ballThread(void* args) {
 		while(numBallUpdates == 0)
 			pthread_cond_wait(&condBallUpdateBegin , &ballPthreads[ID]);
 		while( (numBallUpdates > 0) && ( shouldBallUpdate[ID] ) ) {
+			pthread_mutex_lock(&mutexBallShouldUpdate);
+			numBallUpdates--;
+			shouldBallUpdate[ID] = false;
+			pthread_mutex_unlock(&mutexBallShouldUpdate);
 			ball[ID]->setxCentre( ball[ID]->getxCentre() + DELTA_T*ball[ID]->getxVelocity());
 			ball[ID]->setyCentre( ball[ID]->getyCentre() + DELTA_T*ball[ID]->getyVelocity());
 			ball[ID]->setzCentre( ball[ID]->getzCentre() + DELTA_T*ball[ID]->getzVelocity());
-			numBallUpdates--;
-			shouldBallUpdate[ID] = false;
 		}
 		pthread_cond_signal(&condBallUpdateComplete);
-		pthread_mutex_lock(&ballPthreads[i]);
+		pthread_mutex_lock(&ballPthreads[ID]);
 	}
 }
 

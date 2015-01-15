@@ -2,10 +2,6 @@
 	#define BALL_H
 
 vector<float> vecZero{ 0.0 , 0.0 , 0.0};
-vector<pthread_mutex_t> vecMutexBallUpdate;
-pthread_mutex_t mutexNumUpdate;
-pthread_cond_t condBallUpdateBegin;
-pthread_cond_t condBallUpdateEnd;
 
 class Ball {
 private:
@@ -54,4 +50,13 @@ public:
 	void reshape(int w, int h , int oldWidth , int oldHeight);
 	void* ballThread(void* args);
 };
+
+static int numBallUpdates;
+	vector<pthread_mutex_t> ballPthreads;
+	pthread_cond_t condBallUpdateBegin;
+	pthread_cond_t condBallUpdateComplete;
+	pthread_mutex_t mutexBallShouldUpdate;
+	vector<bool> shouldBallUpdate;
+vector<Ball*> ball; //CHANGE BALL TO BALLS YADAYADYAYDAYDYAD
+
 #endif
