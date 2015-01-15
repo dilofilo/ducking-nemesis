@@ -1,24 +1,9 @@
 #include <GL/glut.h>
-#include <pthread>
+#include <pthread.h>
 #include <iostream>
 #include <vector>
 #include <math.h>
 
-using namespace std;
-
-static int numBallUpdates;
-	vector<pthread_mutex_t> ballPthreads;
-	pthread_cond_t condBallUpdateBegin;
-	pthread_cond_t condBallUpdateComplete
-	pthread_mutex_t mutexBallShouldUpdate;
-
-#include "equationSolver.cpp"
-#include "table.h"
-#include "table.cpp"
-#include "ball.h"
-#include "ball.cpp"
-Table* table;
-vector<Ball*> ball;
 
 //GL stuff
 #define Z_CAMERA 10.0
@@ -27,6 +12,14 @@ static int WIDTH = 640;
 static int HEIGHT = 480;
 #define NUM_BALLS 2
 
+using namespace std;
+
+#include "equationSolver.cpp"
+#include "table.h"
+#include "table.cpp"
+#include "ball.h"
+#include "ball.cpp"
+Table* table;
 
 
 void init() {
@@ -65,7 +58,17 @@ void display() {
 
 void timer(int val) {
 	//Calculations
-	
+	pthread_mutex_lock(&mutexBallShouldUpdate);
+	while( numBallUpdates != 0) {
+		pthread_cond_wait(&condBallUpdateComplete , &mutexBallShouldUpdate);
+	}
+	for(int i = 0; i < NUM_BALLS ; i++) {
+		shouldBallUpdate[i] = true;
+
+	}
+	numBallUpdates = NUM_BALLS;
+	pthread_cond_signal(&condBallUpdateBegin);
+	pthread_mutex_unlock(&mutexBallShouldUpdate);
 
 
 	glutTimerFunc(DELTA_T , timer , 0);
@@ -104,17 +107,20 @@ int main(int argc, char** argv) {
 		tableCorners.push_back(TL);
 	table = new Table( tableCorners , color );
 	ball.resize(NUM_BALLS);
-	vecMutexBallUpdate.resize(NUM_BALLS);
+	ballPthreads.resize(NUM_BALLS);
+	shouldBallUpdate.resize(NUM_BALLS , false);
+
 	pthread_mutex_init(&mutexBallShouldUpdate , NULL);
-	pthread_mutex_init(&mutexNumUpdate , NULL);
+	//pthread_mutex_init(&mutexNumUpdate , NULL);
 	pthread_cond_init(&condBallUpdateComplete , NULL);
 	pthread_cond_init(&condBallUpdateBegin , NULL);
+	
 	color[0] = 1.0 ; color[1] = 0.2; color[2] = 0.3;
 	for(int i=0; i< NUM_BALLS; i++) {
 		ball[i] = new Ball();
 		ball[i]->setxCentre(-1.0 + (float)i);
 		ball[i]->setColor(color);
-		pthread_mutex_init(&vecMutexBallUpdate[i] , NULL);
+		pthread_mutex_init(&ballPthreads[i] , NULL);
 	}
 	ball[0]->setxVelocity(0.1);
 	glutInit(&argc,argv);
@@ -125,7 +131,7 @@ int main(int argc, char** argv) {
 	init();
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
-	glutTimerFunc(DELTA_T , timer , 1); //1000 is an arbitrary constant value
+	glutTimerFunc(DELTA_T , timer , 1); 
 	glutMainLoop();
 
 
