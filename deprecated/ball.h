@@ -72,7 +72,9 @@ class Ball {
 			int getIdx() { 	return idx;	}
 
 			bool willBallCollide(Ball* ball) {
-				return ( ( sqrt( pow( this->getxCentre() - ball->getxCentre() ,2) + pow( this->getyCentre() - ball->getyCentre(),2) ) ) < ( this->getRadius() + ball->getRadius() ));
+				float newDeltaX = this->getxCentre() + deltaT*this->getxVelocity()- ball->getxCentre() - deltaT*ball->getxVelocity();
+				float newDeltaY = this->getyCentre() + deltaT*this->getyVelocity()- ball->getyCentre() - deltaT*ball->getyVelocity();
+				return (((pow(newDeltaX ,2) + pow( newDeltaY , 2) ) ) < pow( ( this->getRadius() + ball->getRadius() ) , 2));
 			}
 		///display() function will be called by the ScreenSaver's display()
 			void display();
