@@ -7,6 +7,8 @@
 #define NUM_STACKS 50
 
 #include "ball.h"
+#include <stdint.h>
+
 
 void Ball::display() {
 	glColor3f(color[0] , color[1] , color[2]);
@@ -36,13 +38,20 @@ void Ball::reshape(int w , int h , int oldWidth , int oldHeight ) {
 	}	
 }
 
+///This struct can be used to pass more data if ever required.
+struct BallThreadParameters {
+	int ID;
+	BallThreadParameters(int x) : ID(x) {}
+};
+
 void* ballThread(void* args) {
-	int ID = *((int*)args);
+	BallThreadParameters* arg = (BallThreadParameters*)args ;
+	int ID = arg->ID;
 	//TODO
 	while(true) {
-		pthread_mutex_lock(&ballPthreads[ID]);
+		pthread_mutex_lock(&vecMutexBallPthreads[ID]);
 		while(numBallUpdates == 0)
-			pthread_cond_wait(&condBallUpdateBegin , &ballPthreads[ID]);
+			pthread_cond_wait(&condBallUpdateBegin , &vecMutexBallPthreads[ID]);
 		while( (numBallUpdates > 0) && ( shouldBallUpdate[ID] ) ) {
 			pthread_mutex_lock(&mutexBallShouldUpdate);
 			numBallUpdates--;
@@ -53,7 +62,7 @@ void* ballThread(void* args) {
 			ball[ID]->setzCentre( ball[ID]->getzCentre() + DELTA_T*ball[ID]->getzVelocity());
 		}
 		pthread_cond_signal(&condBallUpdateComplete);
-		pthread_mutex_lock(&ballPthreads[ID]);
+		pthread_mutex_lock(&vecMutexBallPthreads[ID]);
 	}
 }
 

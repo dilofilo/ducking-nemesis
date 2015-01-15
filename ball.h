@@ -48,15 +48,16 @@ public:
 
 	void display();
 	void reshape(int w, int h , int oldWidth , int oldHeight);
-	void* ballThread(void* args);
+	//void* ballThread(void* args); Not part of the ball class, just packaged along with it.
 };
 
 static int numBallUpdates;
-	vector<pthread_mutex_t> ballPthreads;
+	vector<pthread_mutex_t> vecMutexBallPthreads;
 	pthread_cond_t condBallUpdateBegin;
 	pthread_cond_t condBallUpdateComplete;
 	pthread_mutex_t mutexBallShouldUpdate;
 	vector<bool> shouldBallUpdate;
+	vector<pthread_t> vecBallThread;
 vector<Ball*> ball; //CHANGE BALL TO BALLS YADAYADYAYDAYDYAD
 
 #endif

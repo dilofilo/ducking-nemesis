@@ -39,6 +39,16 @@ void init() {
 	///Set background to black.
 	glClearColor( 0.0 , 0.0 , 0.0 , 1.0);
 	glFlush();
+
+	for(int i = 0; i< NUM_BALLS ; i++) {
+		///Creating the threads
+		BallThreadParameters* args = new BallThreadParameters(i); 
+		int rc = pthread_create(&vecBallThread[i] , NULL , ballThread , (void*)args );
+		if(rc) {
+			cout << "\n\nTHREAD CREATION FAILED.\n\n";
+		}
+	}
+
 }
 
 
@@ -59,15 +69,14 @@ void display() {
 void timer(int val) {
 	//Calculations
 	pthread_mutex_lock(&mutexBallShouldUpdate);
-	while( numBallUpdates != 0) {
-		pthread_cond_wait(&condBallUpdateComplete , &mutexBallShouldUpdate);
-	}
-	for(int i = 0; i < NUM_BALLS ; i++) {
-		shouldBallUpdate[i] = true;
-
-	}
-	numBallUpdates = NUM_BALLS;
-	pthread_cond_signal(&condBallUpdateBegin);
+		while( numBallUpdates != 0) {
+			pthread_cond_wait(&condBallUpdateComplete , &mutexBallShouldUpdate);
+		}
+		for(int i = 0; i < NUM_BALLS ; i++) {
+			shouldBallUpdate[i] = true;
+		}
+		numBallUpdates = NUM_BALLS;
+		pthread_cond_signal(&condBallUpdateBegin);
 	pthread_mutex_unlock(&mutexBallShouldUpdate);
 
 
@@ -107,11 +116,13 @@ int main(int argc, char** argv) {
 		tableCorners.push_back(TL);
 	table = new Table( tableCorners , color );
 	ball.resize(NUM_BALLS);
-	ballPthreads.resize(NUM_BALLS);
+
+	vecMutexBallPthreads.resize(NUM_BALLS);
 	shouldBallUpdate.resize(NUM_BALLS , false);
+	vecBallThread.resize(NUM_BALLS);
 
 	pthread_mutex_init(&mutexBallShouldUpdate , NULL);
-	//pthread_mutex_init(&mutexNumUpdate , NULL);
+	numBallUpdates = NUM_BALLS;
 	pthread_cond_init(&condBallUpdateComplete , NULL);
 	pthread_cond_init(&condBallUpdateBegin , NULL);
 	
@@ -120,7 +131,7 @@ int main(int argc, char** argv) {
 		ball[i] = new Ball();
 		ball[i]->setxCentre(-1.0 + (float)i);
 		ball[i]->setColor(color);
-		pthread_mutex_init(&ballPthreads[i] , NULL);
+		pthread_mutex_init(&vecMutexBallPthreads[i] , NULL);
 	}
 	ball[0]->setxVelocity(0.1);
 	glutInit(&argc,argv);
@@ -129,11 +140,11 @@ int main(int argc, char** argv) {
 	glutInitWindowPosition(50,50);
 	glutCreateWindow("testing");
 	init();
+
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutTimerFunc(DELTA_T , timer , 1); 
+
 	glutMainLoop();
-
-
 	return 0;
 }
