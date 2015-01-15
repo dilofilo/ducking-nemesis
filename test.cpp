@@ -10,7 +10,7 @@
 #define DELTA_T 1.0
 static int WIDTH = 640;
 static int HEIGHT = 480;
-#define NUM_BALLS 2
+#define NUM_BALLS 3
 
 using namespace std;
 
