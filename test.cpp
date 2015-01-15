@@ -21,7 +21,7 @@ Table* table;
 vector<Ball*> ball;
 
 //GL stuff
-#define Z_CAMERA 10.0
+#define Z_CAMERA 7.0
 #define DELTA_T 1.0
 static int WIDTH = 640;
 static int HEIGHT = 480;
