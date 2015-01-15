@@ -10,7 +10,7 @@ static int numBallUpdates;
 	vector<pthread_mutex_t> ballPthreads;
 	pthread_cond_t condBallUpdateBegin;
 	pthread_cond_t condBallUpdateComplete
-
+	pthread_mutex_t mutexBallShouldUpdate;
 
 #include "equationSolver.cpp"
 #include "table.h"
@@ -65,7 +65,9 @@ void display() {
 
 void timer(int val) {
 	//Calculations
-	ball[0]->setxCentre( ball[0]->getxCentre() + DELTA_T*(ball[0]->getxVelocity()));	
+	
+
+
 	glutTimerFunc(DELTA_T , timer , 0);
 	glutPostRedisplay();
 }
@@ -103,6 +105,7 @@ int main(int argc, char** argv) {
 	table = new Table( tableCorners , color );
 	ball.resize(NUM_BALLS);
 	vecMutexBallUpdate.resize(NUM_BALLS);
+	pthread_mutex_init(&mutexBallShouldUpdate , NULL);
 	pthread_mutex_init(&mutexNumUpdate , NULL);
 	pthread_cond_init(&condBallUpdateComplete , NULL);
 	pthread_cond_init(&condBallUpdateBegin , NULL);
