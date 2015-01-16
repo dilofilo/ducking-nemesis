@@ -7,7 +7,7 @@
 #define NUM_STACKS 50
 
 #include "ball.h"
-#include <stdint.h>
+#include <unistd.h>
 
 
 void Ball::display() {
@@ -44,25 +44,37 @@ struct BallThreadParameters {
 	BallThreadParameters(int x) { ID = x;}
 };
 
+
+
+
+// static int numBallUpdates;
+// 	vector<pthread_mutex_t> vecMutexBallPthreads;
+// 	vec<pthread_cond_t> vecCondBallUpdateBegin;
+// 	vec<pthread_cond_t> vecCondBallUpdateComplete;
+// 	pthread_mutex_t mutexStateVariableUpdate;
+// 	vector<bool> vecShouldBallUpdate;
+// pthread_cond_t condBallUpdateComplete
+// 	vector<pthread_t> vecBallThread;
+
 void* ballThread(void* args) {
 	BallThreadParameters* arg = (BallThreadParameters*)args ;
 	int ID = arg->ID;
 	//TODO
 	while(true) {
-		pthread_mutex_lock(&mutexBallPthreads); // Vector of mutexes
+		pthread_mutex_lock(&vecMutexBallPthreads[ID]);
 		while(numBallUpdates == 0)
-			pthread_cond_wait(&condBallUpdateBegin , &mutexBallPthreads); // Vector of mutexes
-		while( ( shouldBallUpdate[ID] ) ) {
-			pthread_mutex_lock(&mutexBallShouldUpdate);
+			pthread_cond_wait(&vecCondBallUpdateBegin[ID] , &vecMutexBallPthreads[ID]);
+		while( (numBallUpdates > 0) && ( vecShouldBallUpdate[ID] ) ) {
+			pthread_mutex_lock(&mutexStateVariableUpdate);
 			numBallUpdates--;
-			shouldBallUpdate[ID] = false;
-			pthread_mutex_unlock(&mutexBallShouldUpdate);
+			vecShouldBallUpdate[ID] = false;
+			pthread_mutex_unlock(&mutexStateVariableUpdate);
 			ball[ID]->setxCentre( ball[ID]->getxCentre() + DELTA_T*ball[ID]->getxVelocity());
 			ball[ID]->setyCentre( ball[ID]->getyCentre() + DELTA_T*ball[ID]->getyVelocity());
 			ball[ID]->setzCentre( ball[ID]->getzCentre() + DELTA_T*ball[ID]->getzVelocity());
 		}
 		pthread_cond_signal(&condBallUpdateComplete);
-		pthread_mutex_lock(&mutexBallPthreads); // vector of mutexes
+		pthread_mutex_unlock(&vecMutexBallPthreads[ID]);
 	}
 }
 

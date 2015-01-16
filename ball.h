@@ -53,12 +53,12 @@ public:
 
 static int numBallUpdates;
 	vector<pthread_mutex_t> vecMutexBallPthreads;
-	pthread_mutex_t mutexBallPthreads;
-	pthread_cond_t condBallUpdateBegin;
-	pthread_cond_t condBallUpdateComplete;
-	pthread_mutex_t mutexBallShouldUpdate;
-	vector<bool> shouldBallUpdate;
+	vector<pthread_cond_t> vecCondBallUpdateBegin;
+	//vector<pthread_cond_t> vecCondBallUpdateComplete; //DEPRECATED
+	pthread_mutex_t mutexStateVariableUpdate;
+	vector<bool> vecShouldBallUpdate;
 	vector<pthread_t> vecBallThread;
+	pthread_cond_t condBallUpdateComplete;
 vector<Ball*> ball; //CHANGE BALL TO BALLS YADAYADYAYDAYDYAD
 
 #endif

@@ -7,7 +7,7 @@
 
 //GL stuff
 #define Z_CAMERA 7.0
-#define DELTA_T 1.0
+#define DELTA_T 5.0
 static int WIDTH = 640;
 static int HEIGHT = 480;
 #define NUM_BALLS 3
@@ -40,15 +40,6 @@ void init() {
 	glClearColor( 0.0 , 0.0 , 0.0 , 1.0);
 	glFlush();
 
-	for(int i = 0; i< NUM_BALLS ; i++) {
-		///Creating the threads
-		BallThreadParameters* args = new BallThreadParameters(i); 
-		int rc = pthread_create(&vecBallThread[i] , NULL , ballThread , (void*)args );
-		if(rc) {
-			cout << "\n\nTHREAD CREATION FAILED.\n\n";
-		}
-	}
-
 }
 
 
@@ -68,19 +59,22 @@ void display() {
 
 void timer(int val) {
 	//Calculations
-	pthread_mutex_lock(&mutexBallShouldUpdate);
-		while( numBallUpdates != 0) {
-			pthread_cond_wait(&condBallUpdateComplete , &mutexBallShouldUpdate);
+	pthread_mutex_lock(&mutexStateVariableUpdate);
+		for(int i = 0; i<NUM_BALLS;i++) {
+			pthread_cond_signal(&vecCondBallUpdateBegin[i]);
 		}
-		for(int i = 0; i < NUM_BALLS ; i++) {
-			shouldBallUpdate[i] = true;
+		while(numBallUpdates != 0 ) {
+			pthread_cond_wait(&condBallUpdateComplete , &mutexStateVariableUpdate);
 		}
 		numBallUpdates = NUM_BALLS;
-		pthread_cond_signal(&condBallUpdateBegin);
-	pthread_mutex_unlock(&mutexBallShouldUpdate);
-
-	glutTimerFunc(DELTA_T , timer , 0);
+		for(int i = 0; i<NUM_BALLS;i++) {
+			vecShouldBallUpdate[i] = true;
+		}
+	pthread_mutex_unlock(&mutexStateVariableUpdate);
+	//End of locked section
+	glutTimerFunc(DELTA_T , timer , 1);
 	glutPostRedisplay();
+	cout << "Redisplay posted\n";
 }
 
 void reshape(int w, int h) {
@@ -101,6 +95,41 @@ void reshape(int w, int h) {
 	glFlush();
 }
 
+
+
+// static int numBallUpdates;
+// 	vector<pthread_mutex_t> vecMutexBallPthreads;
+// 	vec<pthread_cond_t> vecCondBallUpdateBegin;
+// 	vec<pthread_cond_t> vecCondBallUpdateComplete;
+// 	pthread_mutex_t mutexStateVariableUpdate;
+// 	vector<bool> vecShouldBallUpdate;
+// pthread_cond_t condBallUpdateComplete
+// 	vector<pthread_t> vecBallThread;
+
+void threadInit() {
+	vecMutexBallPthreads.resize(NUM_BALLS);
+	//vecCondBallUpdateComplete.resize(NUM_BALLS);
+	vecCondBallUpdateBegin.resize(NUM_BALLS);
+	vecBallThread.resize(NUM_BALLS);
+	numBallUpdates = NUM_BALLS;
+	vecShouldBallUpdate.resize(NUM_BALLS , true);
+
+	pthread_mutex_init(&mutexStateVariableUpdate , NULL);
+	for(int i = 0; i< NUM_BALLS ; i++) {
+		pthread_mutex_init(&vecMutexBallPthreads[i] , NULL);
+		pthread_cond_init(&vecCondBallUpdateBegin[i] , NULL);
+		//pthread_cond_init(&vecCondBallUpdateComplete[i] , NULL);
+		pthread_cond_init(&condBallUpdateComplete , NULL);
+	}
+
+	for(int i = 0 ; i<NUM_BALLS ; i++) {
+		BallThreadParameters* args = new BallThreadParameters(i);
+		int rc = pthread_create(&vecBallThread[i] , NULL , ballThread , (void*)args);
+			if(rc) {
+				cout << "THREAD CREATION FAILED. YOU SHOULD PROBABLY NEVER SEE THIS MESSAGE.\n"	;
+			}
+	}
+}
 int main(int argc, char** argv) {
 	
 	vector<float> color{0.54 , 0.25 , 0.07};
@@ -116,22 +145,12 @@ int main(int argc, char** argv) {
 	table = new Table( tableCorners , color );
 	ball.resize(NUM_BALLS);
 
-	vecMutexBallPthreads.resize(NUM_BALLS);
-	shouldBallUpdate.resize(NUM_BALLS , false);
-	vecBallThread.resize(NUM_BALLS);
 
-	pthread_mutex_init(&mutexBallPthreads , NULL);
-	pthread_mutex_init(&mutexBallShouldUpdate , NULL);
-	numBallUpdates = NUM_BALLS;
-	pthread_cond_init(&condBallUpdateComplete , NULL);
-	pthread_cond_init(&condBallUpdateBegin , NULL);
-	
 	color[0] = 1.0 ; color[1] = 0.2; color[2] = 0.3;
 	for(int i=0; i< NUM_BALLS; i++) {
 		ball[i] = new Ball();
 		ball[i]->setxCentre(-1.0 + (float)i);
 		ball[i]->setColor(color);
-		pthread_mutex_init(&vecMutexBallPthreads[i] , NULL);
 	}
 	ball[0]->setxVelocity(0.1);
 	glutInit(&argc,argv);
@@ -140,6 +159,7 @@ int main(int argc, char** argv) {
 	glutInitWindowPosition(50,50);
 	glutCreateWindow("testing");
 	init();
+	threadInit();
 
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
