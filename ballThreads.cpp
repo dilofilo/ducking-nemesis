@@ -97,12 +97,15 @@ void* ballThread(void* args) {
 			///Process messages received.
 			for(int i = 1 ; i< NUM_BALLS; i++) { //Pop n messages.
 				pthread_mutex_lock(vecMutexMailBox[ID]);	
+				BallDetailsMessage msg = mailBox.front();
+					mailBox.pop();
+
 				vector<float> newPos = addVector( ball[ID]->getPosition() , DELTA_T*ball[ID]->getVelocity() );
 				vector<float> senderPos = msg.senderVelocity;
-				vector<float> deltaPos = addVector( newPos , ScalarMult(senderPos , -1.0));
+				vector<float> deltaPos = addVector( newPos , ScalarMult(msg.senderNextPosition , -1.0));
 
 				///BallToBall Collisions
-				ball[ID]->handleBallCollision(deltaPos , targetVelocity , targetMass); //Changes the velocity,not the 
+				ball[ID]->handleBallCollision(deltaPos , targetVelocity , targetMass , msg.senderRadius ); //Changes the velocity,not the 
 
 				pthread_mutex_unlock(vecMutexMailBox[ID]);
 			}
