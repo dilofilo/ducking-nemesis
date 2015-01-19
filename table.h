@@ -15,10 +15,14 @@ class Table {
 		}
 		~Table();
 
-		vector<float> getBottomLeftCorner() { return corners[0]; }
-		vector<float> getBottomRightCorner() { return corners[1]; }
-		vector<float> getTopRightCorner() { return corners[2]; }
-		vector<float> getTopLeftCorner() { return corners[3]; }
+		vector<float> getBottomLeftFrontCorner() { return corners[0]; }
+		vector<float> getBottomRightFrontCorner() { return corners[1]; }
+		vector<float> getTopRightFrontCorner() { return corners[2]; }
+		vector<float> getTopLeftFrontCorner() { return corners[3]; }
+		vector<float> getBottomLeftBackCorner() { return corners[4]; }
+		vector<float> getBottomRightBackCorner() { return corners[5]; }
+		vector<float> getTopRightBackCorner() { return corners[6]; }
+		vector<float> getTopLeftBackCorner() { return corners[7]; }
 		void setCorners(vector< vector<float> > _newCorners) { corners = _newCorners; }
 
 		void display();

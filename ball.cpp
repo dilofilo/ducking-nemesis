@@ -56,13 +56,23 @@ vector<float> Ball::nextPos(float dt) {
 
 void handleWallCollision(Table* _table) {
 	
-	if ((this->getxCentre + this->getRadius())>=_table->getBottomRightCorner()[0]))
-		this->setxVelocity(-1 * this->getxVelocity());
-	else if (this->getxCentre <= (_table->getBottomLeftCorner()[0]+this->getRadius()))
-		this->setxVelocity(-1 * this->getxVelocity());
-	else if ((this->getyCentre+this->getRadius())>=_table->getTopRightCorner()[1])
-		this->setyVelocity(-1 * this->getyVelocity());
-	else if ((this->getyCentre<=this->getRadius()+_table->getBottomRightCorner))
+	if ((this->getxCentre + this->getRadius())>=_table->getBottomRightFrontCorner()[0]))
+		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with right wall
+
+	else if (this->getxCentre <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0]))
+		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with left wall
+
+	else if ((this->getyCentre+this->getRadius())>=_table->getTopRightFrontCorner()[1])
+		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with top wall
+
+	else if ((this->getyCentre<=this->getRadius()+_table->getBottomRightFrontCorner()[1]))
+		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
+
+	else if ((this->getzCentre+this->getRadius())>=_table->getTopRightFrontCorner()[2]))
+		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
+
+	else if ((this->getzCentre<=this->getRadius()+_table->getBottomRightBackCorner()[2]))
+		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
 }
 
 
