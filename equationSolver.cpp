@@ -1,5 +1,5 @@
-#ifndef SOLVER_CPP
-	#define SOLVER_CPP
+#ifndef EQUATION_SOLVER_CPP
+	#define EQUATION_SOLVER_CPP
 float* old_solveBallCollision(float vXBallA , float vYBallA , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
 {
 	/// Returns an array of four float numbers corresponding to VXA, VYA, VXB, 

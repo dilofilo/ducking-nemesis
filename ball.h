@@ -40,6 +40,12 @@ public:
 	void setyVelocity(float _y) { velocity[2] = _y ; }
 	void setzVelocity(float _z) { velocity[3] = _z ; }
 
+	vector<float> getPosition() { return position; }
+	vector<float> getVelocity() { return velocity; }
+	void setPosition(vector<float> newPos) { position = newPos; }
+	void setVelocity(vector<float> newVelocity) { velocity = newVelocity;}
+
+
 	float getMass() { return mass; }
 	void setMass(float _m) { mass = _m ;}
 	vector<float> getColor() { return color; }
@@ -48,7 +54,12 @@ public:
 
 	void display();
 	void reshape(int w, int h , int oldWidth , int oldHeight);
+	
 	//void* ballThread(void* args); Not part of the ball class, just packaged along with it.
+
+	void displace(float dt);
+	vector<float> nextPos(float dt);
+	void wallCollision(Table* _table);
 };
 
 static int numBallUpdates;

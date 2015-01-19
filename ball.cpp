@@ -8,7 +8,7 @@
 
 #include "ball.h"
 #include <unistd.h>
-
+#include "equationSolver.cpp"
 
 void Ball::display() {
 	glColor3f(color[0] , color[1] , color[2]);
@@ -44,7 +44,15 @@ struct BallThreadParameters {
 	BallThreadParameters(int x) { ID = x;}
 };
 
+void Ball::displace(float dt) {
+	this->setxCentre(this->getxCentre() + dt*this->getxVelocity());
+	this->setyCentre(this->getyCentre() + dt*this->getyVelocity());
+	this->setzCentre(this->getzCentre() + dt*this->getzVelocity());
+}
 
+vector<float> Ball::nextPos(float dt) {
+	return addVector( position , ScalarMult( velocity , dt));
+}
 
 
 // static int numBallUpdates;
@@ -61,6 +69,7 @@ void* ballThread(void* args) {
 	int ID = arg->ID;
 	//TODO
 	while(true) {
+		vector<float> newPos;
 		pthread_mutex_lock(&vecMutexBallPthreads[ID]);
 		while(numBallUpdates == 0)
 			pthread_cond_wait(&vecCondBallUpdateBegin[ID] , &vecMutexBallPthreads[ID]);
@@ -69,9 +78,8 @@ void* ballThread(void* args) {
 			numBallUpdates--;
 			vecShouldBallUpdate[ID] = false;
 			pthread_mutex_unlock(&mutexStateVariableUpdate);
-			ball[ID]->setxCentre( ball[ID]->getxCentre() + DELTA_T*ball[ID]->getxVelocity());
-			ball[ID]->setyCentre( ball[ID]->getyCentre() + DELTA_T*ball[ID]->getyVelocity());
-			ball[ID]->setzCentre( ball[ID]->getzCentre() + DELTA_T*ball[ID]->getzVelocity());
+			newPos = nextPos(DELTA_T);
+			ball[ID]->setPosition(newPos);
 		}
 		pthread_cond_signal(&condBallUpdateComplete);
 		pthread_mutex_unlock(&vecMutexBallPthreads[ID]);
