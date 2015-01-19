@@ -63,7 +63,7 @@ public:
 	void displace(float dt); //displaces ball
 	void handleWallCollision(Table* _table);
 	///Receives the collision handle and updates itself accordingly.
-	void handleBallCollision(vector<float>& deltaPosition , vector<float>& targetVelocity , float targetMass );
+	void handleBallCollision(vector<float>& deltaPosition , vector<float>& targetVelocity , float targetMass , float targetRadius);
 };
 
 vector<Ball*> ball; //CHANGE BALL TO BALLS YADAYADYAYDAYDYAD
