@@ -2,6 +2,7 @@
 	#define BALL_THREADS_CPP
 
 #include <vector>
+#include <queue>
 #include <pthread.h>
 ///The message that will be sent
 struct BallDetailsMessage {
@@ -13,7 +14,7 @@ struct BallDetailsMessage {
 	float senderRadius;
 };
 ///Mailbox for each thread.
-std::vector< std::queue<ballDetailsMessage> > mailBox;
+std::vector< std::queue<BallDetailsMessage> > mailBox;
 
 ///All the variables needed for threading
 	
@@ -36,9 +37,9 @@ std::vector< std::queue<ballDetailsMessage> > mailBox;
 
 ///A function that modularly posts messages.
 void sendMessage(BallDetailsMessage &msg) {
-	pthread_mutex_lock( vecMutexMailBox[i]); //TODO
+	pthread_mutex_lock( vecMutexMailBox[ msg.receiverID ]); //TODO
 		mailBox[msg.receiverID].push_back(msg);
-		pthread_cond_signal(vecCondMailBoxReceived[i]); //Post the message and notify the receiver.
+		pthread_cond_signal(vecCondMailBoxReceived[ msg.receiverID ]); //Post the message and notify the receiver.
 	pthread_mutex_unlock();
 }
 
@@ -99,13 +100,8 @@ void* ballThread(void* args) {
 				pthread_mutex_lock(vecMutexMailBox[ID]);	
 				BallDetailsMessage msg = mailBox.front();
 					mailBox.pop();
-
-				vector<float> newPos = addVector( ball[ID]->getPosition() , DELTA_T*ball[ID]->getVelocity() );
-				vector<float> senderPos = msg.senderVelocity;
-				vector<float> deltaPos = addVector( newPos , ScalarMult(msg.senderNextPosition , -1.0));
-
 				///BallToBall Collisions
-				ball[ID]->handleBallCollision(deltaPos , targetVelocity , targetMass , msg.senderRadius ); //Changes the velocity,not the 
+				ball[ID]->handleBallCollision(msg.senderNextPosition , msg.senderVelocity , msg.senderMass , msg.senderRadius); //Changes the velocity,not the 
 
 				pthread_mutex_unlock(vecMutexMailBox[ID]);
 			}
@@ -143,3 +139,4 @@ void threadInit() {
 	}
 }
 
+#endif
