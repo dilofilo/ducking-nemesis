@@ -54,36 +54,32 @@ vector<float> Ball::nextPos(float dt) {
 	return addVector( position , ScalarMult( velocity , dt));
 }
 
-<<<<<<< HEAD
+
 void Ball::handleWallCollision(Table* _table) {
-=======
-void handleWallCollision(Table* _table) {
 	
-	if ((this->getxCentre + this->getRadius())>=_table->getBottomRightFrontCorner()[0]))
+	if ((this->getxCentre + DELTA_T*this->getxVelocity() + this->getRadius())>=_table->getBottomRightFrontCorner()[0]))
 		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with right wall
 
-	else if (this->getxCentre <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0]))
+	else if (this->getxCentre + DELTA_T*this->getxVelocity() <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0]))
 		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with left wall
 
-	else if ((this->getyCentre+this->getRadius())>=_table->getTopRightFrontCorner()[1])
+	else if ((this->getyCentre + DELTA_T*this->getyVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[1])
 		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with top wall
 
-	else if ((this->getyCentre<=this->getRadius()+_table->getBottomRightFrontCorner()[1]))
+	else if ((this->getyCentre + DELTA_T*this->getyVelocity() <= this->getRadius() + _table->getBottomRightFrontCorner()[1]))
 		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
 
-	else if ((this->getzCentre+this->getRadius())>=_table->getTopRightFrontCorner()[2]))
+	else if ((this->getzCentre + DELTA_T*this->getzVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[2]))
 		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
 
-	else if ((this->getzCentre<=this->getRadius()+_table->getBottomRightBackCorner()[2]))
+	else if ((this->getzCentre + DELTA_T*this->getzVelocity() <= this->getRadius() + _table->getBottomRightBackCorner()[2]))
 		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
 }
 
->>>>>>> 9e07a09291e588f14fd8c83de9d4424c69adccdc
-
-}
 
 void Ball::handleBallCollision(vector<float>& deltaPosition , vector<float>& targetVelocity , float targetMass) {
 	//this->setVelocity()
+
 }
 
 #endif
