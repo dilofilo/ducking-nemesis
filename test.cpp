@@ -15,6 +15,7 @@ static int HEIGHT = 480;
 using namespace std;
 
 #include "equationSolver.cpp"
+#include "ballThreads.cpp"
 #include "table.h"
 #include "table.cpp"
 #include "ball.h"
