@@ -101,12 +101,11 @@ void* ballThread(void* args) {
 				vector<float> deltaPos = addVector( newPos , ScalarMult(senderPos , -1.0));
 
 				///BallToBall Collisions
-				ball[ID]->handleBallCollision(vector<float>& deltaPos , vector<float>& targetVelocity , float targetMass);
+				ball[ID]->handleBallCollision(vector<float>& deltaPos , vector<float>& targetVelocity , float targetMass); //Changes the velocity,not the 
 
 				pthread_mutex_unlock(vecMutexMailBox[ID]);
 			}
-			
-
+			ball[ID]->displace(DELTA_T);
 			//Updates have ended
 		}
 		pthread_cond_signal(&condBallUpdateComplete);

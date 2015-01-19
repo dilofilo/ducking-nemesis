@@ -57,8 +57,10 @@ public:
 	
 	//void* ballThread(void* args); Not part of the ball class, just packaged along with it.
 
-	void displace(float dt); //deprecated
 	vector<float> nextPos(float dt); //deprecated
+
+
+	void displace(float dt); //displaces ball
 	void handleWallCollision(Table* _table);
 	///Receives the collision handle and updates itself accordingly.
 	void handleBallCollision(vector<float>& deltaPosition , vector<float>& targetVelocity , float targetMass );
