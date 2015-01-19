@@ -79,6 +79,9 @@ void Ball::handleWallCollision(Table* _table) {
 
 void Ball::handleBallCollision(vector<float>& targetPosition , vector<float>& targetVelocity , float targetMass , float targetRadius) {
 	//this->setVelocity()
+	
+	if ((pow(targetPosition[0]-this->getPosition()[0],2)) + (pow(targetPosition[1]-this->getPosition()[1],2)) +(pow(targetPosition[2]-this->getPosition()[2],2)) <= pow(this->getRadius() + targetRadius,2))
+		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, this->getPosition(), targetPosition, this->getMass(), targetMass).first); /// checks and updates the balls velocity if it collides with some other ball
 
 }
 
