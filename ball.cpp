@@ -54,6 +54,17 @@ vector<float> Ball::nextPos(float dt) {
 	return addVector( position , ScalarMult( velocity , dt));
 }
 
+void handleWallCollision(Table* _table) {
+	
+	if ((this->getxCentre + this->getRadius())>=_table->getBottomRightCorner()[0]))
+		this->setxVelocity(-1 * this->getxVelocity());
+	else if (this->getxCentre <= (_table->getBottomLeftCorner()[0]+this->getRadius()))
+		this->setxVelocity(-1 * this->getxVelocity());
+	else if ((this->getyCentre+this->getRadius())>=_table->getTopRightCorner()[1])
+		this->setyVelocity(-1 * this->getyVelocity());
+	else if ((this->getyCentre<=this->getRadius()+_table->getBottomRightCorner))
+}
+
 
 // static int numBallUpdates;
 // 	vector<pthread_mutex_t> vecMutexBallPthreads;
