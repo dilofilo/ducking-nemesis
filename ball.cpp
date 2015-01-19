@@ -54,7 +54,21 @@ vector<float> Ball::nextPos(float dt) {
 	return addVector( position , ScalarMult( velocity , dt));
 }
 
+<<<<<<< HEAD
 void Ball::handleWallCollision(Table* _table) {
+=======
+void handleWallCollision(Table* _table) {
+	
+	if ((this->getxCentre + this->getRadius())>=_table->getBottomRightCorner()[0]))
+		this->setxVelocity(-1 * this->getxVelocity());
+	else if (this->getxCentre <= (_table->getBottomLeftCorner()[0]+this->getRadius()))
+		this->setxVelocity(-1 * this->getxVelocity());
+	else if ((this->getyCentre+this->getRadius())>=_table->getTopRightCorner()[1])
+		this->setyVelocity(-1 * this->getyVelocity());
+	else if ((this->getyCentre<=this->getRadius()+_table->getBottomRightCorner))
+}
+
+>>>>>>> 9e07a09291e588f14fd8c83de9d4424c69adccdc
 
 }
 
