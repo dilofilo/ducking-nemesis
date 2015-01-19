@@ -57,19 +57,13 @@ public:
 	
 	//void* ballThread(void* args); Not part of the ball class, just packaged along with it.
 
-	void displace(float dt);
-	vector<float> nextPos(float dt);
-	void wallCollision(Table* _table);
+	void displace(float dt); //deprecated
+	vector<float> nextPos(float dt); //deprecated
+	void handleWallCollision(Table* _table);
+	///Receives the collision handle and updates itself accordingly.
+	void handleBallCollision(vector<float>& deltaPosition , vector<float>& targetVelocity , float targetMass );
 };
 
-static int numBallUpdates;
-	vector<pthread_mutex_t> vecMutexBallPthreads;
-	vector<pthread_cond_t> vecCondBallUpdateBegin;
-	//vector<pthread_cond_t> vecCondBallUpdateComplete; //DEPRECATED
-	pthread_mutex_t mutexStateVariableUpdate;
-	vector<bool> vecShouldBallUpdate;
-	vector<pthread_t> vecBallThread;
-	pthread_cond_t condBallUpdateComplete;
 vector<Ball*> ball; //CHANGE BALL TO BALLS YADAYADYAYDAYDYAD
 
 #endif

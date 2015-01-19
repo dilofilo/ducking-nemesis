@@ -41,6 +41,7 @@ void sendMessage(BallDetailsMessage &msg) {
 	pthread_mutex_unlock();
 }
 
+///Function that makes calling thread wait until it has received N messages
 void waitForMessages(int threadID) {
 	pthread_mutex_lock( &vecMutexMailBox[threadID])
 	while(mailBox[threadID].size() < NUM_BALLS ) {
@@ -66,13 +67,15 @@ void* ballThread(void* args) {
 			numBallUpdates--;
 			vecShouldBallUpdate[ID] = false;
 			pthread_mutex_unlock(&mutexStateVariableUpdate);
+			//Timer-related things have been started.
+
+
+			///Updates begin
 
 			//All the updating goes here.
-			checkWallCollision();
+			ball[ID]->handleWallCollision(table);
 			
 			///Generate N messages, and push them all.
-			
-
 			for(int i=0; i<NUM_BALLS; i++) {
 				if ( i!= ID) {
 					BallDetailsMessage msg = new BallDetailsMessage();
@@ -82,12 +85,29 @@ void* ballThread(void* args) {
 						msg.senderVelocity = ball[ID].getVelocity();
 						msg.senderNextPosition = addVector( ball[ID].getPosition() , DELTA_T*msg.senderVelocity);
 						msg.receiverID = i;
+						sendMessage(msg); //Also signals.
 				} //Message created
-
-
 			}
 
+			
+			///Can be replaced by a wait within the process messages part. That might speed up the entire process by a little bit.
+			waitForMessages(ID);
 
+			///Process messages received.
+			for(int i = 1 ; i< NUM_BALLS; i++) { //Pop n messages.
+				pthread_mutex_lock(vecMutexMailBox[ID]);	
+				vector<float> newPos = addVector( ball[ID]->getPosition() , DELTA_T*ball[ID]->getVelocity() );
+				vector<float> senderPos = msg.senderVelocity;
+				vector<float> deltaPos = addVector( newPos , ScalarMult(senderPos , -1.0));
+
+				///BallToBall Collisions
+				ball[ID]->handleBallCollision(vector<float>& deltaPos , vector<float>& targetVelocity , float targetMass);
+
+				pthread_mutex_unlock(vecMutexMailBox[ID]);
+			}
+			
+
+			//Updates have ended
 		}
 		pthread_cond_signal(&condBallUpdateComplete);
 		pthread_mutex_unlock(&vecMutexBallPthreads[ID]);
