@@ -7,7 +7,7 @@
 
 //GL stuff
 #define Z_CAMERA 7.0
-#define DELTA_T 5.0
+#define DELTA_T 500.0
 static int WIDTH = 640;
 static int HEIGHT = 480;
 #define NUM_BALLS 3
@@ -44,7 +44,7 @@ void init() {
 
 
 void display() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
 	glPushMatrix();
@@ -74,7 +74,7 @@ void timer(int val) {
 	//End of locked section
 	glutTimerFunc(DELTA_T , timer , 1);
 	glutPostRedisplay();
-	cout << "Redisplay posted\n";
+	// cout << "Redisplay posted\n";
 }
 
 void reshape(int w, int h) {
@@ -152,7 +152,8 @@ int main(int argc, char** argv) {
 		ball[i]->setxCentre(-1.0 + (float)i);
 		ball[i]->setColor(color);
 	}
-	ball[0]->setxVelocity(0.1);
+	//ball[0]->setxVelocity(0.1);
+	ball[2]->toggleSelected();
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
 	glutInitWindowSize(WIDTH , HEIGHT);
@@ -163,8 +164,8 @@ int main(int argc, char** argv) {
 
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
-	glutTimerFunc(DELTA_T , timer , 1); 
-
+	glutTimerFunc(DELTA_T , timer , 1); /// 1 is an arbit value ... to be given some meaning later.
+	
 	glutMainLoop();
 	return 0;
 }

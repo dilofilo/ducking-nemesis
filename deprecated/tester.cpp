@@ -4,6 +4,7 @@
 #include <math.h>
 #include <time.h>
 #include <unistd.h>
+#include <limits>
 using namespace std;
 #define Z_CAMERA 10.0
 #define NUMSLICES 50
@@ -25,6 +26,7 @@ vector<bool> shouldThreadUpdate;
 int nUpdatesToBeDone;
 static float WIDTH;
 static float HEIGHT;
+static int selectedBall=-1;
 
 void init() {
 	
@@ -65,6 +67,185 @@ void display() {
 	glPopMatrix();
 
 	glutSwapBuffers();
+}
+
+
+void mouseClickHandler (int button , int state , int x , int y) {
+
+/*	if(state==GLUT_DOWN) {
+
+		/// Mouse Click Detected!	
+		/// Check the Ball that was clicked and mark it as selected.
+
+
+		cout<<"The coordinates of the click are \t"<<x<<"\t"<<y<<endl;
+
+		double matModelView[16], matProjection[16]; 
+		int viewport[4]; 
+		glGetDoublev( GL_MODELVIEW_MATRIX, matModelView ); 
+		glGetDoublev( GL_PROJECTION_MATRIX, matProjection ); 
+		glGetIntegerv( GL_VIEWPORT, viewport );
+		double winX = (double)x; 
+		double m_start_x, m_start_y, m_start_z, m_end_x, m_end_y, m_end_z;
+		double winY = viewport[3] - (double)y; 
+		gluUnProject(winX, winY, 0.0, matModelView, matProjection, viewport, &m_start_x, &m_start_y, &m_start_z); 
+		gluUnProject(winX, winY, 1.0, matModelView, matProjection, viewport, &m_end_x, &m_end_y, &m_end_z); 
+
+		cout<< m_start_x<<"\t"<<m_start_y<<"\t"<<m_start_z<<"\n";
+		cout<< m_end_x<<"\t"<<m_end_y<<"\t"<<m_end_z<<"\n";
+
+		float maxZCentre = numeric_limits<int>::min();
+		
+		float myDenominator = pow((m_start_x - m_end_x),2) + pow((m_start_y - m_end_y),2) + pow((m_start_z - m_end_z),2);
+
+			for(int counter=0;counter<balls.size();counter++)
+			{
+				
+				/// Check whether this was the ball clicked
+
+				float myRadius = balls[counter]->getRadius();
+				float myxCentre = balls[counter]->getxCentre();
+				float myyCentre = balls[counter]->getyCentre();
+				float myzCentre = balls[counter]->getzCentre();
+				
+				bool checkIntersecting = false;
+
+				float diff1_x = myxCentre - m_start_x;
+				float diff1_y = myyCentre - m_start_y;
+				float diff1_z = myzCentre - m_start_z;
+
+				float diff2_x = myxCentre - m_end_x;
+				float diff2_y = myyCentre - m_end_y;
+				float diff2_z = myzCentre - m_end_z;
+
+				float matX = diff1_y*diff2_z - diff2_y*diff1_z;
+				float matY = diff1_x*diff2_z - diff1_z*diff2_x;
+				float matZ = diff1_x*diff2_y - diff1_y*diff2_x; 
+
+
+				float myNumerator = pow(matX,2) + pow(matY,2) + pow(matZ,2);
+
+
+				float perpDist = myNumerator/myDenominator;
+
+				if(perpDist <= pow(myRadius,2)) {
+					checkIntersecting = true;
+				}
+
+
+				if( (checkIntersecting) && (myzCentre > maxZCentre ))  {
+	
+					/// This is the ball! Mark it as selected.
+					if(selectedBall >= 0) {
+						balls[selectedBall]->setIsSelected(false);
+					}
+
+					balls[counter]->setIsSelected(true);
+					selectedBall=counter;
+					maxZCentre = myzCentre;
+				
+				}
+			}		
+
+		
+	}
+*/
+}
+
+void keyboardHandler(unsigned char key, int x, int y) {
+
+	if(key=='a' || key=='A') {
+		/// Request to add a ball.
+		cout<<"Request to add a ball \n";
+		
+		/// TODO
+	}
+
+	if(key=='d' || key=='D') {
+		/// Request to delete a ball.
+		cout<<"Request to delete a ball \n";
+
+		/// TODO
+	}
+
+	if(int(key) == 27 ) {
+		/// Esc pressed, Request to exit the Window. 
+		cout<<"Request to exit the Window \n";
+
+		/// TODO cALL EXITTER().
+	}
+
+	if(int(key) == 32) {
+		/// Spacebar pressed, Request to pause.
+		cout<<"Request to pause \n";
+	
+		/// TODO SET IS PAUSED TO TRUE/FALSE.
+	}
+}
+
+void specialKeyHandler(int key , int x , int y) {
+
+	/**
+	* 37 = Left Arrow Key.
+	* 38 = Up Arrow Key.
+	* 39 = Right Arrow Key.
+	* 40 = Down Arrow Key.
+	*/
+	
+	if(key == GLUT_KEY_RIGHT) {
+		/// De-Select the current Ball and Select the next ball in the vector.
+		if(selectedBall >= 0) {
+			balls[selectedBall]->setIsSelected(false);
+			selectedBall=(selectedBall+1)%(balls.size());
+			balls[selectedBall]->setIsSelected(true);
+		}
+	}
+
+	if(key == GLUT_KEY_LEFT) {
+		/// De-Select the current Ball and Select the previous ball in the vactor.
+		if(selectedBall >= 0) {
+			balls[selectedBall]->setIsSelected(false);
+			selectedBall= (selectedBall-1>0)?(selectedBall-1) : (balls.size()-1);
+			balls[selectedBall]->setIsSelected(true);
+		}
+	}
+
+	if(key == GLUT_KEY_UP) {
+
+		/// Increse the Speed of the selected ball.
+		
+		cout<<"Increse the Speed of the selected ball. \n";
+		if(selectedBall >= 0) {
+			// TODO Modify the velocity.
+
+			float myxVel = balls[selectedBall]->getxVelocity();
+			float myyVel = balls[selectedBall]->getyVelocity();
+
+			myxVel = myxVel*1.1;
+			myyVel = myyVel*1.1;
+
+			balls[selectedBall]->setxVelocity(myxVel);
+			balls[selectedBall]->setyVelocity(myyVel);
+		}
+	}
+
+	if(key == GLUT_KEY_DOWN) {
+
+		cout<<"Increse the Speed of the selected ball. \n";
+		/// Decrease the Speed of the selected ball.
+		if(selectedBall >= 0) {
+			// TODO Modify the velocity.
+
+			float myxVel = balls[selectedBall]->getxVelocity();
+			float myyVel = balls[selectedBall]->getyVelocity();
+
+			myxVel = myxVel*0.9;
+			myyVel = myyVel*0.9;
+
+			balls[selectedBall]->setxVelocity(myxVel);
+			balls[selectedBall]->setyVelocity(myyVel);
+		}
+	}
 }
 
 void reshape(int w , int h) {
@@ -173,6 +354,9 @@ int main(int argc, char** argv) {
 		ball1->setxVelocity(+0.01);
 		ball1->setyVelocity(-0.02);
 
+	ball0 -> setIsSelected(true);
+	selectedBall = 0;
+
 	balls.push_back(ball0);
 	balls.push_back(ball1);
 	balls.push_back(ball2);
@@ -190,6 +374,10 @@ int main(int argc, char** argv) {
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutTimerFunc(1 , timerFunc , 1); //1000 is an arbitrary constant value
+	//void glutMouseFunc(void (*func)(int button, int state, int x, int y))
+	glutMouseFunc(mouseClickHandler);
+	glutKeyboardFunc(keyboardHandler);
+	glutSpecialFunc(specialKeyHandler);
 	glutMainLoop();
 
 	return 0;
