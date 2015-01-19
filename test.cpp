@@ -107,30 +107,6 @@ void reshape(int w, int h) {
 // pthread_cond_t condBallUpdateComplete
 // 	vector<pthread_t> vecBallThread;
 
-void threadInit() {
-	vecMutexBallPthreads.resize(NUM_BALLS);
-	//vecCondBallUpdateComplete.resize(NUM_BALLS);
-	vecCondBallUpdateBegin.resize(NUM_BALLS);
-	vecBallThread.resize(NUM_BALLS);
-	numBallUpdates = NUM_BALLS;
-	vecShouldBallUpdate.resize(NUM_BALLS , true);
-
-	pthread_mutex_init(&mutexStateVariableUpdate , NULL);
-	for(int i = 0; i< NUM_BALLS ; i++) {
-		pthread_mutex_init(&vecMutexBallPthreads[i] , NULL);
-		pthread_cond_init(&vecCondBallUpdateBegin[i] , NULL);
-		//pthread_cond_init(&vecCondBallUpdateComplete[i] , NULL);
-		pthread_cond_init(&condBallUpdateComplete , NULL);
-	}
-
-	for(int i = 0 ; i<NUM_BALLS ; i++) {
-		BallThreadParameters* args = new BallThreadParameters(i);
-		int rc = pthread_create(&vecBallThread[i] , NULL , ballThread , (void*)args);
-			if(rc) {
-				cout << "THREAD CREATION FAILED. YOU SHOULD PROBABLY NEVER SEE THIS MESSAGE.\n"	;
-			}
-	}
-}
 int main(int argc, char** argv) {
 	
 	vector<float> color{0.54 , 0.25 , 0.07};

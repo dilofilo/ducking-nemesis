@@ -31,11 +31,11 @@ void Ball::display() {
 
 void Ball::reshape(int w , int h , int oldWidth , int oldHeight ) {
 	//Manipulate variables here
-	if ((w/oldWidth >= 1.0 ) && (h/oldHeight >= 1.0) ) {
-		radius *= ( (w/oldWidth) < (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
-	}else {
-		radius *= ( (w/oldWidth) > (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
-	}	
+	// if ((w/oldWidth >= 1.0 ) && (h/oldHeight >= 1.0) ) {
+	// 	radius *= ( (w/oldWidth) < (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
+	// }else {
+	// 	radius *= ( (w/oldWidth) > (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
+	// }	
 }
 
 ///This struct can be used to pass more data if ever required.
@@ -54,36 +54,12 @@ vector<float> Ball::nextPos(float dt) {
 	return addVector( position , ScalarMult( velocity , dt));
 }
 
+void Ball::handleWallCollision(Table* _table) {
 
-// static int numBallUpdates;
-// 	vector<pthread_mutex_t> vecMutexBallPthreads;
-// 	vec<pthread_cond_t> vecCondBallUpdateBegin;
-// 	vec<pthread_cond_t> vecCondBallUpdateComplete;
-// 	pthread_mutex_t mutexStateVariableUpdate;
-// 	vector<bool> vecShouldBallUpdate;
-// pthread_cond_t condBallUpdateComplete
-// 	vector<pthread_t> vecBallThread;
+}
 
-void* ballThread(void* args) {
-	BallThreadParameters* arg = (BallThreadParameters*)args ;
-	int ID = arg->ID;
-	//TODO
-	while(true) {
-		vector<float> newPos;
-		pthread_mutex_lock(&vecMutexBallPthreads[ID]);
-		while(numBallUpdates == 0)
-			pthread_cond_wait(&vecCondBallUpdateBegin[ID] , &vecMutexBallPthreads[ID]);
-		while( (numBallUpdates > 0) && ( vecShouldBallUpdate[ID] ) ) {
-			pthread_mutex_lock(&mutexStateVariableUpdate);
-			numBallUpdates--;
-			vecShouldBallUpdate[ID] = false;
-			pthread_mutex_unlock(&mutexStateVariableUpdate);
-			newPos = nextPos(DELTA_T);
-			ball[ID]->setPosition(newPos);
-		}
-		pthread_cond_signal(&condBallUpdateComplete);
-		pthread_mutex_unlock(&vecMutexBallPthreads[ID]);
-	}
+void Ball::handleBallCollision(vector<float>& deltaPosition , vector<float>& targetVelocity , float targetMass) {
+	//this->setVelocity()
 }
 
 #endif

@@ -1,36 +1,37 @@
 #ifndef BALL_THREADS_CPP
 	#define BALL_THREADS_CPP
 
-
+#include <vector>
+#include <pthread.h>
 ///The message that will be sent
 struct BallDetailsMessage {
 	int receiverID;
 	int senderID;
-	vector<float> senderVelocity;
-	vector<float> senderNextPosition;
+	std::vector<float> senderVelocity;
+	std::vector<float> senderNextPosition;
 	float senderMass;
 	float senderRadius;
 };
 ///Mailbox for each thread.
-vector<queue<ballDetailsMessage> > mailBox;
+std::vector< std::queue<ballDetailsMessage> > mailBox;
 
 ///All the variables needed for threading
 	
 	//Unnecessary lock for each thread
-	vector<pthread_mutex_t> vecMutexBallPthreads;
+	std::vector<pthread_mutex_t> vecMutexBallPthreads;
 
 	//Interaction between timer and each thread.
 	static int numBallUpdates;
-	vector<pthread_cond_t> vecCondBallUpdateBegin;
+	std::vector<pthread_cond_t> vecCondBallUpdateBegin;
 	//vector<pthread_cond_t> vecCondBallUpdateComplete; //DEPRECATED
 	pthread_mutex_t mutexStateVariableUpdate;
-	vector<bool> vecShouldBallUpdate;
-	vector<pthread_t> vecBallThread;
+	std::vector<bool> vecShouldBallUpdate;
+	std::vector<pthread_t> vecBallThread;
 	pthread_cond_t condBallUpdateComplete;
 
 	//Communication locks
-	vector<pthread_mutex_t> vecMutexMailBox;
-	vector<pthread_cond_t> vecCondMailBoxReceived;
+	std::vector<pthread_mutex_t> vecMutexMailBox;
+	std::vector<pthread_cond_t> vecCondMailBoxReceived;
 
 
 ///A function that modularly posts messages.
@@ -101,7 +102,7 @@ void* ballThread(void* args) {
 				vector<float> deltaPos = addVector( newPos , ScalarMult(senderPos , -1.0));
 
 				///BallToBall Collisions
-				ball[ID]->handleBallCollision(vector<float>& deltaPos , vector<float>& targetVelocity , float targetMass); //Changes the velocity,not the 
+				ball[ID]->handleBallCollision(deltaPos , targetVelocity , targetMass); //Changes the velocity,not the 
 
 				pthread_mutex_unlock(vecMutexMailBox[ID]);
 			}
