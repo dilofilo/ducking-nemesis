@@ -77,7 +77,7 @@ void Ball::handleWallCollision(Table* _table) {
 }
 
 
-void Ball::handleBallCollision(vector<float>& deltaPosition , vector<float>& targetVelocity , float targetMass , float targetRadius) {
+void Ball::handleBallCollision(vector<float>& targetPosition , vector<float>& targetVelocity , float targetMass , float targetRadius) {
 	//this->setVelocity()
 }
 

@@ -46,6 +46,8 @@ public:
 	void setVelocity(vector<float> newVelocity) { velocity = newVelocity;}
 
 
+	float getRadius() { return radius; }
+	void setRadius(float _r) { radius = _r; }
 	float getMass() { return mass; }
 	void setMass(float _m) { mass = _m ;}
 	vector<float> getColor() { return color; }
@@ -63,7 +65,7 @@ public:
 	void displace(float dt); //displaces ball
 	void handleWallCollision(Table* _table);
 	///Receives the collision handle and updates itself accordingly.
-	void handleBallCollision(vector<float>& deltaPosition , vector<float>& targetVelocity , float targetMass , float targetRadius);
+	void handleBallCollision(vector<float>& targetPosition , vector<float>& targetVelocity , float targetMass , float targetRadius);
 };
 
 vector<Ball*> ball; //CHANGE BALL TO BALLS YADAYADYAYDAYDYAD
