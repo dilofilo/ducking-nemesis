@@ -13,12 +13,12 @@ void Table::display() {
 }
 
 void Table::reshape(int w , int h , int oldWidth , int oldHeight) {
-	float xRatio = w/oldWidth;
-	float yRatio = h/oldHeight;
+	// float xRatio = w/oldWidth;
+	// float yRatio = h/oldHeight;
 
-	for(int i=0; i<4;i++) {
-		corners[i][0] *= xRatio;
-		corners[i][1] *= yRatio;
-	}
+	// for(int i=0; i<4;i++) {
+	// 	corners[i][0] *= xRatio;
+	// 	corners[i][1] *= yRatio;
+	// }
 }
 #endif

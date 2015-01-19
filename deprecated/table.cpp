@@ -25,16 +25,6 @@ void Table::print() {
 
 ///function to handle reshaping the table.
 void Table::reshape(int w , int h) {
-	xll *= w/oldWidth;
-	xlr *= w/oldWidth;
-	xtl *= w/oldWidth;
-	xtr *= w/oldWidth;
-
-	yll *= h/oldHeight;
-	ylr *= h/oldHeight;
-	ytl *= h/oldHeight;
-	ytr *= h/oldHeight;
-
 	oldWidth = w;
 	oldHeight = h;
 }
