@@ -31,11 +31,11 @@ void Ball::display() {
 
 void Ball::reshape(int w , int h , int oldWidth , int oldHeight ) {
 	//Manipulate variables here
-	if ((w/oldWidth >= 1.0 ) && (h/oldHeight >= 1.0) ) {
-		radius *= ( (w/oldWidth) < (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
-	}else {
-		radius *= ( (w/oldWidth) > (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
-	}	
+	// if ((w/oldWidth >= 1.0 ) && (h/oldHeight >= 1.0) ) {
+	// 	radius *= ( (w/oldWidth) < (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
+	// }else {
+	// 	radius *= ( (w/oldWidth) > (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
+	// }	
 }
 
 ///This struct can be used to pass more data if ever required.
@@ -55,35 +55,30 @@ vector<float> Ball::nextPos(float dt) {
 }
 
 
-// static int numBallUpdates;
-// 	vector<pthread_mutex_t> vecMutexBallPthreads;
-// 	vec<pthread_cond_t> vecCondBallUpdateBegin;
-// 	vec<pthread_cond_t> vecCondBallUpdateComplete;
-// 	pthread_mutex_t mutexStateVariableUpdate;
-// 	vector<bool> vecShouldBallUpdate;
-// pthread_cond_t condBallUpdateComplete
-// 	vector<pthread_t> vecBallThread;
+void Ball::handleWallCollision(Table* _table) {
+	
+	if ((this->getxCentre + this->getRadius())>=_table->getBottomRightFrontCorner()[0]))
+		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with right wall
 
-void* ballThread(void* args) {
-	BallThreadParameters* arg = (BallThreadParameters*)args ;
-	int ID = arg->ID;
-	//TODO
-	while(true) {
-		vector<float> newPos;
-		pthread_mutex_lock(&vecMutexBallPthreads[ID]);
-		while(numBallUpdates == 0)
-			pthread_cond_wait(&vecCondBallUpdateBegin[ID] , &vecMutexBallPthreads[ID]);
-		while( (numBallUpdates > 0) && ( vecShouldBallUpdate[ID] ) ) {
-			pthread_mutex_lock(&mutexStateVariableUpdate);
-			numBallUpdates--;
-			vecShouldBallUpdate[ID] = false;
-			pthread_mutex_unlock(&mutexStateVariableUpdate);
-			newPos = nextPos(DELTA_T);
-			ball[ID]->setPosition(newPos);
-		}
-		pthread_cond_signal(&condBallUpdateComplete);
-		pthread_mutex_unlock(&vecMutexBallPthreads[ID]);
-	}
+	else if (this->getxCentre <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0]))
+		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with left wall
+
+	else if ((this->getyCentre+this->getRadius())>=_table->getTopRightFrontCorner()[1])
+		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with top wall
+
+	else if ((this->getyCentre<=this->getRadius()+_table->getBottomRightFrontCorner()[1]))
+		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
+
+	else if ((this->getzCentre+this->getRadius())>=_table->getTopRightFrontCorner()[2]))
+		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
+
+	else if ((this->getzCentre<=this->getRadius()+_table->getBottomRightBackCorner()[2]))
+		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
+}
+
+
+void Ball::handleBallCollision(vector<float>& targetPosition , vector<float>& targetVelocity , float targetMass , float targetRadius) {
+	//this->setVelocity()
 }
 
 #endif

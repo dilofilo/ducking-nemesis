@@ -29,11 +29,11 @@ void Ball::display() {
 
 void Ball::reshape(int w , int h) {
 	//Manipulate variables here
-	if ((w/oldWidth >= 1.0 ) && (h/oldHeight >= 1.0) ) {
-		radius *= ( (w/oldWidth) < (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
-	}else {
-		radius *= ( (w/oldWidth) > (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
-	}
+	// if ((w/oldWidth >= 1.0 ) && (h/oldHeight >= 1.0) ) {
+	// 	radius *= ( (w/oldWidth) < (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
+	// }else {
+	// 	radius *= ( (w/oldWidth) > (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
+	// }
 	
 	oldWidth = w;
 	oldHeight = h;
