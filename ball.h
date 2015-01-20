@@ -16,7 +16,7 @@ private:
 
 public:
 
-	Ball(vector<float> pos = vecZero , vector<float> velo = vecZero , float _radius = 1.0 , vector<float> _color = vecZero) {
+	Ball(vector<float> pos = vecZero , vector<float> velo = vecZero , float _radius = 0.1 , vector<float> _color = vecZero) {
 		position = pos;
 		velocity = velo;
 		radius = _radius;
@@ -44,8 +44,6 @@ public:
 	vector<float> getVelocity() { return velocity; }
 	void setPosition(vector<float> newPos) { position = newPos; }
 	void setVelocity(vector<float> newVelocity) { velocity = newVelocity;}
-
-
 	float getRadius() { return radius; }
 	void setRadius(float _r) { radius = _r; }
 	float getMass() { return mass; }
@@ -57,10 +55,7 @@ public:
 	void display();
 	void reshape(int w, int h , int oldWidth , int oldHeight);
 	
-	//void* ballThread(void* args); Not part of the ball class, just packaged along with it.
-
-	vector<float> nextPos(float dt); //deprecated
-
+	//void* ballThread(void* args); //Not part of the ball class, just packaged along with it. //Can now be found in ballThreads.cpp
 
 	void displace(float dt); //displaces ball
 	void handleWallCollision(Table* _table);

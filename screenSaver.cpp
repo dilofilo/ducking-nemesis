@@ -1,4 +1,8 @@
-void init() {
+#ifndef SCREEN_SAVER_CPP
+	#define SCREEN_SAVER_CPP
+
+///Function that setps up glut's camera and rendering mode etc.
+void ScreenSaver::init() {
 	glEnable(GL_DEPTH_TEST); //Ensure that 3d figures are drawn in the correct order.
 	glCullFace(GL_BACK); //Ensures that when a solid is drawn, the back figuyres arent draw. Thats a 2x improvmenet in performance.
 	glEnable(GL_CULL_FACE);
@@ -17,3 +21,13 @@ void init() {
 	glFlush();
 }
 
+///Function that initializes the table* (included in table.h)
+
+///Function that initializes n balls randomly.
+
+///Function that starts the entire process.
+void ScreenSaver::execute(int& argc , char** argv) {
+
+}
+
+#endif

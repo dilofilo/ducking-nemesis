@@ -29,4 +29,6 @@ class Table {
 		void reshape( int w , int h , int oldWidth , int oldHeight);
 };
 
+Table* table;
+
 #endif

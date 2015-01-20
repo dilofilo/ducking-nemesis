@@ -5,6 +5,13 @@
 #include <queue>
 #include <pthread.h>
 ///The message that will be sent
+///This struct can be used to pass more data if ever required.
+struct BallThreadParameters {
+	int ID;
+	BallThreadParameters(int x) { ID = x;}
+};
+
+
 struct BallDetailsMessage {
 	int receiverID;
 	int senderID;
@@ -37,27 +44,34 @@ std::vector< std::queue<BallDetailsMessage> > mailBox;
 
 ///A function that modularly posts messages.
 void sendMessage(BallDetailsMessage &msg) {
-	pthread_mutex_lock( vecMutexMailBox[ msg.receiverID ]); //TODO
-		mailBox[msg.receiverID].push_back(msg);
-		pthread_cond_signal(vecCondMailBoxReceived[ msg.receiverID ]); //Post the message and notify the receiver.
-	pthread_mutex_unlock();
+	pthread_mutex_lock( &vecMutexMailBox[ msg.receiverID ]); //TODO
+		mailBox[msg.receiverID].push(msg);
+		pthread_cond_signal( &vecCondMailBoxReceived[ msg.receiverID ]); //Post the message and notify the receiver.
+	pthread_mutex_unlock(&vecMutexMailBox[ msg.receiverID ]);
 }
 
 ///Function that makes calling thread wait until it has received N messages
 void waitForMessages(int threadID) {
-	pthread_mutex_lock( &vecMutexMailBox[threadID])
+	pthread_mutex_lock( &vecMutexMailBox[threadID]);
 	while(mailBox[threadID].size() < NUM_BALLS ) {
 		pthread_cond_wait(&vecCondMailBoxReceived[threadID] , &vecMutexMailBox[threadID]);
 	}
 	pthread_mutex_unlock( &vecMutexMailBox[threadID] );
 }
 
+///Note the subtle difference in names.
+void waitForMessage(int threadID) {
+	while(mailBox[threadID].empty()) {
+		pthread_cond_wait(&vecCondMailBoxReceived[threadID] , &vecMutexMailBox[threadID]);
+	}
+}
+
 ///The thread's function
 void* ballThread(void* args) {
 	BallThreadParameters* arg = (BallThreadParameters*)args ;
 	int ID = arg->ID;
-	float myMass = ball[ID].getMass();
-	float myRadius = ball[ID].getRadius();
+	float myMass = ball[ID]->getMass();
+	float myRadius = ball[ID]->getRadius();
 
 	//TODO
 	while(true) {
@@ -71,43 +85,47 @@ void* ballThread(void* args) {
 			pthread_mutex_unlock(&mutexStateVariableUpdate);
 			//Timer-related things have been started.
 
-
 			///Updates begin
-
 			//All the updating goes here.
 			ball[ID]->handleWallCollision(table);
 			
 			///Generate N messages, and push them all.
 			for(int i=0; i<NUM_BALLS; i++) {
 				if ( i!= ID) {
-					BallDetailsMessage msg = new BallDetailsMessage();
+					BallDetailsMessage msg;
 						msg.senderID = ID;
 						msg.senderRadius = myRadius;
 						msg.senderMass = myMass;
-						msg.senderVelocity = ball[ID].getVelocity();
-						msg.senderNextPosition = addVector( ball[ID].getPosition() , DELTA_T*msg.senderVelocity);
+						msg.senderVelocity = ball[ID]->getVelocity();
+						msg.senderNextPosition = addVectors( ball[ID]->getPosition() , ScalarMult(ball[ID]->getVelocity() , DELTA_T));
 						msg.receiverID = i;
 						sendMessage(msg); //Also signals.
 				} //Message created
 			}
 
-			
-			///Can be replaced by a wait within the process messages part. That might speed up the entire process by a little bit.
-			waitForMessages(ID);
+			// Indicator line : cout << "thread: " << ID <<	" will now begin waiting \n";		
+			// Can be replaced by a wait within the process messages part. That might speed up the entire process by a little bit.
+			// waitForMessages(ID);
 
 			///Process messages received.
 			for(int i = 1 ; i< NUM_BALLS; i++) { //Pop n messages.
-				pthread_mutex_lock(vecMutexMailBox[ID]);	
-				BallDetailsMessage msg = mailBox.front();
-					mailBox.pop();
-				///BallToBall Collisions
-				ball[ID]->handleBallCollision(msg.senderNextPosition , msg.senderVelocity , msg.senderMass , msg.senderRadius); //Changes the velocity,not the 
+				pthread_mutex_lock(&vecMutexMailBox[ID]);	
+				
+				///Wait to receive atleast one message.
+				waitForMessage(ID);
 
-				pthread_mutex_unlock(vecMutexMailBox[ID]);
+				//ASSERT : MailBox is not empty.
+					BallDetailsMessage msg = mailBox[ID].front();
+						mailBox[ID].pop();
+					///BallToBall Collisions
+					ball[ID]->handleBallCollision(msg.senderNextPosition , msg.senderVelocity , msg.senderMass , msg.senderRadius); //Changes the velocity,not the 
+				
+				pthread_mutex_unlock(&vecMutexMailBox[ID]);
 			}
 			ball[ID]->displace(DELTA_T);
 			//Updates have ended
 		}
+
 		pthread_cond_signal(&condBallUpdateComplete);
 		pthread_mutex_unlock(&vecMutexBallPthreads[ID]);
 	}
@@ -115,12 +133,15 @@ void* ballThread(void* args) {
 
 ///Function called for initializing all the thread-related variables
 void threadInit() {
+	numBallUpdates = NUM_BALLS;
 	vecMutexBallPthreads.resize(NUM_BALLS);
 	//vecCondBallUpdateComplete.resize(NUM_BALLS);
 	vecCondBallUpdateBegin.resize(NUM_BALLS);
 	vecBallThread.resize(NUM_BALLS);
-	numBallUpdates = NUM_BALLS;
 	vecShouldBallUpdate.resize(NUM_BALLS , true);
+	vecMutexMailBox.resize(NUM_BALLS);
+	vecCondMailBoxReceived.resize(NUM_BALLS);
+	mailBox.resize(NUM_BALLS);
 
 	pthread_mutex_init(&mutexStateVariableUpdate , NULL);
 	for(int i = 0; i< NUM_BALLS ; i++) {
@@ -128,6 +149,8 @@ void threadInit() {
 		pthread_cond_init(&vecCondBallUpdateBegin[i] , NULL);
 		//pthread_cond_init(&vecCondBallUpdateComplete[i] , NULL);
 		pthread_cond_init(&condBallUpdateComplete , NULL);
+		pthread_mutex_init(&vecMutexMailBox[i] , NULL);
+		pthread_cond_init(&vecCondMailBoxReceived[i] , NULL);
 	}
 
 	for(int i = 0 ; i<NUM_BALLS ; i++) {

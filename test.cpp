@@ -6,8 +6,8 @@
 
 
 //GL stuff
-#define Z_CAMERA 7.0
-#define DELTA_T 500.0
+#define Z_CAMERA 10.0
+#define DELTA_T 1.0
 static int WIDTH = 640;
 static int HEIGHT = 480;
 #define NUM_BALLS 3
@@ -22,7 +22,6 @@ using namespace std;
 
 #include "table.cpp"
 #include "ball.cpp"
-Table* table;
 
 
 void init() {
@@ -62,6 +61,7 @@ void display() {
 
 void timer(int val) {
 	//Calculations
+	
 	pthread_mutex_lock(&mutexStateVariableUpdate);
 		for(int i = 0; i<NUM_BALLS;i++) {
 			pthread_cond_signal(&vecCondBallUpdateBegin[i]);
@@ -113,10 +113,10 @@ int main(int argc, char** argv) {
 	
 	vector<float> color{0.54 , 0.25 , 0.07};
 	vector< vector<float> > tableCorners;
-		vector<float> BL{ -5.0 , -4.0 , 0.0 };
-		vector<float> BR{ 5.0 , -4.0 , 0.0 };
-		vector<float> TR{ 5.0 , 4.0 , 0.0 };
-		vector<float> TL{ -5.0 , 4.0 , 0.0 };
+		vector<float> BL{ -5.0 , -4.0 , -0.1 };
+		vector<float> BR{ 5.0 , -4.0 , -0.1 };
+		vector<float> TR{ 5.0 , 4.0 , -0.1 };
+		vector<float> TL{ -5.0 , 4.0 , -0.1 };
 		tableCorners.push_back(BL);
 		tableCorners.push_back(BR);
 		tableCorners.push_back(TR);
@@ -125,14 +125,15 @@ int main(int argc, char** argv) {
 	ball.resize(NUM_BALLS);
 
 
-	color[0] = 1.0 ; color[1] = 0.2; color[2] = 0.3;
+	color[0] = 0.5 ; color[1] = 0.2; color[2] = 0.3;
 	for(int i=0; i< NUM_BALLS; i++) {
 		ball[i] = new Ball();
 		ball[i]->setxCentre(-1.0 + (float)i);
 		ball[i]->setColor(color);
 	}
 	//ball[0]->setxVelocity(0.1);
-	ball[2]->toggleSelected();
+	ball[2]->setxVelocity(0.001);
+	ball[2]->setyVelocity(0.001);
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
 	glutInitWindowSize(WIDTH , HEIGHT);
@@ -143,6 +144,9 @@ int main(int argc, char** argv) {
 
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
+	// glutSpecialFunc(specialKeyHandler);
+	// glutMouseFunc(mouseHandler);
+	// glutKeyboardFunc(keyboardHandler);
 	glutTimerFunc(DELTA_T , timer , 1); /// 1 is an arbit value ... to be given some meaning later.
 	
 	glutMainLoop();
