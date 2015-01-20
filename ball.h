@@ -1,6 +1,6 @@
  #ifndef BALL_H
 	#define BALL_H
-
+using namespace std;
 vector<float> vecZero{ 0.0 , 0.0 , 0.0};
 
 class Ball {

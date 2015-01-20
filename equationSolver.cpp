@@ -1,5 +1,12 @@
 #ifndef EQUATION_SOLVER_CPP
 	#define EQUATION_SOLVER_CPP
+#include <GL/glut.h>
+#include <pthread.h>
+#include <math.h>
+#include <vector>
+#include <queue>
+#include <time.h>
+#include <iostream>
 
 ///deprecated
 float* old_solveBallCollision(float vXBallA , float vYBallA , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)

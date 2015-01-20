@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
-
+using namespace std;
 
 //GL stuff
 #define Z_CAMERA 10.0

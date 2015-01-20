@@ -8,6 +8,7 @@
 #include <vector>
 #include <queue>
 #include <time.h>
+#include <iostream>
 using namespace std;
 
 ///Static Global Variables - Initialized in the class ScreenSaver's constructor.

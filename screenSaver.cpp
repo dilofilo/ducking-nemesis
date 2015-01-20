@@ -3,7 +3,7 @@
 
 #include "screenSaver.h"
 #include <limits>
-
+using namespace std;
 
 
 ///Function that setps up glut's camera and rendering mode etc.

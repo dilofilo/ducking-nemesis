@@ -7,6 +7,7 @@
 #define NUM_STACKS 50
 #define OFFSET 0.001
 #include "ball.h"
+
 #include <unistd.h>
 #include "equationSolver.cpp"
 
@@ -60,9 +61,11 @@ void Ball::handleWallCollision(Table* _table) {
 void Ball::handleBallCollision(vector<float>& targetPosition , vector<float>& targetVelocity , float targetMass , float targetRadius) {
 	//this->setVelocity()
 	
-	if  ( dotProduct( addVectors( this->getPosition() , ScalarMult(targetPosition , -1.0)) , addVectors( this->getPosition() , ScalarMult(targetPosition , -1.0))) <= pow(this->getRadius() + targetRadius,2)) {
+	vector<float> deltaPos = addVectors( this->getPosition() , ScalarMult(this->getVelocity() , DELTA_T));
+	float distSquare = dotProduct(deltaPos , deltaPos);
+	if (distSquare <= pow( this->getRadius() + targetRadius, 2) )
 		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, this->getPosition(), targetPosition, this->getMass(), targetMass).first); /// checks and updates the balls velocity if it collides with some other ball
-	}
+	
 }
 
 #endif

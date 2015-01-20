@@ -1,9 +1,14 @@
 #ifndef BALL_THREADS_CPP
 	#define BALL_THREADS_CPP
 
+#include <GL/glut.h>
+#include <pthread.h>
+#include <math.h>
 #include <vector>
 #include <queue>
-#include <pthread.h>
+#include <time.h>
+#include <iostream>
+using namespace std;
 ///The message that will be sent
 ///This struct can be used to pass more data if ever required.
 struct BallThreadParameters {

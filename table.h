@@ -1,6 +1,6 @@
 #ifndef TABLE_H
 	#define TABLE_H
-
+using namespace std;
 vector<float> vecUnity{ 1.0 , 1.0 , 1.0};
 class Table {
 	private:

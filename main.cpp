@@ -1,4 +1,10 @@
 //Things needed to convert string to int
+#include <GL/glut.h>
+#include <pthread.h>
+#include <math.h>
+#include <vector>
+#include <queue>
+#include <time.h>
 #include <string>
 #include <sstream>
 #include <iostream>
