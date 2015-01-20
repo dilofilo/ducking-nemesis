@@ -15,20 +15,10 @@ void Ball::display() {
 	glColor3f(color[0] , color[1] , color[2]);
 	glPushMatrix();
 		glTranslated( position[0] , position[1] , position[2] );
-		glutSolidSphere( radius , NUM_SLICES , NUM_STACKS);
+		if(isSelected) glutSolidSphere( radius , NUM_SLICES , NUM_STACKS);
+		else glutWireSphere( radius , NUM_SLICES , NUM_STACKS);
 	glPopMatrix();
 
-	if(isSelected) {
-		glColor3f(color[2] , color[1] , color[0]);
-		glBegin(GL_POLYGON);
-			//Draw square around the ball.
-
-			glVertex3f(position[0] + radius, position[1] + radius, position[2] + OFFSET );
-			glVertex3f(position[0] - radius, position[1] + radius, position[2] );
-			glVertex3f(position[0] - radius, position[1] - radius, position[2] );
-			glVertex3f(position[0] - radius, position[1] + radius, position[2] );
-		glEnd();
-	}
 }
 
 void Ball::reshape(int w , int h , int oldWidth , int oldHeight ) {
@@ -62,8 +52,8 @@ void Ball::handleWallCollision(Table* _table) {
 	 else if ((this->getzCentre() + DELTA_T*this->getzVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[2])
 	 	this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
 
-	// else if ((this->getzCentre() + DELTA_T*this->getzVelocity() ) <= this->getRadius() + _table->getBottomRightBackCorner()[2])
-	// 	this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
+	 else if ((this->getzCentre() + DELTA_T*this->getzVelocity() ) <= this->getRadius() + _table->getBottomRightBackCorner()[2])
+		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
 }
 
 

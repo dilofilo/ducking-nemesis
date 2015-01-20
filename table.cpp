@@ -10,6 +10,13 @@ void Table::display() {
 		glVertex3f( corners[2][0] , corners[2][1] , corners[2][2]);
 		glVertex3f( corners[3][0] , corners[3][1] , corners[3][2]);
 	glEnd();
+	glBegin(GL_POLYGON);
+		glVertex3f( corners[5][0] , corners[5][1] , corners[5][2]);
+		glVertex3f( corners[4][0] , corners[4][1] , corners[4][2]);
+		glVertex3f( corners[7][0] , corners[7][1] , corners[7][2]);
+		glVertex3f( corners[6][0] , corners[6][1] , corners[6][2]);
+	glEnd();
+		
 }
 
 void Table::reshape(int w , int h , int oldWidth , int oldHeight) {

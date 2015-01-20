@@ -1,4 +1,4 @@
-#ifndef BALL_H
+ #ifndef BALL_H
 	#define BALL_H
 
 vector<float> vecZero{ 0.0 , 0.0 , 0.0};
@@ -50,6 +50,7 @@ public:
 	void setMass(float _m) { mass = _m ;}
 	vector<float> getColor() { return color; }
 	void setColor( vector<float> _color ) { color = _color; }
+	void setIsSelected(bool tempVar) { isSelected = tempVar; }
 	void toggleSelect() { isSelected = !isSelected ; }
 
 	void display();
