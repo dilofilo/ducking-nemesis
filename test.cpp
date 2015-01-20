@@ -125,15 +125,14 @@ int main(int argc, char** argv) {
 	ball.resize(NUM_BALLS);
 
 
-	color[0] = 0.5 ; color[1] = 0.2; color[2] = 0.3;
+	color[0] = 0.0 ; color[1] = 0.0; color[2] = 0.0;
 	for(int i=0; i< NUM_BALLS; i++) {
 		ball[i] = new Ball();
 		ball[i]->setxCentre(-1.0 + (float)i);
 		ball[i]->setColor(color);
 	}
+	ball[1]->setxVelocity(0.001);
 	//ball[0]->setxVelocity(0.1);
-	ball[2]->setxVelocity(0.001);
-	ball[2]->setyVelocity(0.001);
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
 	glutInitWindowSize(WIDTH , HEIGHT);

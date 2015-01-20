@@ -1,12 +1,17 @@
 #ifndef SCREEN_SAVER_H
 	#define SCREEN_SAVER_H
+//C++ includes
+
 #include <GL/glut.h>
 #include <pthread.h>
 #include <math.h>
+#include <vector>
+#include <queue>
 
 using namespace std;
 
 ///Include source code.
+
 #include "equationSolver.cpp" //includes a few functions
 #include "ball.h" //includes ball vector
 #include "table.h" //Includes table*
