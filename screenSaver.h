@@ -16,7 +16,7 @@ static int WIDTH;
 static int HEIGHT;
 static int DELTA_T;
 ///program specific stuff
-static int selectedBall = -1;
+static int selectedBall = 0;
 static int NUM_BALLS;
 
 ///Stuff for ball generation

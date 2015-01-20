@@ -31,14 +31,14 @@ public:
 	float getyCentre() { return position[1] ; }
 	float getzCentre() { return position[2] ; }
 	void setxCentre(float _x) { position[0] = _x ; }
-	void setyCentre(float _y) { position[2] = _y ; }
-	void setzCentre(float _z) { position[3] = _z ; }
+	void setyCentre(float _y) { position[1] = _y ; }
+	void setzCentre(float _z) { position[2] = _z ; }
 	float getxVelocity() { return velocity[0] ; }
 	float getyVelocity() { return velocity[1] ; }
 	float getzVelocity() { return velocity[2] ; }
 	void setxVelocity(float _x) { velocity[0] = _x ; }
-	void setyVelocity(float _y) { velocity[2] = _y ; }
-	void setzVelocity(float _z) { velocity[3] = _z ; }
+	void setyVelocity(float _y) { velocity[1] = _y ; }
+	void setzVelocity(float _z) { velocity[2] = _z ; }
 
 	vector<float> getPosition() { return position; }
 	vector<float> getVelocity() { return velocity; }

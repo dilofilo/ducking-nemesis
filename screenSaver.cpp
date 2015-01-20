@@ -226,30 +226,40 @@ void handleSpecial(int key , int x , int y) {
 
 			float myxVel = ball[selectedBall]->getxVelocity();
 			float myyVel = ball[selectedBall]->getyVelocity();
+			float myzVel = ball[selectedBall]->getzVelocity();
 
+			///Ensure that your balls dont speed
 			myxVel = myxVel*1.1;
+				if(myxVel>MAX_VELOCITY) myxVel = MAX_VELOCITY;
 			myyVel = myyVel*1.1;
+				if(myyVel>MAX_VELOCITY) myyVel = MAX_VELOCITY;
+			myzVel = myzVel*1.1;
+				if(myzVel>MAX_VELOCITY) myzVel = MAX_VELOCITY;
+
 
 			ball[selectedBall]->setxVelocity(myxVel);
 			ball[selectedBall]->setyVelocity(myyVel);
+			ball[selectedBall]->setzVelocity(myzVel);
+
 		}
 	}
 
 	if(key == GLUT_KEY_DOWN) {
 
-		cout<<"Increse the Speed of the selected ball. \n";
+		cout<<"Decrease the Speed of the selected ball. \n";
 		/// Decrease the Speed of the selected ball.
 		if(selectedBall >= 0) {
 			// TODO Modify the velocity.
-
 			float myxVel = ball[selectedBall]->getxVelocity();
 			float myyVel = ball[selectedBall]->getyVelocity();
+			float myzVel = ball[selectedBall]->getyVelocity();
 
 			myxVel = myxVel*0.9;
 			myyVel = myyVel*0.9;
-
+			myzVel = myzVel*0.9;
 			ball[selectedBall]->setxVelocity(myxVel);
 			ball[selectedBall]->setyVelocity(myyVel);
+			ball[selectedBall]->setzVelocity(myzVel);
 		}
 	}
 }
@@ -280,7 +290,9 @@ void display() {
 void timer(int value) {
 	pthread_mutex_lock(&mutexStateVariableUpdate);
 	for(int i = 0; i<NUM_BALLS;i++) {
+			pthread_mutex_lock(&vecMutexBallPthreads[i]);
 			pthread_cond_signal(&vecCondBallUpdateBegin[i]);
+			pthread_mutex_unlock(&vecMutexBallPthreads[i]);
 	}
 	while(numBallUpdates != 0 ) {
 		pthread_cond_wait(&condBallUpdateComplete , &mutexStateVariableUpdate);
