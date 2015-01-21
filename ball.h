@@ -9,6 +9,7 @@ private:
 	vector<float> position;
 	vector<float> velocity;
 	float mass;
+	float myColour[4];
 	float radius;
 	///Visual Parameters (GUI)
 	vector<float> color;
@@ -21,6 +22,12 @@ public:
 		velocity = velo;
 		radius = _radius;
 		color = _color;
+			//myColor needed for lighting
+			myColour[3] = 1.0;
+			myColour[0] =color[0];
+			myColour[1] =color[1];
+			myColour[2] =color[2];
+		color.push_back (1.0); /// For lighting
 		isSelected = false;
 		mass = pow(radius, 3);
 	} //Constructor Done

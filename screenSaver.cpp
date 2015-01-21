@@ -11,6 +11,7 @@ void initLighting(); /// Function to start up the lighting effects.
 
 ///Function that setps up glut's camera and rendering mode etc.
 void ScreenSaver::init() {
+
 	glEnable(GL_DEPTH_TEST); //Ensure that 3d figures are drawn in the correct order.
 	glCullFace(GL_BACK); //Ensures that when a solid is drawn, the back figuyres arent draw. Thats a 2x improvmenet in performance.
 	glEnable(GL_CULL_FACE);
@@ -42,9 +43,9 @@ void initLighting() {
     glEnable(GL_LIGHT0);
 
      // Set lighting intensity and color
-       glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
-     glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
     
     // Set the light position
      glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition); 
@@ -81,7 +82,13 @@ void ScreenSaver::execute(int& argc , char** argv) {
 
 void handleMouse(int button , int state , int x , int y) {
 
-	if(state==GLUT_DOWN) {
+	
+	if( button ==3 || button == 4 ) {
+		/// 3= Scroll UP and 4 = Scroll DOWN
+		///If Z_CAM is greater or lesser than certain thresholds, it won't scroll.
+		
+	}
+	else if((state==GLUT_DOWN) && (button == GLUT_LEFT_BUTTON)) {
 
 		/// Mouse Click Detected!	
 		/// Check the Ball that was clicked and mark it as selected.
@@ -180,6 +187,18 @@ void handleKeyboard(unsigned char key, int x, int y) {
 	else if(key=='q' || key=='Q')  {
 		ROTATE_Z -= 0.5;
 	}
+	else if(key=='f' || key=='F') {
+		if (mainScreenSaver->isFullScreen) {
+			//Reshape window
+			glutReshapeWindow(WIDTH/2.0, HEIGHT/2.0);
+        	glutPositionWindow(50,50);
+			mainScreenSaver->isFullScreen = false;
+		}
+		else {
+			glutFullScreen();
+			mainScreenSaver->isFullScreen = true;
+		}
+	}
 	else if(key=='i' || key=='I') {
 		/// Request to add a ball.
 		cout<<"Request to add a ball \n";
@@ -207,6 +226,7 @@ void handleKeyboard(unsigned char key, int x, int y) {
 void handleSpecial(int key , int x , int y) {
 
 	if(key == GLUT_KEY_RIGHT) {
+		//table->randomizeColor();
 		/// De-Select the current Ball and Select the next ball in the vector.
 		if(selectedBall >= 0) {
 			ball[selectedBall]->setIsSelected(false);
@@ -217,9 +237,10 @@ void handleSpecial(int key , int x , int y) {
 
 	if(key == GLUT_KEY_LEFT) {
 		/// De-Select the current Ball and Select the previous ball in the vactor.
+		//table->randomizeColor();
 		if(selectedBall >= 0) {
 			ball[selectedBall]->setIsSelected(false);
-			selectedBall= (selectedBall-1>0)?(selectedBall-1) : (ball.size()-1);
+			selectedBall= (selectedBall-1 >= 0)?(selectedBall-1) : (ball.size()-1);
 			ball[selectedBall]->setIsSelected(true);
 		}
 	}
@@ -401,7 +422,7 @@ void ScreenSaver::generateBall() {
 		{
 			float tempVariable = rand()%101;
 			tempVariable /= 100.0;
-			vectorColor.push_back(tempVariable);	//generates random velocity
+			vectorColor.push_back(tempVariable);	//generates random Colour
 		}
 
 

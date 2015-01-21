@@ -2,9 +2,28 @@
 	#define TABLE_CPP
 #include "table.h"
 
+void Table::randomizeColor()
+{
+	srand(time(NULL));
+
+		for (int j=0; j<3; j++)
+		{
+			float tempVariable = rand()%101;
+			tempVariable /= 100.0;
+			this->color[j] = tempVariable;	//generates random Colour
+			myColour[j] = color[j];
+		}
+} 
+
 void Table::display() {
-	glColor3f(color[0] , color[1] , color[2]);
 	
+	//Fix lighting issues
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT , myColour );
+ 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE , myColour );
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, myColour );
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
+
+	glColor3f(color[0] , color[1] , color[2] );
 	///Generate line-like things
 	
 	//Edges
@@ -107,7 +126,9 @@ void Table::display() {
 			glVertex3f( corners[4][0] , corners[4][1] , corners[4][2]);
 			glVertex3f( corners[1][0] , corners[1][1] , corners[1][2]);
 		glEnd();
-	/// Dilapidated code for hollow cube
+	
+	
+	// glColor4f(0.203,0.596 ,0.858 , 0);
 	// glBegin(GL_POLYGON);
 	// 	glVertex3f( corners[0][0] , corners[0][1] , corners[0][2]);
 	// 	glVertex3f( corners[1][0] , corners[1][1] , corners[1][2]);

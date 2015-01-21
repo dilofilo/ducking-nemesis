@@ -12,34 +12,42 @@
 #include "equationSolver.cpp"
 
 
-GLfloat qaBlack[] = {0.0, 0.0, 0.0, 1.0}; //Black Color
-GLfloat qaGreen[] = {0.0, 1.0, 0.0, 1.0}; //Green Color
-GLfloat qaWhite[] = {1.0, 1.0, 1.0, 1.0}; //White Color
-GLfloat qaRed[] = {1.0, 0.0, 0.0, 1.0}; //White Color
 
-    // Set lighting intensity and color
-GLfloat qaAmbientLight[]    = {0.2, 0.2, 0.2, 1.0};
-GLfloat qaDiffuseLight[]    = {0.8, 0.8, 0.8, 1.0};
-GLfloat qaSpecularLight[]    = {1.0, 1.0, 1.0, 1.0};
-GLfloat emitLight[] = {0.9, 0.9, 0.9, 0.01};
-GLfloat Noemit[] = {0.0, 0.0, 0.0, 1.0};
-    // Light source position
-GLfloat qaLightPosition[]    = {0.5, 0, -3.5, 0.5}; 
+//Variables for lighting and stuff.
+	GLfloat qaBlack[] = {0.0, 0.0, 0.0, 1.0}; //Black Color
+	GLfloat qaGreen[] = {0.0, 1.0, 0.0, 1.0}; //Green Color
+	GLfloat qaWhite[] = {1.0, 1.0, 1.0, 1.0}; //White Color
+	GLfloat qaRed[] = {1.0, 0.0, 0.0, 1.0}; //White Color
+
+	    // Set lighting intensity and color
+	GLfloat qaAmbientLight[]    = {0.2, 0.2, 0.2, 1.0};
+	GLfloat qaDiffuseLight[]    = {0.8, 0.8, 0.8, 1.0};
+	GLfloat qaSpecularLight[]    = {1.0, 1.0, 1.0, 1.0};
+	GLfloat emitLight[] = {0.9, 0.9, 0.9, 0.01};
+	GLfloat Noemit[] = {0.0, 0.0, 0.0, 1.0};
+	    // Light source position
+	GLfloat qaLightPosition[]    = {0.0, 0.0 , 0.0, 0.5}; 
 
 
 
 void Ball::display() {
 	
-	 // Set material properties
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaGreen);
+	//Set ball's materials
+	if( isSelected ) {
+	    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaWhite);
+	 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaWhite);
+	    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
+    	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
+	} 
+	else {
+		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, myColour);
+	    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, myColour);
+	    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
+	    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
+	}
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaGreen);
+	glColor3f(color[0] , color[1] , color[2] );
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
-
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
-	glColor3f(color[0] , color[1] , color[2]);
-	if( isSelected ) glColor3f(1.0,1.0,1.0);
 	glPushMatrix();
 		glTranslated( position[0] , position[1] , position[2] );
 		if(isSelected) glutSolidSphere( radius , NUM_SLICES , NUM_STACKS);
