@@ -5,8 +5,9 @@
 #include <limits>
 using namespace std;
 
-#define BOUNDING_RADIUS 0.1
+#define BOUNDING_RADIUS 10.0
 
+void initLighting(); /// Function to start up the lighting effects.
 
 ///Function that setps up glut's camera and rendering mode etc.
 void ScreenSaver::init() {
@@ -19,18 +20,36 @@ void ScreenSaver::init() {
 	gluPerspective( 45.0f , //FOV in yz plane.
 			(float)WIDTH/(float)HEIGHT , //ratio
 			1.0f , //Near clipping distance
-			10000000.0f //Far clipping distance.
+			10000.0f //Far clipping distance.
 		);
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
 	///Set background to black.
 	glClearColor( 0.0 , 0.0 , 0.0 , 1.0);
+	///Call the lighting functions.
+	initLighting();
 	glFlush();
 }
 
 void ScreenSaver::exitter() {
 	cout << "BYE BYE BABY HOW DO YOU DO?\n";
 }
+
+void initLighting() {
+
+    // Enable lighting
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+     // Set lighting intensity and color
+       glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
+     glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
+    
+    // Set the light position
+     glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition); 
+}
+
 
 ///Function that starts the entire process.
 void ScreenSaver::execute(int& argc , char** argv) {
