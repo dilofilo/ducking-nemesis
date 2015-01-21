@@ -26,6 +26,7 @@ void Table::display() {
 	glColor3f(color[0] , color[1] , color[2] );
 	///Generate line-like things
 	
+	#ifdef THREE_D
 	//Edges
 		glBegin(GL_LINES);
 			glVertex3f( corners[0][0] , corners[0][1] , corners[0][2]);
@@ -165,6 +166,17 @@ void Table::display() {
 	// 	glVertex3f( corners[1][0] , corners[1][1] , corners[1][2]);
 	// 	glVertex3f( corners[0][0] , corners[0][1] , corners[0][2]);
 	// glEnd();
+
+#else
+	
+	glColor3f (color[0] , color[1], color[2]);
+	glBegin(GL_POLYGON);
+		glVertex3f( corners[0][0] , corners[0][1] , 0.0 );
+		glVertex3f( corners[1][0] , corners[1][1] , 0.0 );
+		glVertex3f( corners[2][0] , corners[2][1] , 0.0 );
+		glVertex3f( corners[3][0] , corners[3][1] , 0.0 );
+    glEnd();
+ #endif
 		
 }
 

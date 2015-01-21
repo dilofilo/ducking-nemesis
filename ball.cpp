@@ -84,11 +84,13 @@ void Ball::handleWallCollision(Table* _table) {
 	else if ((this->getyCentre() + DELTA_T*this->getyVelocity()) <= this->getRadius() + _table->getBottomRightFrontCorner()[1])
 		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
 
+	#ifdef THREE_D
 	 else if ((this->getzCentre() + DELTA_T*this->getzVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[2])
 	 	this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
 
 	 else if ((this->getzCentre() + DELTA_T*this->getzVelocity() ) <= this->getRadius() + _table->getBottomRightBackCorner()[2])
 		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
+	#endif
 }
 
 
