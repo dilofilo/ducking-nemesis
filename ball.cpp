@@ -14,6 +14,7 @@
 
 void Ball::display() {
 	glColor3f(color[0] , color[1] , color[2]);
+	if( isSelected ) glColor3f(1.0,1.0,1.0);
 	glPushMatrix();
 		glTranslated( position[0] , position[1] , position[2] );
 		if(isSelected) glutSolidSphere( radius , NUM_SLICES , NUM_STACKS);
@@ -58,13 +59,14 @@ void Ball::handleWallCollision(Table* _table) {
 }
 
 
-void Ball::handleBallCollision(vector<float>& targetPosition , vector<float>& targetVelocity , float targetMass , float targetRadius) {
+void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targetVelocity , float targetMass , float targetRadius) {
 	//this->setVelocity()
 	
-	vector<float> deltaPos = addVectors( this->getPosition() , ScalarMult(this->getVelocity() , DELTA_T));
+	vector<float> newPos = addVectors( this->getPosition() , ScalarMult(this->getVelocity() , DELTA_T));
+	vector<float> deltaPos = addVectors(newPos , ScalarMult( targetPosition, -1.0));
 	float distSquare = dotProduct(deltaPos , deltaPos);
 	if (distSquare <= pow( this->getRadius() + targetRadius, 2) )
-		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, this->getPosition(), targetPosition, this->getMass(), targetMass).first); /// checks and updates the balls velocity if it collides with some other ball
+		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass).first); /// checks and updates the balls velocity if it collides with some other ball
 	
 }
 

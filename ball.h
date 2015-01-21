@@ -53,6 +53,20 @@ public:
 	void setIsSelected(bool tempVar) { isSelected = tempVar; }
 	void toggleSelect() { isSelected = !isSelected ; }
 
+	///Speed control functions
+	float getSpeed() {
+		float speed = 0;
+		for(int i=0; i<velocity.size() ; i++) {
+			speed += pow(velocity[i] , 2);
+		}
+		return speed;
+	}
+	//Slows down by given ratio
+	void slowDown(float ratio) {
+		for(int i=0; i<velocity.size() ; i++)
+			velocity[i] /= ratio ;
+	}
+
 	void display();
 	void reshape(int w, int h , int oldWidth , int oldHeight);
 	
@@ -61,7 +75,7 @@ public:
 	void displace(float dt); //displaces ball
 	void handleWallCollision(Table* _table);
 	///Receives the collision handle and updates itself accordingly.
-	void handleBallCollision(vector<float>& targetPosition , vector<float>& targetVelocity , float targetMass , float targetRadius);
+	void handleBallCollision(vector<float> targetPosition , vector<float> targetVelocity , float targetMass , float targetRadius);
 };
 
 vector<Ball*> ball; //CHANGE BALL TO BALLS YADAYADYAYDAYDYAD

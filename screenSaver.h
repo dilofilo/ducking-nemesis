@@ -75,7 +75,9 @@ public:
 
 		delete table;
 	}
-	
+	///Functional functions
+	void togglePaused() {isPaused = !isPaused;}
+
 	///Initializes the table and the balls.
 	void init();
 	void generateTable();

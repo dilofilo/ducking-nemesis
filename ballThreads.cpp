@@ -127,6 +127,12 @@ void* ballThread(void* args) {
 				
 				pthread_mutex_unlock(&vecMutexMailBox[ID]);
 			}
+
+			float ratio = ball[ID]->getSpeed() / MAX_VELOCITY;
+			if ( ratio >= 1.0) {
+				ball[ID]->slowDown(ratio);
+			}
+
 			ball[ID]->displace(DELTA_T);
 			//Updates have ended
 		}

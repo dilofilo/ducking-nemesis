@@ -5,6 +5,8 @@
 #include <limits>
 using namespace std;
 
+#define BOUNDING_RADIUS 0.1
+
 
 ///Function that setps up glut's camera and rendering mode etc.
 void ScreenSaver::init() {
@@ -82,29 +84,28 @@ void handleMouse(int button , int state , int x , int y) {
 		cout<< m_start_x<<"\t"<<m_start_y<<"\t"<<m_start_z<<"\n";
 		cout<< m_end_x<<"\t"<<m_end_y<<"\t"<<m_end_z<<"\n";
 
-		float maxZCentre = numeric_limits<int>::min();
+		float maxZCentre = numeric_limits<float>::min(); // MIN_INT
 		
 		float myDenominator = pow((m_start_x - m_end_x),2) + pow((m_start_y - m_end_y),2) + pow((m_start_z - m_end_z),2);
 
 			for(int counter=0;counter<ball.size();counter++)
 			{
-				
+				///Cross product magic.
 				/// Check whether this was the ball clicked
-
-				float myRadius = ball[counter]->getRadius();
+				float myRadius = ball[counter]->getRadius() + BOUNDING_RADIUS;
 				float myxCentre = ball[counter]->getxCentre();
 				float myyCentre = ball[counter]->getyCentre();
 				float myzCentre = ball[counter]->getzCentre();
 				
 				bool checkIntersecting = false;
 
-				float diff1_x = myxCentre - m_start_x;
-				float diff1_y = myyCentre - m_start_y;
-				float diff1_z = myzCentre - m_start_z;
+				float diff1_x = m_end_x - m_start_x;
+				float diff1_y = m_end_y - m_start_y;
+				float diff1_z = m_end_z - m_start_z;
 
-				float diff2_x = myxCentre - m_end_x;
-				float diff2_y = myyCentre - m_end_y;
-				float diff2_z = myzCentre - m_end_z;
+				float diff2_x = -(myxCentre - m_start_x);
+				float diff2_y = -(myyCentre - m_start_y);
+				float diff2_z = -(myzCentre - m_start_z);
 
 				float matX = diff1_y*diff2_z - diff2_y*diff1_z;
 				float matY = diff1_x*diff2_z - diff1_z*diff2_x;
@@ -144,55 +145,43 @@ void handleKeyboard(unsigned char key, int x, int y) {
 
 	if(key=='w' || key=='W') {
 		ROTATE_X += 0.5;
-	}
-	
-	if(key=='s' || key=='S') {
+	}	
+	else if(key=='s' || key=='S') {
 		ROTATE_X -= 0.5;
-	}
-	
-	if(key=='d' || key=='D') {
+	}	
+	else if(key=='d' || key=='D') {
 		ROTATE_Y += 0.5;
-	}
-	
-	if(key=='a' || key=='A') {
+	}	
+	else if(key=='a' || key=='A') {
 		ROTATE_Y -= 0.5;
-	}
-	
-	if(key=='e' || key=='E')  {
+	}	
+	else if(key=='e' || key=='E')  {
 		ROTATE_Z += 0.5;
-	}
-	
-	if(key=='q' || key=='Q')  {
+	}	
+	else if(key=='q' || key=='Q')  {
 		ROTATE_Z -= 0.5;
 	}
-
-
-	if(key=='i' || key=='I') {
+	else if(key=='i' || key=='I') {
 		/// Request to add a ball.
 		cout<<"Request to add a ball \n";
 		
 		/// TODO
 	}
-
-	if(key=='r' || key=='R') {
+	else if(key=='r' || key=='R') {
 		/// Request to delete a ball.
 		cout<<"Request to delete a ball \n";
 
 		/// TODO
 	}
-
-	if(int(key) == 27 ) {
+	else if(int(key) == 27 ) {
 		/// Esc pressed, Request to exit the Window. 
 		cout<<"Request to exit the Window \n";
 
 		/// TODO cALL EXITTER().
 	}
-
-	if(int(key) == 32) {
+	else if(int(key) == 32) {
 		/// Spacebar pressed, Request to pause.
-		cout<<"Request to pause \n";
-	
-		/// TODO SET IS PAUSED TO TRUE/FALSE.
+		mainScreenSaver->togglePaused();
 	}
 }
 
@@ -288,21 +277,21 @@ void display() {
 }
 
 void timer(int value) {
-	pthread_mutex_lock(&mutexStateVariableUpdate);
-	for(int i = 0; i<NUM_BALLS;i++) {
-			pthread_mutex_lock(&vecMutexBallPthreads[i]);
-			pthread_cond_signal(&vecCondBallUpdateBegin[i]);
-			pthread_mutex_unlock(&vecMutexBallPthreads[i]);
+	if(! (mainScreenSaver->isPaused) ) {
+		pthread_mutex_lock(&mutexStateVariableUpdate);
+		for(int i = 0; i<NUM_BALLS;i++) {
+				pthread_cond_signal(&vecCondBallUpdateBegin[i]);
+		}
+		while(numBallUpdates != 0 ) {
+			pthread_cond_wait(&condBallUpdateComplete , &mutexStateVariableUpdate);
+		}
+		numBallUpdates = NUM_BALLS;
+		for(int i = 0; i<NUM_BALLS;i++) {
+			vecShouldBallUpdate[i] = true;
+		}
+		pthread_mutex_unlock(&mutexStateVariableUpdate);
+		//End of locked section
 	}
-	while(numBallUpdates != 0 ) {
-		pthread_cond_wait(&condBallUpdateComplete , &mutexStateVariableUpdate);
-	}
-	numBallUpdates = NUM_BALLS;
-	for(int i = 0; i<NUM_BALLS;i++) {
-		vecShouldBallUpdate[i] = true;
-	}
-	pthread_mutex_unlock(&mutexStateVariableUpdate);
-	//End of locked section
 	glutTimerFunc(DELTA_T , timer , 0);
 	glutPostRedisplay();
 }

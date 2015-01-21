@@ -80,7 +80,7 @@ vector<float> ScalarMult(vector<float> vec , float x) {
 
 
 ///Function that accepts parameters of two balls and returns the new velocities.
-pair< vector<float> , vector<float> > solveBallCollision( const vector<float>& velocityA , const vector<float>& velocityB , const vector<float>& posA , const vector<float>& posB , float massA , float massB , float e = 1.0) {
+pair< vector<float> , vector<float> > solveBallCollision( vector<float> velocityA , vector<float> velocityB , vector<float> posA , vector<float> posB , float massA , float massB , float e = 1.0) {
 	pair< vector<float>  , vector<float> > velocities;
 	velocities.first.resize(velocityA.size());
 	velocities.second.resize(velocityB.size());
