@@ -21,19 +21,12 @@ struct BallDetailsMessage {
 	int receiverID;
 	int senderID;
 	std::vector<float> senderVelocity;
-	std::vector<float> senderNextPosition;
+	std::vector<float> senderPosition;
 	float senderMass;
 	float senderRadius;
 };
 ///Mailbox for each thread.
 std::vector< std::queue<BallDetailsMessage> > mailBox;
-
-///Signals for adding and deleting balls
-	pthread_cond_t condBallAddBegin;
-	pthread_cond_t condBallAddEnd;
-	pthread_cond_t condBallDeleteBegin;
-	pthread_cond_t condBallDeleteEnd;
-
 
 ///All the variables needed for threading
 	
@@ -99,7 +92,7 @@ void* ballThread(void* args) {
 
 			///Updates begin
 			//All the updating goes here.
-			ball[ID]->handleWallCollision(table);
+			//ball[ID]->handleWallCollision(table);
 			
 			///Generate N messages, and push them all.
 			for(int i=0; i<NUM_BALLS; i++) {
@@ -109,7 +102,7 @@ void* ballThread(void* args) {
 						msg.senderRadius = myRadius;
 						msg.senderMass = myMass;
 						msg.senderVelocity = ball[ID]->getVelocity();
-						msg.senderNextPosition = addVectors( ball[ID]->getPosition() , ScalarMult(ball[ID]->getVelocity() , DELTA_T));
+						msg.senderPosition = ball[ID]->getPosition(); //addVectors( ball[ID]->getPosition() , ScalarMult(ball[ID]->getVelocity() , DELTA_T));
 						msg.receiverID = i;
 						sendMessage(msg); //Also signals.
 				} //Message created
@@ -130,7 +123,7 @@ void* ballThread(void* args) {
 					BallDetailsMessage msg = mailBox[ID].front();
 						mailBox[ID].pop();
 					///BallToBall Collisions
-					ball[ID]->handleBallCollision(msg.senderNextPosition , msg.senderVelocity , msg.senderMass , msg.senderRadius); //Changes the velocity,not the 
+					ball[ID]->handleBallCollision(msg.senderPosition , msg.senderVelocity , msg.senderMass , msg.senderRadius); //Changes the velocity,not the 
 				
 				pthread_mutex_unlock(&vecMutexMailBox[ID]);
 			}
@@ -139,7 +132,7 @@ void* ballThread(void* args) {
 			if ( ratio >= 1.0) {
 				ball[ID]->slowDown(ratio);
 			}
-
+			ball[ID]->handleWallCollision(table);
 			ball[ID]->displace(DELTA_T);
 			//Updates have ended
 		}

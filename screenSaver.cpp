@@ -271,9 +271,12 @@ void handleSpecial(int key , int x , int y) {
 				if(myxVel>MAX_VELOCITY) myxVel = MAX_VELOCITY;
 			myyVel = myyVel*1.1;
 				if(myyVel>MAX_VELOCITY) myyVel = MAX_VELOCITY;
+			#ifdef THREE_D
 			myzVel = myzVel*1.1;
 				if(myzVel>MAX_VELOCITY) myzVel = MAX_VELOCITY;
-
+			#else
+			myzVel = 0.0f;
+			#endif
 
 			ball[selectedBall]->setxVelocity(myxVel);
 			ball[selectedBall]->setyVelocity(myyVel);
@@ -294,7 +297,11 @@ void handleSpecial(int key , int x , int y) {
 
 			myxVel = myxVel*0.9;
 			myyVel = myyVel*0.9;
-			myzVel = myzVel*0.9;
+			#ifdef THREE_D
+				myzVel = myzVel*0.9;
+			#else
+			myzVel = 0.0f;
+			#endif
 			ball[selectedBall]->setxVelocity(myxVel);
 			ball[selectedBall]->setyVelocity(myyVel);
 			ball[selectedBall]->setzVelocity(myzVel);
@@ -326,8 +333,8 @@ void display() {
 }
 
 void timer(int value) {
-	if (mainScreenSaver->getIndicatorAddBall()) mainScreenSaver->addBall();
-	if (mainScreenSaver->getIndicatorDeleteBall()) mainScreenSaver->deleteBall();
+	while(mainScreenSaver->getIndicatorAddBall()) mainScreenSaver->addBall();
+	while(mainScreenSaver->getIndicatorDeleteBall()) mainScreenSaver->deleteBall();
 
 	///Code for updating stuff.
 	if(! (mainScreenSaver->getIsPaused()) ) {
@@ -477,7 +484,7 @@ void ScreenSaver::generateBall() {
 }
 
 void ScreenSaver::addBall()
-{ /*
+{ 
 	//Ball Generation Code.
 		#ifdef THREE_D
 			int numDim=3;
@@ -485,8 +492,8 @@ void ScreenSaver::addBall()
 			int numDim=2;
 		#endif
 
-	int created = MAX_TRY;
-	while( created-- ) {
+	bool created = false;
+	while( !created ) {
 		//Random Position
 		vector<float> initPos;
 		for (int j=0; j<numDim; j++) {
@@ -511,16 +518,13 @@ void ScreenSaver::addBall()
 
 			bool validPosition = true;
 			//Checking for overlaps
-			while( validPosition ) {
-				for(int i =0 ; i< NUM_BALLS ; i++) {
-
-					//Check for overlap. If overlap, set validPosition = false; created ; break.
-
-				}
+			for(int i =0 ; i< NUM_BALLS ; i++) {
+				//Check for overlap. If overlap, set validPosition = false; created ; break.
 			}
+			
 			if( validPosition ) {
 				//If a ball was amde succesfully.
-				created = 0;
+				created = true;
 					vector<float> initVelocity;
 					for (int j=0; j<numDim; j++) {
 						float tempVar = rand()%101;
@@ -543,18 +547,45 @@ void ScreenSaver::addBall()
 
 				Ball* newBall = new Ball(initPos , initVelocity , newRadius , vectorColor );
 				ball.push_back(newBall);
-				//Handle threads.
-				pthread_t newBallThread;
-				vecBallThread.push_back(newBallThread);
-				//Handle Threading Stuff.
+				//Handle threads. And all the associated jazz.
+				
+					mailBox.resize(mailBox.size() + 1); //Increase size by 1 . 
+
+					pthread_t newBallThread;
+					vecBallThread.push_back(newBallThread);
+		
+					
+					pthread_mutex_t threadMutex;
+					vecMutexBallPthreads.push_back(threadMutex);
+					pthread_mutex_init(&vecMutexBallPthreads[vecMutexBallPthreads.size() - 1] , NULL);
+				
+
+					vecShouldBallUpdate.push_back(false);
+
+					pthread_cond_t newCondUpdateBegin;
+					vecCondBallUpdateBegin.push_back(newCondUpdateBegin);
+					pthread_cond_init(&vecCondBallUpdateBegin[vecCondBallUpdateBegin.size() - 1] , NULL);
+
+					pthread_mutex_t newMailBoxMutex;
+					vecMutexMailBox.push_back(newMailBoxMutex);
+					pthread_mutex_init(&vecMutexMailBox[vecMutexMailBox.size() - 1] , NULL);
+
+					pthread_cond_t newMailBoxCond;
+					vecCondMailBoxReceived.push_back(newMailBoxCond);
+					pthread_cond_init(&vecCondMailBoxReceived[vecCondMailBoxReceived.size() - 1] , NULL);
+
+
 				int newID = NUM_BALLS ; //Temporary.
 				BallThreadParameters* args = new BallThreadParameters(newID);
-				pthread_create(newBallThread , NULL , ballThread , (void*)args);
-				
+				//Create only after all initializations have occured
+				int rc = pthread_create(&newBallThread , NULL , ballThread , (void*)args);
+				if(rc) cout<< "HOLY MOTHER OF GOD . FATALITY \n";
 				NUM_BALLS++;
 			}
 
-		}	*/	
+		}
+		cout << "BALL CREATED \n";
+		this->toggleIndicatorAddBall();
 }
 
 void ScreenSaver::deleteBall() {

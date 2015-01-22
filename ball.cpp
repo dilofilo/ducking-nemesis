@@ -3,8 +3,8 @@
 
 
 #define PI 3.14159265359
-#define NUM_SLICES 50
-#define NUM_STACKS 50
+#define NUM_SLICES 100
+#define NUM_STACKS 100
 #define OFFSET 0.001
 #include "ball.h"
 #include <ncurses.h>
@@ -96,22 +96,26 @@ void Ball::handleWallCollision(Table* _table) {
 	#endif
 }
 
-#define preciseDeltaT 0.25
+#define preciseDeltaT (DELTA_T/20.0)
 
 void Ball::pullApart(vector<float> targetPosition, vector<float> targetVelocity, float targetRadius)
 {
 	vector<float> tempVelocity=this->getVelocity();
 	vector<float> tempPos=this->getPosition();
-	targetPosition=addVectors(targetPosition,ScalarMult(targetVelocity,-1.0*DELTA_T));
-	vector<float> deltaPos = addVectors(tempPos , ScalarMult( targetPosition, -1.0));
-	float distSquare = dotProduct(deltaPos , deltaPos);
+	//	targetPosition=addVectors(targetPosition,ScalarMult(targetVelocity,-1.0*DELTA_T));
+	// vector<float> deltaPos = addVectors(tempPos , ScalarMult( targetPosition, -1.0));
 	
+	
+	vector<float> deltaPos = addVectors( tempPos , ScalarMult(targetPosition , -1.0)); 
+	float distSquare = dotProduct(deltaPos , deltaPos);
+	float deltaPosMagnitude = sqrt( dotProduct( deltaPos , deltaPos) );
+	deltaPos = ScalarMult( deltaPos, 1.0 / deltaPosMagnitude );
+
 	while(distSquare <= pow( this->getRadius() + targetRadius, 2) ) {
-		tempPos=addVectors(tempPos, ScalarMult(tempVelocity,-1.0*preciseDeltaT));
-		targetPosition=addVectors(targetPosition, ScalarMult(targetVelocity,-1.0*preciseDeltaT));
+		tempPos=addVectors(tempPos, ScalarMult(deltaPos,1.0*preciseDeltaT));
+		targetPosition=addVectors(targetPosition, ScalarMult(deltaPos,-1.0*preciseDeltaT));
 		deltaPos = addVectors(tempPos , ScalarMult( targetPosition, -1.0));
 		distSquare = dotProduct(deltaPos , deltaPos);
-	
 	}
 	this->setPosition(tempPos);
 }
@@ -120,14 +124,15 @@ void Ball::pullApart(vector<float> targetPosition, vector<float> targetVelocity,
 
 void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targetVelocity , float targetMass , float targetRadius) {
 	//this->setVelocity()
-	this->pullApart(targetPosition, targetVelocity, targetRadius);
-	vector<float> newPos = addVectors( this->getPosition() , ScalarMult(this->getVelocity() , DELTA_T));
+	vector<float> newPos = this->getPosition(); //addVectors( this->getPosition() , ScalarMult(this->getVelocity() , DELTA_T));
 	vector<float> deltaPos = addVectors(newPos , ScalarMult( targetPosition, -1.0));
 	float distSquare = dotProduct(deltaPos , deltaPos);
-	if (distSquare <= pow( this->getRadius() + targetRadius, 2) ) {
-		
+	if (distSquare <= pow( this->getRadius() + targetRadius, 2) ) {		
 		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass).first); /// checks and updates the balls velocity if it collides with some other ball
 	}
+	this->pullApart(targetPosition, targetVelocity, targetRadius);
+
+
 }
 
 
