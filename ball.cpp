@@ -7,7 +7,7 @@
 #define NUM_STACKS 50
 #define OFFSET 0.001
 #include "ball.h"
-
+#include <ncurses.h>
 #include <unistd.h>
 #include "equationSolver.cpp"
 
@@ -46,7 +46,7 @@ void Ball::display() {
 	    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
 	}
 
-	glColor3f(color[0] , color[1] , color[2] );
+	glColor4f(color[0] , color[1] , color[2] , 1.0);
 
 	glPushMatrix();
 		glTranslated( position[0] , position[1] , position[2] );
@@ -57,12 +57,13 @@ void Ball::display() {
 }
 
 void Ball::reshape(int w , int h , int oldWidth , int oldHeight ) {
-	//Manipulate variables here
-	// if ((w/oldWidth >= 1.0 ) && (h/oldHeight >= 1.0) ) {
-	// 	radius *= ( (w/oldWidth) < (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
-	// }else {
-	// 	radius *= ( (w/oldWidth) > (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
-	// }	
+
+/*	Manipulate variables here
+	if ((w/oldWidth >= 1.0 ) && (h/oldHeight >= 1.0) ) {
+		radius *= ( (w/oldWidth) < (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
+	}else {
+		radius *= ( (w/oldWidth) > (h/oldHeight) ? (h/oldHeight) : (w/oldWidth) );
+	}*/	
 }
 
 void Ball::displace(float dt) {
@@ -72,7 +73,7 @@ void Ball::displace(float dt) {
 }
 
 void Ball::handleWallCollision(Table* _table) {
-	if ((this->getxCentre() + DELTA_T*this->getxVelocity() + this->getRadius()) >=_table->getBottomRightFrontCorner()[0])
+	if ((this->getxCentre() + DELTA_T*this->getxVelocity() + this->getRadius()) >=_table->getBottomRightFrontCorner()[0]) {
 		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with right wall
 
 	if ((this->getxCentre() + DELTA_T*this->getxVelocity()) <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0]))
@@ -82,29 +83,35 @@ void Ball::handleWallCollision(Table* _table) {
 		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with top wall
 
 	if ((this->getyCentre() + DELTA_T*this->getyVelocity()) <= this->getRadius() + _table->getBottomRightFrontCorner()[1])
-		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
 
+	}
+	if ((this->getxCentre() + DELTA_T*this->getxVelocity()) <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0])) {
+		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with left wall
+	}
+	if ((this->getyCentre() + DELTA_T*this->getyVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[1]) {
+		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with top wall
+	}
+	if ((this->getyCentre() + DELTA_T*this->getyVelocity()) <= this->getRadius() + _table->getBottomRightFrontCorner()[1]) {
+>>>>>>> 0d5a01be4ae7ef746d3ff85ac01dfb16f1f0dadb
+		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
+	}
 	#ifdef THREE_D
+<<<<<<< HEAD
 	if ((this->getzCentre() + DELTA_T*this->getzVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[2])
 	 	this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
 
 	if ((this->getzCentre() + DELTA_T*this->getzVelocity() ) <= this->getRadius() + _table->getBottomRightBackCorner()[2])
+=======
+	if ((this->getzCentre() + DELTA_T*this->getzVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[2]) {
+	 	this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
+	 }
+	if ((this->getzCentre() + DELTA_T*this->getzVelocity() ) <= this->getRadius() + _table->getBottomRightBackCorner()[2]) {
+>>>>>>> 0d5a01be4ae7ef746d3ff85ac01dfb16f1f0dadb
 		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
+	}
 	#endif
 }
 
-#define preciseDeltaT 0.25
-
-void Ball::pullApart(vector<float> targetPosition, vector<float> targetVelocity, float targetRadius)
-{
-	float tempVelocity=this->getVelocity;
-	vector<float> tempPos=this->getPosition;
-	while (distance(1,2)<(r1+r2))
-	{
-		ball1.centre=ball1.centre-preciseDeltaT*v1;
-		ball2.centre=ball2.centre-preciseDeltaT*v2;
-	}
-}
 
 
 void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targetVelocity , float targetMass , float targetRadius) {
@@ -113,9 +120,10 @@ void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targ
 	vector<float> newPos = addVectors( this->getPosition() , ScalarMult(this->getVelocity() , DELTA_T));
 	vector<float> deltaPos = addVectors(newPos , ScalarMult( targetPosition, -1.0));
 	float distSquare = dotProduct(deltaPos , deltaPos);
-	if (distSquare <= pow( this->getRadius() + targetRadius, 2) )
+	if (distSquare <= pow( this->getRadius() + targetRadius, 2) ) {
+		
 		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass).first); /// checks and updates the balls velocity if it collides with some other ball
-	
+	}
 }
 
 

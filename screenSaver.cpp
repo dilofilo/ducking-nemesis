@@ -3,6 +3,7 @@
 
 #include "screenSaver.h"
 #include <limits>
+ 
 using namespace std;
 
 #define BOUNDING_RADIUS 10.0
@@ -25,10 +26,12 @@ void ScreenSaver::init() {
 		);
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
+
 	///Set background to black.
-	glClearColor( 0.0 , 0.0 , 0.0 , 1.0);
+	glClearColor( 0.0 , 0.0 , 0.0 , 0.0);
 	///Call the lighting functions.
 	initLighting();
+
 	glFlush();
 }
 
@@ -61,7 +64,7 @@ void ScreenSaver::execute(int& argc , char** argv) {
 	
 
 	glutInit(&argc,argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(WIDTH , HEIGHT);
 	glutInitWindowPosition(50,50);
 	glutCreateWindow(" Bouncy ball ");
@@ -82,11 +85,12 @@ void ScreenSaver::execute(int& argc , char** argv) {
 
 void handleMouse(int button , int state , int x , int y) {
 
-	
-	if( button ==3 || button == 4 ) {
-		/// 3= Scroll UP and 4 = Scroll DOWN
-		///If Z_CAM is greater or lesser than certain thresholds, it won't scroll.
+	/// 3= Scroll UP and 4 = Scroll DOWN
+	if( button ==3) {		
+		if (Z_CAM - Z_DISPLACE > 3.0*BOUND) Z_DISPLACE += 0.5;
 		
+	} else if (button == 4) {
+		if (Z_CAM - Z_DISPLACE < 10.0*BOUND) Z_DISPLACE -= 0.5;
 	}
 	else if((state==GLUT_DOWN) && (button == GLUT_LEFT_BUTTON)) {
 
@@ -191,28 +195,30 @@ void handleKeyboard(unsigned char key, int x, int y) {
 	else 
 		#endif
 	if(key=='f' || key=='F') {
-		if (mainScreenSaver->isFullScreen) {
+		if (mainScreenSaver->getIsFullScreen()) {
 			//Reshape window
-			glutReshapeWindow(640, 480);
+			glutReshapeWindow(640 , 480);
         	glutPositionWindow(50,50);
-			mainScreenSaver->isFullScreen = false;
+			mainScreenSaver->toggleFullScreen(); //Sets it to false
 		}
 		else {
 			glutFullScreen();
-			mainScreenSaver->isFullScreen = true;
+			mainScreenSaver->toggleFullScreen(); //Sets it to true;
 		}
 	}
 	else if(key=='i' || key=='I') {
 		/// Request to add a ball.
-		cout<<"Request to add a ball \n";
 		
-		/// TODO
+		cout<<"Request to add a ball \n";
+		mainScreenSaver -> toggleIndicatorAddBall();
+
 	}
 	else if(key=='r' || key=='R') {
 		/// Request to delete a ball.
 		cout<<"Request to delete a ball \n";
 
-		/// TODO
+		mainScreenSaver-> toggleIndicatorDeleteBall();
+		
 	}
 	else if(int(key) == 27 ) {
 		/// Esc pressed, Request to exit the Window. 
@@ -299,28 +305,32 @@ void handleSpecial(int key , int x , int y) {
 
 void display() {
   	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	glLoadIdentity();
-  	
-
 
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
 	glPushMatrix();
 	gluLookAt( X_CAM , Y_CAM , Z_CAM , X_CAM_FOCAL , Y_CAM_FOCAL , Z_CAM_FOCAL , UP_X , UP_Y , UP_Z); // Focus camera at 0,0,0. ZCAMERA defined in main.cpp
 	glPushMatrix();
+  		glTranslated(0.0,0.0,Z_DISPLACE);
 	  	glRotatef( ROTATE_X, 1.0, 0.0, 0.0);
   		glRotatef( ROTATE_Y, 0.0, 1.0, 0.0);
   		glRotatef(ROTATE_Z , 0.0, 0.0, 1.0);
 
-	table->display();
+  	///Render balls first because they are opaque
 	for(int i=0; i<NUM_BALLS; i++) ball[i]->display();
-	
+	table->display();
+
 	glPopMatrix();
 	glPopMatrix();
 	glutSwapBuffers();
 }
 
 void timer(int value) {
-	if(! (mainScreenSaver->isPaused) ) {
+	if (mainScreenSaver->getIndicatorAddBall()) mainScreenSaver->addBall();
+	if (mainScreenSaver->getIndicatorDeleteBall()) mainScreenSaver->deleteBall();
+
+	///Code for updating stuff.
+	if(! (mainScreenSaver->getIsPaused()) ) {
 		pthread_mutex_lock(&mutexStateVariableUpdate);
 		for(int i = 0; i<NUM_BALLS;i++) {
 				pthread_cond_signal(&vecCondBallUpdateBegin[i]);
@@ -402,7 +412,7 @@ void ScreenSaver::generateBall() {
 			}
 
 			#ifndef THREE_D
-				float tempVar=0.0;
+				float tempVar=2.0;
 				initPos.push_back(tempVar);
 			#endif	
 		
@@ -465,4 +475,89 @@ void ScreenSaver::generateBall() {
 		ball.push_back(newBall);																		//updates ball vector
 	}	
 }
+
+void ScreenSaver::addBall()
+{
+	//Ball Generation Code.
+		#ifdef THREE_D
+			int numDim=3;
+		#else
+			int numDim=2;
+		#endif
+
+	int created = MAX_TRY;
+	while( created-- ) {
+		//Random Position
+		vector<float> initPos;
+		for (int j=0; j<numDim; j++) {
+			float tempVar = rand()%101;
+			tempVar /= 100;
+			tempVar -= 0.5;
+			tempVar *= 2.0*(BOUND - MAX_RADIUS);
+			initPos.push_back(tempVar);	//generates random velocity
+		}
+
+		#ifndef THREE_D
+			float tempVar=0.0;
+			initPos.push_back(tempVar);
+		#endif	
+			//ASSERT : position is ready
+
+			//Radius Generation
+			float newRadius = rand()%101;						//random radius	
+			newRadius /= 100.0;
+			newRadius *= MAX_RADIUS/2.0;
+			newRadius += MAX_RADIUS/2.0; //Minimum radius
+
+			bool validPosition = true;
+			//Checking for overlaps
+			while( validPosition ) {
+				for(int i =0 ; i< NUM_BALLS ; i++) {
+
+					//Check for overlap. If overlap, set validPosition = false; created ; break.
+
+				}
+			}
+			if( validPosition ) {
+				//If a ball was amde succesfully.
+				created = 0;
+					vector<float> initVelocity;
+					for (int j=0; j<numDim; j++) {
+						float tempVar = rand()%101;
+						tempVar /= 100.0;
+						tempVar -= 0.5;
+						tempVar *= 2.0;
+						tempVar *= MAX_VELOCITY/2.0;
+						tempVar += MAX_VELOCITY/2.0;
+						initVelocity.push_back(tempVar);	//generates random velocity
+					}
+
+					vector<float> vectorColor;
+					for (int j=0; j<3; j++)
+					{
+						float tempVariable = rand()%101;
+						tempVariable /= 100.0;
+						vectorColor.push_back(tempVariable);	//generates random Colour
+					}
+
+
+				Ball* newBall = new Ball(initPos , initVelocity , newRadius , vectorColor );
+				ball.push_back(newBall);
+				//Handle threads.
+				pthread_t newBallThread;
+				vecBallThread.push_back(newBallThread);
+				int newID = NUM_BALLS ; //Temporary.
+				pthread_create(newBallThread , NULL , , )
+				NUM_BALLS++;
+			}
+
+		}		
+}
+
+void ScreenSaver::deleteBall() {
+	this->toggleIndicatorDeleteBall();
+	NUM_BALLS--;
+	//Remove the last ball.
+}
+
 #endif
