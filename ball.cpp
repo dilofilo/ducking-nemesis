@@ -75,22 +75,35 @@ void Ball::handleWallCollision(Table* _table) {
 	if ((this->getxCentre() + DELTA_T*this->getxVelocity() + this->getRadius()) >=_table->getBottomRightFrontCorner()[0])
 		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with right wall
 
-	else if ((this->getxCentre() + DELTA_T*this->getxVelocity()) <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0]))
+	if ((this->getxCentre() + DELTA_T*this->getxVelocity()) <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0]))
 		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with left wall
 
-	else if ((this->getyCentre() + DELTA_T*this->getyVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[1])
+	if ((this->getyCentre() + DELTA_T*this->getyVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[1])
 		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with top wall
 
-	else if ((this->getyCentre() + DELTA_T*this->getyVelocity()) <= this->getRadius() + _table->getBottomRightFrontCorner()[1])
+	if ((this->getyCentre() + DELTA_T*this->getyVelocity()) <= this->getRadius() + _table->getBottomRightFrontCorner()[1])
 		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
 
 	#ifdef THREE_D
-	 else if ((this->getzCentre() + DELTA_T*this->getzVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[2])
+	if ((this->getzCentre() + DELTA_T*this->getzVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[2])
 	 	this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
 
-	 else if ((this->getzCentre() + DELTA_T*this->getzVelocity() ) <= this->getRadius() + _table->getBottomRightBackCorner()[2])
+	if ((this->getzCentre() + DELTA_T*this->getzVelocity() ) <= this->getRadius() + _table->getBottomRightBackCorner()[2])
 		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
 	#endif
+}
+
+#define preciseDeltaT 0.25
+
+void Ball::pullApart(vector<float> targetPosition, vector<float> targetVelocity, float targetRadius)
+{
+	float tempVelocity=this->getVelocity;
+	vector<float> tempPos=this->getPosition;
+	while (distance(1,2)<(r1+r2))
+	{
+		ball1.centre=ball1.centre-preciseDeltaT*v1;
+		ball2.centre=ball2.centre-preciseDeltaT*v2;
+	}
 }
 
 
@@ -104,5 +117,7 @@ void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targ
 		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass).first); /// checks and updates the balls velocity if it collides with some other ball
 	
 }
+
+
 
 #endif
