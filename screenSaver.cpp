@@ -477,7 +477,7 @@ void ScreenSaver::generateBall() {
 }
 
 void ScreenSaver::addBall()
-{
+{ /*
 	//Ball Generation Code.
 		#ifdef THREE_D
 			int numDim=3;
@@ -554,7 +554,7 @@ void ScreenSaver::addBall()
 				NUM_BALLS++;
 			}
 
-		}		
+		}	*/	
 }
 
 void ScreenSaver::deleteBall() {

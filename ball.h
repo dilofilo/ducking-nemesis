@@ -81,6 +81,8 @@ public:
 
 	void displace(float dt); //displaces ball
 	void handleWallCollision(Table* _table);
+	void pullApart(vector<float> targetPosition, vector<float> targetVelocity, float targetRadius);
+
 	///Receives the collision handle and updates itself accordingly.
 	void handleBallCollision(vector<float> targetPosition , vector<float> targetVelocity , float targetMass , float targetRadius);
 };
