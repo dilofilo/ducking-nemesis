@@ -43,6 +43,8 @@ static float ROTATE_Y = 0.0;
 static float ROTATE_Z = 0.0;
 static float Z_DISPLACE = 0.0;
 
+#define MAX_TRY 1000 //Used for ball generation wali cheez
+
 ///Include source code.
 
 #include "equationSolver.cpp" //includes a few functions
@@ -54,20 +56,24 @@ static float Z_DISPLACE = 0.0;
 
 
 class ScreenSaver {
-
-public:
 	///Variables
 	bool isPaused;
 	bool isFullScreen;
+	bool indicatorAddBall;
+	bool indicatorDeleteBall;
+public:
 	
 	///Constructors and Destructors
 	ScreenSaver(int numBalls) {
 		isPaused = false;
 		isFullScreen = false;
+		indicatorAddBall = false;
+		indicatorDeleteBall = false;
 		NUM_BALLS = numBalls; //Static variable set.
 		WIDTH = 640;
 		HEIGHT = 480;
 		DELTA_T = 3.0; //Arbitrary Number.
+
 	}
 	~ScreenSaver() {
 		for(int i = 0; i< NUM_BALLS ; i++) 
@@ -76,7 +82,15 @@ public:
 		delete table;
 	}
 	///Functional functions
-	void togglePaused() {isPaused = !isPaused;}
+	bool getIsPaused() { return isPaused; }
+	void togglePaused() { isPaused = !isPaused; }
+	bool getIsFullScreen() { return isFullScreen ; }
+	void toggleFullScreen() { isFullScreen = !isFullScreen; }
+
+	bool getIndicatorAddBall() { return indicatorAddBall; }
+	bool getIndicatorDeleteBall() { return indicatorDeleteBall; }
+	void toggleIndicatorAddBall() { indicatorAddBall = !indicatorAddBall ; }
+	void toggleIndicatorDeleteBall() { indicatorDeleteBall = !indicatorDeleteBall ;}
 
 	///Initializes the table and the balls.
 	void init();
@@ -89,6 +103,10 @@ public:
 	///Called to start.
 	void execute(int& argc , char** argv);
 
+	// Number of Balls modification functions
+	void addBall();
+	void deleteBall();
+
 	//End of Class
 };
 
@@ -98,6 +116,7 @@ public:
 	void display();
 	void reshape(int w , int h);
 	void timer(int value);
+
 
 	///User I/O function
 	void handleMouse(int button , int state , int x , int y);
