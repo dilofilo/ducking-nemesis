@@ -546,8 +546,11 @@ void ScreenSaver::addBall()
 				//Handle threads.
 				pthread_t newBallThread;
 				vecBallThread.push_back(newBallThread);
+				//Handle Threading Stuff.
 				int newID = NUM_BALLS ; //Temporary.
-				pthread_create(newBallThread , NULL , , )
+				BallThreadParameters* args = new BallThreadParameters(newID);
+				pthread_create(newBallThread , NULL , ballThread , (void*)args);
+				
 				NUM_BALLS++;
 			}
 
