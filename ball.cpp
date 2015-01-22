@@ -46,7 +46,7 @@ void Ball::display() {
 	    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
 	}
 
-	glColor4f(color[0] , color[1] , color[2]);
+	glColor4f(color[0] , color[1] , color[2] , 1.0);
 
 	glPushMatrix();
 		glTranslated( position[0] , position[1] , position[2] );
@@ -84,11 +84,13 @@ void Ball::handleWallCollision(Table* _table) {
 	else if ((this->getyCentre() + DELTA_T*this->getyVelocity()) <= this->getRadius() + _table->getBottomRightFrontCorner()[1])
 		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
 
+	#ifdef THREE_D
 	 else if ((this->getzCentre() + DELTA_T*this->getzVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[2])
 	 	this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
 
 	 else if ((this->getzCentre() + DELTA_T*this->getzVelocity() ) <= this->getRadius() + _table->getBottomRightBackCorner()[2])
 		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
+	#endif
 }
 
 
@@ -98,8 +100,10 @@ void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targ
 	vector<float> newPos = addVectors( this->getPosition() , ScalarMult(this->getVelocity() , DELTA_T));
 	vector<float> deltaPos = addVectors(newPos , ScalarMult( targetPosition, -1.0));
 	float distSquare = dotProduct(deltaPos , deltaPos);
-	if (distSquare <= pow( this->getRadius() + targetRadius, 2) )
+	if (distSquare <= pow( this->getRadius() + targetRadius, 2) ) {
+		
 		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass).first); /// checks and updates the balls velocity if it collides with some other ball
+	}
 	
 }
 

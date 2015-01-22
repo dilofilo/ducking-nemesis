@@ -12,7 +12,7 @@ void initLighting(); /// Function to start up the lighting effects.
 ///Function that setps up glut's camera and rendering mode etc.
 void ScreenSaver::init() {
 
-	glEnable(GL_DEPTH_TEST); //Ensure that 3d figures are drawn in the correct order.
+	glEnable(GL_DEPTH_TEST); //Ensure that THREE_D figures are drawn in the correct order.
 	glCullFace(GL_BACK); //Ensures that when a solid is drawn, the back figuyres arent draw. Thats a 2x improvmenet in performance.
 	glEnable(GL_CULL_FACE);
 	//R*R*R space to camera space setup.
@@ -25,6 +25,7 @@ void ScreenSaver::init() {
 		);
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
+
 	///Set background to black.
 	glClearColor( 0.0 , 0.0 , 0.0 , 0.0);
 	///Call the lighting functions.
@@ -62,7 +63,7 @@ void ScreenSaver::execute(int& argc , char** argv) {
 	
 
 	glutInit(&argc,argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_ALPHA);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(WIDTH , HEIGHT);
 	glutInitWindowPosition(50,50);
 	glutCreateWindow(" Bouncy ball ");
@@ -171,6 +172,7 @@ void handleMouse(int button , int state , int x , int y) {
 
 void handleKeyboard(unsigned char key, int x, int y) {
 
+	#ifdef THREE_D
 	if(key=='w' || key=='W') {
 		ROTATE_X += 0.5;
 	}	
@@ -189,7 +191,9 @@ void handleKeyboard(unsigned char key, int x, int y) {
 	else if(key=='q' || key=='Q')  {
 		ROTATE_Z -= 0.5;
 	}
-	else if(key=='f' || key=='F') {
+	else 
+		#endif
+	if(key=='f' || key=='F') {
 		if (mainScreenSaver->isFullScreen) {
 			//Reshape window
 			glutReshapeWindow(640 , 480);
@@ -308,9 +312,11 @@ void display() {
 	  	glRotatef( ROTATE_X, 1.0, 0.0, 0.0);
   		glRotatef( ROTATE_Y, 0.0, 1.0, 0.0);
   		glRotatef(ROTATE_Z , 0.0, 0.0, 1.0);
-	table->display();
+
+  	///Render balls first because they are opaque
 	for(int i=0; i<NUM_BALLS; i++) ball[i]->display();
-	
+	table->display();
+
 	glPopMatrix();
 	glPopMatrix();
 	glutSwapBuffers();
@@ -358,14 +364,29 @@ void reshape(int w , int h) {
 
 ///Function that initializes the table* (included in table.h)
 	///Default values for bounding box.
-	vector<vector<float> > _corners{{-BOUND,-BOUND,BOUND},{BOUND,-BOUND,BOUND},{BOUND,BOUND,BOUND},{-BOUND,BOUND,BOUND},{-BOUND,-BOUND,-BOUND},{BOUND,-BOUND,-BOUND},{BOUND,BOUND,-BOUND},{-BOUND,BOUND,-BOUND}};		//generates box  
+	#ifdef THREE_D
+		vector<vector<float> > _cornersTHREE_D{{-BOUND,-BOUND,BOUND},{BOUND,-BOUND,BOUND},{BOUND,BOUND,BOUND},{-BOUND,BOUND,BOUND},{-BOUND,-BOUND,-BOUND},{BOUND,-BOUND,-BOUND},{BOUND,BOUND,-BOUND},{-BOUND,BOUND,-BOUND}};		//generates box  
+	#else
+		vector<vector<float> > _cornersTWO_D{{-BOUND,-BOUND,0.0},{BOUND,-BOUND,0.0},{BOUND,BOUND,0.0},{-BOUND,BOUND,0.0}};
+	#endif
 void ScreenSaver::generateTable() {
-	table = new Table(_corners);							//generates new ball
+	#ifdef THREE_D
+		table = new Table(_cornersTHREE_D);							//generates new ball
+	#else
+		table = new Table(_cornersTWO_D);
+	#endif 
+
 }
 
 ///Function that initializes n ball randomly.
 void ScreenSaver::generateBall() {
 	srand(time(NULL));
+
+	#ifdef THREE_D
+		int numDim=3;
+	#else
+		int numDim=2;
+	#endif
 	
 	vector<pair<vector<float>,float> > positionRadius;		//stores all positions and radii
 	for (int i=0;i<NUM_BALLS;i++)
@@ -373,14 +394,20 @@ void ScreenSaver::generateBall() {
 		bool created=false;									//checks if ball is created
 		while(!created)
 		{				
-			vector<float> initPos;							
-			for (int j=0; j<3; j++) {
+			vector<float> initPos;
+
+			for (int j=0; j<numDim; j++) {
 				float tempVar = rand()%101;
 				tempVar /= 100;
 				tempVar -= 0.5;
 				tempVar *= 2.0*(BOUND - MAX_RADIUS);
 				initPos.push_back(tempVar);	//generates random velocity
 			}
+
+			#ifndef THREE_D
+				float tempVar=2.0;
+				initPos.push_back(tempVar);
+			#endif	
 		
 			float newRadius = rand()%101;						//random radius	
 			newRadius /= 100.0;
@@ -390,11 +417,14 @@ void ScreenSaver::generateBall() {
 			bool validPos=true;									
 			for (int k=0; k<positionRadius.size(); k++)
 			{
+				
 				if (pow((initPos[0]-positionRadius[k].first[0]),2) + pow((initPos[1]-positionRadius[k].first[1]),2) + pow((initPos[2]-positionRadius[k].first[2]),2)<= pow(newRadius + positionRadius[k].second,2))
 					{
 						validPos=false;																	//checks if position is valid
 						break;
-					}																		
+					}	
+			
+
 			}	
 			if (validPos==true)
 			{
@@ -407,7 +437,7 @@ void ScreenSaver::generateBall() {
 	for (int i=0; i<NUM_BALLS; i++)
 	{
 		vector<float> initVelocity;
-		for (int j=0; j<3; j++) {
+		for (int j=0; j<numDim; j++) {
 			float tempVar = rand()%101;
 			tempVar /= 100.0;
 			tempVar -= 0.5;
@@ -417,6 +447,12 @@ void ScreenSaver::generateBall() {
 			initVelocity.push_back(tempVar);	//generates random velocity
 		}
 
+		#ifndef THREE_D
+			float tempVar=0.0;
+			initVelocity.push_back(tempVar);
+		#endif
+
+
 		vector<float> vectorColor;
 		for (int j=0; j<3; j++)
 		{
@@ -425,8 +461,9 @@ void ScreenSaver::generateBall() {
 			vectorColor.push_back(tempVariable);	//generates random Colour
 		}
 
-
-		cout << "ball" << i << "made " << positionRadius[i].second << "\t" << initVelocity[0] <<"\t" << initVelocity[1] << "\t" << initVelocity[2] << "\n";									
+		
+		cout << "ball" << i << "made " << positionRadius[i].second << "\t" << initVelocity[0] <<"\t" << initVelocity[1] << "\t" << initVelocity[2] << "\n";
+	 									
 		Ball* newBall= new Ball( positionRadius[i].first , initVelocity, positionRadius[i].second , vectorColor );	//creates new ball with parameters
 		ball.push_back(newBall);																		//updates ball vector
 	}	

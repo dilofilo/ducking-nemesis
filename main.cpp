@@ -1,4 +1,5 @@
 //Things needed to convert string to int
+#define THREE_D
 #include <GL/glut.h>
 #include <pthread.h>
 #include <math.h>
@@ -11,6 +12,8 @@
 
 #include "screenSaver.h"
 #include "screenSaver.cpp"
+
+
 
 int main(int argc, char** argv) {
 	//Convert string to int.
