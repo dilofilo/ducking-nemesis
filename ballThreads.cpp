@@ -28,6 +28,13 @@ struct BallDetailsMessage {
 ///Mailbox for each thread.
 std::vector< std::queue<BallDetailsMessage> > mailBox;
 
+///Signals for adding and deleting balls
+	pthread_cond_t condBallAddBegin;
+	pthread_cond_t condBallAddEnd;
+	pthread_cond_t condBallDeleteBegin;
+	pthread_cond_t condBallDeleteEnd;
+
+
 ///All the variables needed for threading
 	
 	//Unnecessary lock for each thread
