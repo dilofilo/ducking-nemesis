@@ -23,7 +23,7 @@ void Table::display() {
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, myColour );
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
 
-	glColor3f(color[0] , color[1] , color[2] );
+	glColor4f(color[0] , color[1] , color[2] );
 	///Generate line-like things
 	
 	//Edges
@@ -128,7 +128,7 @@ void Table::display() {
 		glEnd();
 	
 	
-	// glColor4f(0.203,0.596 ,0.858 , 0);
+	// glColor4f(0.203,0.596 ,0.858 , 0.5);
 	// glBegin(GL_POLYGON);
 	// 	glVertex3f( corners[0][0] , corners[0][1] , corners[0][2]);
 	// 	glVertex3f( corners[1][0] , corners[1][1] , corners[1][2]);

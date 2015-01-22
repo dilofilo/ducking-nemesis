@@ -41,7 +41,7 @@ static float UP_Z = 0.0;
 static float ROTATE_X = 0.0;
 static float ROTATE_Y = 0.0;
 static float ROTATE_Z = 0.0;
-
+static float Z_DISPLACE = 0.0;
 
 ///Include source code.
 

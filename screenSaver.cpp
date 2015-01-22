@@ -26,9 +26,10 @@ void ScreenSaver::init() {
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
 	///Set background to black.
-	glClearColor( 0.0 , 0.0 , 0.0 , 1.0);
+	glClearColor( 0.0 , 0.0 , 0.0 , 0.0);
 	///Call the lighting functions.
 	initLighting();
+
 	glFlush();
 }
 
@@ -61,7 +62,7 @@ void ScreenSaver::execute(int& argc , char** argv) {
 	
 
 	glutInit(&argc,argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH );
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_ALPHA);
 	glutInitWindowSize(WIDTH , HEIGHT);
 	glutInitWindowPosition(50,50);
 	glutCreateWindow(" Bouncy ball ");
@@ -82,11 +83,12 @@ void ScreenSaver::execute(int& argc , char** argv) {
 
 void handleMouse(int button , int state , int x , int y) {
 
-	
-	if( button ==3 || button == 4 ) {
-		/// 3= Scroll UP and 4 = Scroll DOWN
-		///If Z_CAM is greater or lesser than certain thresholds, it won't scroll.
+	/// 3= Scroll UP and 4 = Scroll DOWN
+	if( button ==3) {		
+		if (Z_CAM - Z_DISPLACE > 3.0*BOUND) Z_DISPLACE += 0.5;
 		
+	} else if (button == 4) {
+		if (Z_CAM - Z_DISPLACE < 10.0*BOUND) Z_DISPLACE -= 0.5;
 	}
 	else if((state==GLUT_DOWN) && (button == GLUT_LEFT_BUTTON)) {
 
@@ -190,7 +192,7 @@ void handleKeyboard(unsigned char key, int x, int y) {
 	else if(key=='f' || key=='F') {
 		if (mainScreenSaver->isFullScreen) {
 			//Reshape window
-			glutReshapeWindow(WIDTH/2.0, HEIGHT/2.0);
+			glutReshapeWindow(640 , 480);
         	glutPositionWindow(50,50);
 			mainScreenSaver->isFullScreen = false;
 		}
@@ -296,18 +298,16 @@ void handleSpecial(int key , int x , int y) {
 
 void display() {
   	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	glLoadIdentity();
-  	
-
 
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
 	glPushMatrix();
 	gluLookAt( X_CAM , Y_CAM , Z_CAM , X_CAM_FOCAL , Y_CAM_FOCAL , Z_CAM_FOCAL , UP_X , UP_Y , UP_Z); // Focus camera at 0,0,0. ZCAMERA defined in main.cpp
 	glPushMatrix();
+  		glTranslated(0.0,0.0,Z_DISPLACE);
 	  	glRotatef( ROTATE_X, 1.0, 0.0, 0.0);
   		glRotatef( ROTATE_Y, 0.0, 1.0, 0.0);
   		glRotatef(ROTATE_Z , 0.0, 0.0, 1.0);
-
 	table->display();
 	for(int i=0; i<NUM_BALLS; i++) ball[i]->display();
 	

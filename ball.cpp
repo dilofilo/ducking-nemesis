@@ -46,7 +46,7 @@ void Ball::display() {
 	    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
 	}
 
-	glColor3f(color[0] , color[1] , color[2] );
+	glColor4f(color[0] , color[1] , color[2]);
 
 	glPushMatrix();
 		glTranslated( position[0] , position[1] , position[2] );
