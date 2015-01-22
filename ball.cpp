@@ -74,24 +74,31 @@ void Ball::displace(float dt) {
 
 void Ball::handleWallCollision(Table* _table) {
 	if ((this->getxCentre() + DELTA_T*this->getxVelocity() + this->getRadius()) >=_table->getBottomRightFrontCorner()[0]) {
-		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with right wall
+		if(this->getxVelocity()>=0)
+			this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with right wall
+
 		}
-	if ((this->getxCentre() + DELTA_T*this->getxVelocity()) <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0])) {
-		this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with left wall
+	if ((this->getxCentre() + DELTA_T*this->getxVelocity()  ) <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0])) {
+		if(this->getxVelocity()<=0)
+			this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with left wall
 	}
 
-	if ((this->getyCentre() + DELTA_T*this->getyVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[1]) {
-		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with top wall
+	if ((this->getyCentre() + DELTA_T*this->getyVelocity()  + this->getRadius()) >= _table->getTopRightFrontCorner()[1]) {
+		if(this->getyVelocity()>=0)
+			this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with top wall
 	}
-	if ((this->getyCentre() + DELTA_T*this->getyVelocity()) <= this->getRadius() + _table->getBottomRightFrontCorner()[1]) {
-		this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
+	if ((this->getyCentre() + DELTA_T*this->getyVelocity()  ) <= this->getRadius() + _table->getBottomRightFrontCorner()[1]) {
+		if(this->getyVelocity()<=0)
+			this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
 	}
 	#ifdef THREE_D
-	if ((this->getzCentre() + DELTA_T*this->getzVelocity() + this->getRadius()) >= _table->getTopRightFrontCorner()[2]) {
-	 	this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
+	if ((this->getzCentre() + DELTA_T*this->getzVelocity()  + this->getRadius()) >= _table->getTopRightFrontCorner()[2]) {
+	 	if(this->getzVelocity()>=0)
+	 		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
 	 }
-	if ((this->getzCentre() + DELTA_T*this->getzVelocity() ) <= this->getRadius() + _table->getBottomRightBackCorner()[2]) {
-		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
+	if ((this->getzCentre() + DELTA_T*this->getzVelocity()  ) <= this->getRadius() + _table->getBottomRightBackCorner()[2]) {
+		if(this->getzVelocity()<=0)
+			this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
 	}
 	#endif
 }
@@ -110,8 +117,20 @@ void Ball::pullApart(vector<float> targetPosition, vector<float> targetVelocity,
 	float distSquare = dotProduct(deltaPos , deltaPos);
 	float deltaPosMagnitude = sqrt( dotProduct( deltaPos , deltaPos) );
 	deltaPos = ScalarMult( deltaPos, 1.0 / deltaPosMagnitude );
+	bool checkWall1=false;
+	bool checkWall2=false;
+
 
 	while(distSquare <= pow( this->getRadius() + targetRadius, 2) ) {
+		// if (!validate(tempPos))
+		// {
+		// 	checkWall1=true;
+		// }
+		// if (!validate(targetPosition))
+		// {
+		// 	checkwall2=true;
+		// }
+
 		tempPos=addVectors(tempPos, ScalarMult(deltaPos,1.0*preciseDeltaT));
 		targetPosition=addVectors(targetPosition, ScalarMult(deltaPos,-1.0*preciseDeltaT));
 		deltaPos = addVectors(tempPos , ScalarMult( targetPosition, -1.0));

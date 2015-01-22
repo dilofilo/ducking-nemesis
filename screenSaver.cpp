@@ -223,7 +223,7 @@ void handleKeyboard(unsigned char key, int x, int y) {
 	else if(int(key) == 27 ) {
 		/// Esc pressed, Request to exit the Window. 
 		cout<<"Request to exit the Window \n";
-
+		mainScreenSaver->exitter();
 		/// TODO cALL EXITTER().
 	}
 	else if(int(key) == 32) {
@@ -333,8 +333,14 @@ void display() {
 }
 
 void timer(int value) {
-	while(mainScreenSaver->getIndicatorAddBall()) mainScreenSaver->addBall();
-	while(mainScreenSaver->getIndicatorDeleteBall()) mainScreenSaver->deleteBall();
+	while(mainScreenSaver->getIndicatorAddBall()) {
+		mainScreenSaver->addBall();
+		cout << "TRY\n";
+	}
+	while(mainScreenSaver->getIndicatorDeleteBall()) {
+		mainScreenSaver->deleteBall();
+		cout << "TRY\n";
+	}
 
 	///Code for updating stuff.
 	if(! (mainScreenSaver->getIsPaused()) ) {
@@ -506,7 +512,7 @@ void ScreenSaver::addBall()
 
 		#ifndef THREE_D
 			float tempVar=0.0;
-			initPos.push_back(tempVar);
+			initPos.push_back(tempVar); //Pushes back z=0.0 if not 3d.
 		#endif	
 			//ASSERT : position is ready
 
@@ -520,6 +526,7 @@ void ScreenSaver::addBall()
 			//Checking for overlaps
 			for(int i =0 ; i< NUM_BALLS ; i++) {
 				//Check for overlap. If overlap, set validPosition = false; created ; break.
+				
 			}
 			
 			if( validPosition ) {
@@ -578,14 +585,17 @@ void ScreenSaver::addBall()
 				int newID = NUM_BALLS ; //Temporary.
 				BallThreadParameters* args = new BallThreadParameters(newID);
 				//Create only after all initializations have occured
-				int rc = pthread_create(&newBallThread , NULL , ballThread , (void*)args);
+				int rc = pthread_create(&vecBallThread[vecBallThread.size() - 1] , NULL , ballThread , (void*)args);
 				if(rc) cout<< "HOLY MOTHER OF GOD . FATALITY \n";
+			
+				cout << "Updating NUM_BALLS " << NUM_BALLS << "\n";
 				NUM_BALLS++;
-			}
 
+			}
 		}
-		cout << "BALL CREATED \n";
 		this->toggleIndicatorAddBall();
+		cout << "BALL CREATED " << this->getIndicatorAddBall() << "\n";
+		return;
 }
 
 void ScreenSaver::deleteBall() {

@@ -23,7 +23,7 @@ static int NUM_BALLS;
 ///Stuff for ball generation
 static float MAX_RADIUS = 1.0;
 static float BOUND = 10.0;
-static float MAX_VELOCITY = 0.03;
+static float MAX_VELOCITY = 0.05;
 
 ///Camera related variables
 static float X_CAM = 0.0;
