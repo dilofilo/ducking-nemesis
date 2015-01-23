@@ -61,7 +61,7 @@ static float Z_DISPLACE = 0.0;
 #include "ballThreads.cpp" //includes mailboxes and threading stuff.
 #include "ball.cpp" 
 #include "table.cpp"
-
+//#include "skybox.cpp"
 
 class ScreenSaver {
 	///Variables

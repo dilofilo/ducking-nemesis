@@ -2,6 +2,9 @@
 	#define BALL_H
 using namespace std;
 vector<float> vecZero{ 0.0 , 0.0 , 0.0};
+static float gravity = 0.0;
+#define GRAVITY 0.001;
+static float coefficientRestitution = 0.8;
 
 class Ball {
 private:
@@ -14,7 +17,7 @@ private:
 	///Visual Parameters (GUI)
 	vector<float> color;
 	bool isSelected;
-
+	int timeSinceCollision;
 public:
 
 	Ball(vector<float> pos = vecZero , vector<float> velo = vecZero , float _radius = 0.1 , vector<float> _color = vecZero) {

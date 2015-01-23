@@ -41,11 +41,11 @@ void displaySkybox() {
 	glBegin(GL_QUADS);
 		glTexCoord2d( 0.0 ,  0.0);
 		glVertex3f( _cornersTHREE_D[0][0] , _cornersTHREE_D[0][1] , -2*_cornersTHREE_D[0][2]);
-		glTexCoord2d( 0.0 ,  0.0);
+		glTexCoord2d( 1.0 ,  0.0);
 		glVertex3f( _cornersTHREE_D[1][0] , _cornersTHREE_D[1][1] , -2*_cornersTHREE_D[1][2]);
-		glTexCoord2d( 0.0 ,  0.0);
+		glTexCoord2d( 1.0 ,  1.0);
 		glVertex3f( _cornersTHREE_D[2][0] , _cornersTHREE_D[2][1] , -2*_cornersTHREE_D[2][2]);
-		glTexCoord2d( 0.0 ,  0.0);
+		glTexCoord2d( 0.0 ,  1.0);
 		glVertex3f( _cornersTHREE_D[3][0] , _cornersTHREE_D[3][1] , -2*_cornersTHREE_D[3][2]);
 	glEnd();
 	

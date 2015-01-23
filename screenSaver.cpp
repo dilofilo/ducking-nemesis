@@ -31,6 +31,7 @@ void ScreenSaver::init() {
 	glClearColor( 0.0 , 0.0 , 0.0 , 0.0);
 	///Call the lighting functions.
 	initLighting();
+	//initSkybox();
 
 	glFlush();
 }
@@ -43,6 +44,7 @@ void ScreenSaver::exitter() {
 		//delete ball[i];
 		
 	}
+	//killSkybox();
 	//delete table;
 	//Handle ball, table etc?
 	glutDestroyWindow(windowID);
@@ -221,14 +223,17 @@ void handleKeyboard(unsigned char key, int x, int y) {
 		/// Request to add a ball.
 		
 		cout<<"Request to add a ball \n";
-		mainScreenSaver -> toggleIndicatorAddBall();
+		if (mainScreenSaver-> getIsPaused()) {
+			mainScreenSaver -> toggleIndicatorAddBall();
+		}
 
 	}
 	else if(key=='r' || key=='R') {
 		/// Request to delete a ball.
 		cout<<"Request to delete a ball \n";
-
-		mainScreenSaver-> toggleIndicatorDeleteBall();
+		if (mainScreenSaver->getIsPaused()) {
+			mainScreenSaver-> toggleIndicatorDeleteBall();
+		}
 		
 	}
 	else if(int(key) == 27 ) {
@@ -240,6 +245,12 @@ void handleKeyboard(unsigned char key, int x, int y) {
 	else if(int(key) == 32) {
 		/// Spacebar pressed, Request to pause.
 		mainScreenSaver->togglePaused();
+	}
+	else if( key== 'g' || key == 'G' ) {
+		if ( gravity >0.0 )
+			gravity =0.0f;
+		else 
+			gravity = GRAVITY;
 	}
 }
 
@@ -339,7 +350,7 @@ void display() {
 	for(int i=0; i<NUM_BALLS; i++) ball[i]->display();
 	glDisable(GL_LIGHTING);
 	table->display();
-
+	//displaySkybox();
 	glPopMatrix();
 	glPopMatrix();
 	glutSwapBuffers();
@@ -366,9 +377,16 @@ void timer(int value) {
 		}
 		pthread_mutex_unlock(&mutexStateVariableUpdate);
 
-		if(mainScreenSaver->getIndicatorAddBall())
-			mainScreenSaver->addBall();
 		//End of locked section
+	}
+	else { //Only works when paused.
+		if(mainScreenSaver->getIndicatorAddBall()) {
+			mainScreenSaver->addBall(); 
+		}
+		if(mainScreenSaver->getIndicatorDeleteBall()) {
+			mainScreenSaver->deleteBall();
+		}
+
 	}
 	if( mainScreenSaver->isAlive()) { //Avoids poting redisplay after quit.
 		glutTimerFunc(DELTA_T , timer , 0);
@@ -414,13 +432,11 @@ void ScreenSaver::generateTable() {
 ///Function that initializes n ball randomly.
 void ScreenSaver::generateBall() {
 	srand(time(NULL));
-
 	#ifdef THREE_D
 		int numDim=3;
 	#else
 		int numDim=2;
 	#endif
-	
 	vector<pair<vector<float>,float> > positionRadius;		//stores all positions and radii
 	for (int i=0;i<NUM_BALLS;i++)
 	{
@@ -428,7 +444,6 @@ void ScreenSaver::generateBall() {
 		while(!created)
 		{				
 			vector<float> initPos;
-
 			for (int j=0; j<numDim; j++) {
 				float tempVar = rand()%101;
 				tempVar /= 100;
@@ -436,37 +451,30 @@ void ScreenSaver::generateBall() {
 				tempVar *= 2.0*(BOUND - MAX_RADIUS);
 				initPos.push_back(tempVar);	//generates random velocity
 			}
-
 			#ifndef THREE_D
 				float tempVar=2.0;
 				initPos.push_back(tempVar);
 			#endif	
-		
 			float newRadius = rand()%101;						//random radius	
-			newRadius /= 100.0;
-			newRadius *= MAX_RADIUS/2.0;
-			newRadius += MAX_RADIUS/2.0;
-			
-			bool validPos=true;									
+				newRadius /= 100.0;
+				newRadius *= MAX_RADIUS/2.0;
+				newRadius += MAX_RADIUS/2.0;
+				bool validPos=true;									
 			for (int k=0; k<positionRadius.size(); k++)
 			{
-				
 				if (pow((initPos[0]-positionRadius[k].first[0]),2) + pow((initPos[1]-positionRadius[k].first[1]),2) + pow((initPos[2]-positionRadius[k].first[2]),2)<= pow(newRadius + positionRadius[k].second,2))
 					{
 						validPos=false;																	//checks if position is valid
 						break;
 					}	
-			
-
 			}	
 			if (validPos==true)
 			{
 				positionRadius.push_back(pair<vector<float>,float> ( initPos, newRadius ));				//updates vectors of position and radii
 				created=true;
 			}
-		}
-		
-	} 
+		}		
+	}
 	for (int i=0; i<NUM_BALLS; i++)
 	{
 		vector<float> initVelocity;
@@ -479,13 +487,10 @@ void ScreenSaver::generateBall() {
 			tempVar += MAX_VELOCITY/2.0;
 			initVelocity.push_back(tempVar);	//generates random velocity
 		}
-
 		#ifndef THREE_D
 			float tempVar=0.0;
 			initVelocity.push_back(tempVar);
 		#endif
-
-
 		vector<float> vectorColor;
 		for (int j=0; j<3; j++)
 		{
@@ -493,10 +498,7 @@ void ScreenSaver::generateBall() {
 			tempVariable /= 100.0;
 			vectorColor.push_back(tempVariable);	//generates random Colour
 		}
-
-		
 		cout << "ball" << i << "made " << positionRadius[i].second << "\t" << initVelocity[0] <<"\t" << initVelocity[1] << "\t" << initVelocity[2] << "\n";
-	 									
 		Ball* newBall= new Ball( positionRadius[i].first , initVelocity, positionRadius[i].second , vectorColor );	//creates new ball with parameters
 		ball.push_back(newBall);																		//updates ball vector
 	}	
@@ -504,6 +506,8 @@ void ScreenSaver::generateBall() {
 
 void ScreenSaver::addBall()
 {
+	///Generate the balls outisde the box and send them flying in
+
 	//Ball Generation Code.
 	vector<float> initPos(3);
 		initPos[0] = 0.0;
@@ -511,13 +515,12 @@ void ScreenSaver::addBall()
 		initPos[2] = 0.0;
 		//ASSERT : position is ready
 		//Radius Generation
-		float newRadius = rand()%101;						//random radius	
+	float newRadius = rand()%101;						//random radius	
 		newRadius /= 100.0;
 		newRadius *= MAX_RADIUS/2.0;
 		newRadius += MAX_RADIUS/2.0; //Minimum radius
-		//Generate the balls outisde the box and send them flying in
-		//If a ball was amde succesfully.
-		vector<float> initVelocity(3);
+	//Velocity
+	vector<float> initVelocity(3);
 			initVelocity[1] = -1.0*MAX_VELOCITY/4.0;
 			initVelocity[0]= 0.0;
 			initVelocity[2] = 0.0;		

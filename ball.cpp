@@ -3,8 +3,8 @@
 
 
 #define PI 3.14159265359
-#define NUM_SLICES 50
-#define NUM_STACKS 50
+static int NUM_SLICES = 40;
+static int NUM_STACKS = 40;
 #define OFFSET 0.001
 #include "ball.h"
 #include <unistd.h>
@@ -25,7 +25,7 @@
 	GLfloat emitLight[] = {0.9, 0.9, 0.9, 0.01};
 	GLfloat Noemit[] = {0.0, 0.0, 0.0, 1.0};
 	    // Light source position
-	GLfloat qaLightPosition[]    = {0.0, 0.0 , 0.0, 0.5}; 
+	GLfloat qaLightPosition[]    = {0.0, 0.0 , (GLfloat)2.0*BOUND, 0.5}; 
 
 
 
@@ -69,35 +69,37 @@ void Ball::displace(float dt) {
 	this->setxCentre(this->getxCentre() + dt*this->getxVelocity());
 	this->setyCentre(this->getyCentre() + dt*this->getyVelocity());
 	this->setzCentre(this->getzCentre() + dt*this->getzVelocity());
+
+	this->setyVelocity(this->getyVelocity() - DELTA_T*gravity);
 }
 
 void Ball::handleWallCollision(Table* _table) {
 	if ((this->getxCentre() + DELTA_T*this->getxVelocity() + this->getRadius()) >=_table->getBottomRightFrontCorner()[0]) {
 		if(this->getxVelocity()>=0)
-			this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with right wall
+			this->setxVelocity(-1.0* coefficientRestitution * this->getxVelocity());										//checks for collision with right wall
 
 		}
 	if ((this->getxCentre() + DELTA_T*this->getxVelocity()  ) <= (this->getRadius()+_table->getBottomLeftFrontCorner()[0])) {
 		if(this->getxVelocity()<=0)
-			this->setxVelocity(-1 * this->getxVelocity());										//checks for collision with left wall
+			this->setxVelocity(-1.0* coefficientRestitution * this->getxVelocity());										//checks for collision with left wall
 	}
 
 	if ((this->getyCentre() + DELTA_T*this->getyVelocity()  + this->getRadius()) >= _table->getTopRightFrontCorner()[1]) {
 		if(this->getyVelocity()>=0)
-			this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with top wall
+			this->setyVelocity(-1.0* coefficientRestitution * this->getyVelocity());										//checks for collision with top wall
 	}
 	if ((this->getyCentre() + DELTA_T*this->getyVelocity()  ) <= this->getRadius() + _table->getBottomRightFrontCorner()[1]) {
 		if(this->getyVelocity()<=0)
-			this->setyVelocity(-1 * this->getyVelocity());										//checks for collision with bottom wall
+			this->setyVelocity(-1.0* coefficientRestitution * this->getyVelocity());										//checks for collision with bottom wall
 	}
 	#ifdef THREE_D
 	if ((this->getzCentre() + DELTA_T*this->getzVelocity()  + this->getRadius()) >= _table->getTopRightFrontCorner()[2]) {
 	 	if(this->getzVelocity()>=0)
-	 		this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with front wall
+	 		this->setzVelocity(-1.0* coefficientRestitution * this->getzVelocity());										//checks for collision with front wall
 	 }
 	if ((this->getzCentre() + DELTA_T*this->getzVelocity()  ) <= this->getRadius() + _table->getBottomRightBackCorner()[2]) {
 		if(this->getzVelocity()<=0)
-			this->setzVelocity(-1 * this->getzVelocity());										//checks for collision with back wall
+			this->setzVelocity(-1.0* coefficientRestitution * this->getzVelocity());										//checks for collision with back wall
 	}
 	#endif
 }
@@ -148,8 +150,11 @@ void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targ
 	vector<float> deltaPos = addVectors(newPos , ScalarMult(targetPosition , -1.0));
 	float speedAlongNormal = dotProduct(deltaPos , addVectors(targetVelocity , ScalarMult(this->getVelocity() , -1.0)));
 	float distSquare = dotProduct(deltaPos , deltaPos);
-	if( (distSquare <= pow( this->getRadius() + targetRadius , 2)) &&( speedAlongNormal >= 0.0) )
-		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass).first); /// checks and updates the balls velocity if it collides with some other ball
+	if( (distSquare <= pow( this->getRadius() + targetRadius , 2)) &&( speedAlongNormal >= 0.0) ) {
+		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass , coefficientRestitution).first); /// checks and updates the balls velocity if it collides with some other ball
+		this-> timeSinceCollision = 100; //Display changes according to timeSinceCollision
+	}
+
 }
 
 
