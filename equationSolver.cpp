@@ -5,8 +5,6 @@
 #include <math.h>
 #include <vector>
 #include <queue>
-#include <time.h>
-#include <iostream>
 
 ///deprecated
 float* old_solveBallCollision(float vXBallA , float vYBallA , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
@@ -97,8 +95,8 @@ pair< vector<float> , vector<float> > solveBallCollision( vector<float> velocity
 	//velocities.first = addVectors(velocityA, ScalarMult(deltaPos, (dotProduct(deltaPos,(ScalarMult(addVectors(velocityB,ScalarMult(velocityA,-1.0)),2*massB/(massA+massB)))))));
 	//velocities.second = addVectors(velocityA, ScalarMult(deltaPos, (dotProduct(deltaPos,(ScalarMult(addVectors(velocityA,ScalarMult(velocityB,-1.0)),2*massA/(massA+massB)))))));
 
-	velocities.first = addVectors( velocityA , ScalarMult( deltaPos, ( dotProduct(deltaPos, addVectors( ScalarMult(velocityB,massB*(1.0+e)/(massA+massB)), ScalarMult(velocityA,-1.0*(1.0+e)*massB/massA+massB))))));  
-	velocities.second = addVectors( velocityB , ScalarMult( deltaPos, ( dotProduct(deltaPos, addVectors( ScalarMult(velocityA,massA*(1.0+e)/(massA+massB)), ScalarMult(velocityB,-1.0*(1.0+e)*massA/massA+massB))))));
+	velocities.first =  addVectors( velocityA , ScalarMult( deltaPos, ( dotProduct(deltaPos, addVectors( ScalarMult(velocityB,massB*(1.0+e)/(massA+massB)), ScalarMult(velocityA,-1.0*(1.0+e)*massB/(massA+massB)))))));  
+	velocities.second = addVectors( velocityB , ScalarMult( deltaPos, ( dotProduct(deltaPos, addVectors( ScalarMult(velocityA,massA*(1.0+e)/(massA+massB)), ScalarMult(velocityB,-1.0*(1.0+e)*massA/(massA+massB)))))));
 	return velocities;
 }
 

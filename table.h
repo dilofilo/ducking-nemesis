@@ -17,7 +17,9 @@ class Table {
 				myColour[1] =color[1];
 				myColour[2] =color[2];
 		}
-		~Table();
+		~Table() {
+			//delete[] myColour;
+		}
 
 		vector<float> getBottomLeftFrontCorner() { return corners[0]; }
 		vector<float> getBottomRightFrontCorner() { return corners[1]; }

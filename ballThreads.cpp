@@ -46,6 +46,10 @@ std::vector< std::queue<BallDetailsMessage> > mailBox;
 	std::vector<pthread_mutex_t> vecMutexMailBox;
 	std::vector<pthread_cond_t> vecCondMailBoxReceived;
 
+	vector<pthread_mutex_t> vecMutexThreadTerminate;
+	vector<bool> threadTerminate;
+
+	pthread_mutex_t numBallLock;
 
 ///A function that modularly posts messages.
 void sendMessage(BallDetailsMessage &msg) {
@@ -77,11 +81,21 @@ void* ballThread(void* args) {
 	int ID = arg->ID;
 	float myMass = ball[ID]->getMass();
 	float myRadius = ball[ID]->getRadius();
-
 	//TODO
 	while(true) {
+		
+		//Exit Thread code.
+		pthread_mutex_lock(&vecMutexThreadTerminate[ID] );
+			if(threadTerminate[ID]) {
+				pthread_mutex_unlock(&vecMutexThreadTerminate[ID]);
+				break;
+			}
+		pthread_mutex_unlock(&vecMutexThreadTerminate[ID] );
+
+
+		//Functional Code.
 		pthread_mutex_lock(&vecMutexBallPthreads[ID]);
-		while(numBallUpdates == 0)
+		while(numBallUpdates == 0 || !vecShouldBallUpdate[ID] )
 			pthread_cond_wait(&vecCondBallUpdateBegin[ID] , &vecMutexBallPthreads[ID]);
 		while( (numBallUpdates > 0) && ( vecShouldBallUpdate[ID] ) ) {
 			pthread_mutex_lock(&mutexStateVariableUpdate);
@@ -102,7 +116,7 @@ void* ballThread(void* args) {
 						msg.senderRadius = myRadius;
 						msg.senderMass = myMass;
 						msg.senderVelocity = ball[ID]->getVelocity();
-						msg.senderPosition = ball[ID]->getPosition(); //addVectors( ball[ID]->getPosition() , ScalarMult(ball[ID]->getVelocity() , DELTA_T));
+						msg.senderPosition = addVectors(ball[ID]->getPosition() , ScalarMult( ball[ID]->getVelocity(), DELTA_T)); //addVectors( ball[ID]->getPosition() , ScalarMult(ball[ID]->getVelocity() , DELTA_T));
 						msg.receiverID = i;
 						sendMessage(msg); //Also signals.
 				} //Message created
@@ -113,12 +127,10 @@ void* ballThread(void* args) {
 			// waitForMessages(ID);
 
 			///Process messages received.
-			for(int i = 1 ; i< NUM_BALLS; i++) { //Pop n messages.
+			for(int i = 1 ; i< NUM_BALLS; i++) { //Pop n-1 messages.
 				pthread_mutex_lock(&vecMutexMailBox[ID]);	
-				
 				///Wait to receive atleast one message.
 				waitForMessage(ID);
-
 				//ASSERT : MailBox is not empty.
 					BallDetailsMessage msg = mailBox[ID].front();
 						mailBox[ID].pop();
@@ -127,7 +139,6 @@ void* ballThread(void* args) {
 				
 				pthread_mutex_unlock(&vecMutexMailBox[ID]);
 			}
-
 			float ratio = ball[ID]->getSpeed() / MAX_VELOCITY;
 			if ( ratio >= 1.0) {
 				ball[ID]->slowDown(ratio);
@@ -135,15 +146,20 @@ void* ballThread(void* args) {
 			ball[ID]->handleWallCollision(table);
 			ball[ID]->displace(DELTA_T);
 			//Updates have ended
+			pthread_cond_signal(&condBallUpdateComplete);
 		}
-
-		pthread_cond_signal(&condBallUpdateComplete);
 		pthread_mutex_unlock(&vecMutexBallPthreads[ID]);
 	}
 }
 
+///Function to destroy all threads.
+void threadKill() {
+	
+}
+
 ///Function called for initializing all the thread-related variables
 void threadInit() {
+	pthread_mutex_init(&numBallLock , NULL);
 	numBallUpdates = NUM_BALLS;
 	vecMutexBallPthreads.resize(NUM_BALLS);
 	//vecCondBallUpdateComplete.resize(NUM_BALLS);
@@ -154,6 +170,9 @@ void threadInit() {
 	vecCondMailBoxReceived.resize(NUM_BALLS);
 	mailBox.resize(NUM_BALLS);
 
+	threadTerminate.resize(NUM_BALLS,false);
+	vecMutexThreadTerminate.resize(NUM_BALLS);
+
 	pthread_mutex_init(&mutexStateVariableUpdate , NULL);
 	for(int i = 0; i< NUM_BALLS ; i++) {
 		pthread_mutex_init(&vecMutexBallPthreads[i] , NULL);
@@ -162,6 +181,8 @@ void threadInit() {
 		pthread_cond_init(&condBallUpdateComplete , NULL);
 		pthread_mutex_init(&vecMutexMailBox[i] , NULL);
 		pthread_cond_init(&vecCondMailBoxReceived[i] , NULL);
+
+		pthread_mutex_init(&vecMutexThreadTerminate[i] , NULL);
 	}
 
 	for(int i = 0 ; i<NUM_BALLS ; i++) {

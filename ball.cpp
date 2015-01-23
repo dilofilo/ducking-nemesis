@@ -3,11 +3,10 @@
 
 
 #define PI 3.14159265359
-#define NUM_SLICES 100
-#define NUM_STACKS 100
+#define NUM_SLICES 50
+#define NUM_STACKS 50
 #define OFFSET 0.001
 #include "ball.h"
-#include <ncurses.h>
 #include <unistd.h>
 #include "equationSolver.cpp"
 
@@ -105,6 +104,8 @@ void Ball::handleWallCollision(Table* _table) {
 
 #define preciseDeltaT (DELTA_T/20.0)
 
+
+///Deprecated
 void Ball::pullApart(vector<float> targetPosition, vector<float> targetVelocity, float targetRadius)
 {
 	vector<float> tempVelocity=this->getVelocity();
@@ -143,15 +144,12 @@ void Ball::pullApart(vector<float> targetPosition, vector<float> targetVelocity,
 
 void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targetVelocity , float targetMass , float targetRadius) {
 	//this->setVelocity()
-	vector<float> newPos = this->getPosition(); //addVectors( this->getPosition() , ScalarMult(this->getVelocity() , DELTA_T));
-	vector<float> deltaPos = addVectors(newPos , ScalarMult( targetPosition, -1.0));
+	vector<float> newPos = addVectors(this->getPosition() , ScalarMult(this->getVelocity() , DELTA_T)); // Position in next iteration
+	vector<float> deltaPos = addVectors(newPos , ScalarMult(targetPosition , -1.0));
+	float speedAlongNormal = dotProduct(deltaPos , addVectors(targetVelocity , ScalarMult(this->getVelocity() , -1.0)));
 	float distSquare = dotProduct(deltaPos , deltaPos);
-	if (distSquare <= pow( this->getRadius() + targetRadius, 2) ) {		
+	if( (distSquare <= pow( this->getRadius() + targetRadius , 2)) &&( speedAlongNormal >= 0.0) )
 		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass).first); /// checks and updates the balls velocity if it collides with some other ball
-	}
-	this->pullApart(targetPosition, targetVelocity, targetRadius);
-
-
 }
 
 

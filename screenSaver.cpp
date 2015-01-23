@@ -36,7 +36,16 @@ void ScreenSaver::init() {
 }
 
 void ScreenSaver::exitter() {
-	cout << "BYE BYE BABY HOW DO YOU DO?\n";
+	for(int i = 0; i<NUM_BALLS; i++) {
+		pthread_mutex_lock(&vecMutexThreadTerminate[i]);
+			threadTerminate[i] = true;
+		pthread_mutex_unlock(&vecMutexThreadTerminate[i]);
+		//delete ball[i];
+		
+	}
+	//delete table;
+	//Handle ball, table etc?
+	glutDestroyWindow(windowID);
 }
 
 void initLighting() {
@@ -67,7 +76,7 @@ void ScreenSaver::execute(int& argc , char** argv) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(WIDTH , HEIGHT);
 	glutInitWindowPosition(50,50);
-	glutCreateWindow(" Bouncy ball ");
+	windowID = glutCreateWindow(" Bouncy ball ");
 
 	init();
 	threadInit();
@@ -80,6 +89,8 @@ void ScreenSaver::execute(int& argc , char** argv) {
 
 	glutTimerFunc(DELTA_T , timer , 0);
 	glutMainLoop();
+	for(int i=0; i<NUM_BALLS;i++)
+		pthread_exit(&vecBallThread[i]);
 }
 
 
@@ -118,7 +129,7 @@ void handleMouse(int button , int state , int x , int y) {
 		
 		float myDenominator = pow((m_start_x - m_end_x),2) + pow((m_start_y - m_end_y),2) + pow((m_start_z - m_end_z),2);
 
-			for(int counter=0;counter<ball.size();counter++)
+			for(int counter=0;counter<NUM_BALLS;counter++)
 			{
 				///Cross product magic.
 				/// Check whether this was the ball clicked
@@ -222,7 +233,7 @@ void handleKeyboard(unsigned char key, int x, int y) {
 	}
 	else if(int(key) == 27 ) {
 		/// Esc pressed, Request to exit the Window. 
-		cout<<"Request to exit the Window \n";
+		mainScreenSaver->kill();
 		mainScreenSaver->exitter();
 		/// TODO cALL EXITTER().
 	}
@@ -239,7 +250,7 @@ void handleSpecial(int key , int x , int y) {
 		/// De-Select the current Ball and Select the next ball in the vector.
 		if(selectedBall >= 0) {
 			ball[selectedBall]->setIsSelected(false);
-			selectedBall=(selectedBall+1)%(ball.size());
+			selectedBall=(selectedBall+1)%(NUM_BALLS);
 			ball[selectedBall]->setIsSelected(true);
 		}
 	}
@@ -249,7 +260,7 @@ void handleSpecial(int key , int x , int y) {
 		//table->randomizeColor();
 		if(selectedBall >= 0) {
 			ball[selectedBall]->setIsSelected(false);
-			selectedBall= (selectedBall-1 >= 0)?(selectedBall-1) : (ball.size()-1);
+			selectedBall= (selectedBall-1 >= 0)?(selectedBall-1) : (NUM_BALLS-1);
 			ball[selectedBall]->setIsSelected(true);
 		}
 	}
@@ -324,7 +335,9 @@ void display() {
   		glRotatef(ROTATE_Z , 0.0, 0.0, 1.0);
 
   	///Render balls first because they are opaque
+    glEnable(GL_LIGHTING);
 	for(int i=0; i<NUM_BALLS; i++) ball[i]->display();
+	glDisable(GL_LIGHTING);
 	table->display();
 
 	glPopMatrix();
@@ -333,17 +346,9 @@ void display() {
 }
 
 void timer(int value) {
-	while(mainScreenSaver->getIndicatorAddBall()) {
-		mainScreenSaver->addBall();
-		cout << "TRY\n";
-	}
-	while(mainScreenSaver->getIndicatorDeleteBall()) {
-		mainScreenSaver->deleteBall();
-		cout << "TRY\n";
-	}
 
 	///Code for updating stuff.
-	if(! (mainScreenSaver->getIsPaused()) ) {
+	if(! (mainScreenSaver->getIsPaused()) && mainScreenSaver->isAlive()) {
 		pthread_mutex_lock(&mutexStateVariableUpdate);
 		for(int i = 0; i<NUM_BALLS;i++) {
 				pthread_cond_signal(&vecCondBallUpdateBegin[i]);
@@ -351,44 +356,52 @@ void timer(int value) {
 		while(numBallUpdates != 0 ) {
 			pthread_cond_wait(&condBallUpdateComplete , &mutexStateVariableUpdate);
 		}
+
+		//Add and delete ball Code
+
+		//Back to normal Code
 		numBallUpdates = NUM_BALLS;
 		for(int i = 0; i<NUM_BALLS;i++) {
 			vecShouldBallUpdate[i] = true;
 		}
 		pthread_mutex_unlock(&mutexStateVariableUpdate);
+
+		if(mainScreenSaver->getIndicatorAddBall())
+			mainScreenSaver->addBall();
 		//End of locked section
 	}
-	glutTimerFunc(DELTA_T , timer , 0);
-	glutPostRedisplay();
+	if( mainScreenSaver->isAlive()) { //Avoids poting redisplay after quit.
+		glutTimerFunc(DELTA_T , timer , 0);
+		glutPostRedisplay();
+	}else {
+
+	}
 }
 
 
 void reshape(int w , int h) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45.0f, (GLfloat)w/ (GLfloat)h, 0.1f, 100000.0f);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	
+	if(mainScreenSaver->isAlive()) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		gluPerspective(45.0f, (GLfloat)w/ (GLfloat)h, 0.1f, 100000.0f);
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
 
-	table->reshape(w , h, WIDTH , HEIGHT);
-	for(int i=0; i< NUM_BALLS; i++) ball[i]->reshape(w , h, WIDTH , HEIGHT);
+		table->reshape(w , h, WIDTH , HEIGHT);
+		for(int i=0; i< NUM_BALLS; i++) ball[i]->reshape(w , h, WIDTH , HEIGHT);
 
-	WIDTH = w;
-	HEIGHT = h;
+		WIDTH = w;
+		HEIGHT = h;
 
-	glFlush();
+		glFlush();
+	}
 }
 
 
 ///Function that initializes the table* (included in table.h)
-	///Default values for bounding box.
-	#ifdef THREE_D
-		vector<vector<float> > _cornersTHREE_D{{-BOUND,-BOUND,BOUND},{BOUND,-BOUND,BOUND},{BOUND,BOUND,BOUND},{-BOUND,BOUND,BOUND},{-BOUND,-BOUND,-BOUND},{BOUND,-BOUND,-BOUND},{BOUND,BOUND,-BOUND},{-BOUND,BOUND,-BOUND}};		//generates box  
-	#else
-		vector<vector<float> > _cornersTWO_D{{-BOUND,-BOUND,0.0},{BOUND,-BOUND,0.0},{BOUND,BOUND,0.0},{-BOUND,BOUND,0.0}};
-	#endif
 void ScreenSaver::generateTable() {
 	#ifdef THREE_D
 		table = new Table(_cornersTHREE_D);							//generates new ball
@@ -490,112 +503,78 @@ void ScreenSaver::generateBall() {
 }
 
 void ScreenSaver::addBall()
-{ 
+{
 	//Ball Generation Code.
-		#ifdef THREE_D
-			int numDim=3;
-		#else
-			int numDim=2;
-		#endif
-
-	bool created = false;
-	while( !created ) {
-		//Random Position
-		vector<float> initPos;
-		for (int j=0; j<numDim; j++) {
-			float tempVar = rand()%101;
-			tempVar /= 100;
-			tempVar -= 0.5;
-			tempVar *= 2.0*(BOUND - MAX_RADIUS);
-			initPos.push_back(tempVar);	//generates random velocity
-		}
-
-		#ifndef THREE_D
-			float tempVar=0.0;
-			initPos.push_back(tempVar); //Pushes back z=0.0 if not 3d.
-		#endif	
-			//ASSERT : position is ready
-
-			//Radius Generation
-			float newRadius = rand()%101;						//random radius	
-			newRadius /= 100.0;
-			newRadius *= MAX_RADIUS/2.0;
-			newRadius += MAX_RADIUS/2.0; //Minimum radius
-
-			bool validPosition = true;
-			//Checking for overlaps
-			for(int i =0 ; i< NUM_BALLS ; i++) {
-				//Check for overlap. If overlap, set validPosition = false; created ; break.
-				
+	vector<float> initPos(3);
+		initPos[0] = 0.0;
+		initPos[1] = 2.0*BOUND ;
+		initPos[2] = 0.0;
+		//ASSERT : position is ready
+		//Radius Generation
+		float newRadius = rand()%101;						//random radius	
+		newRadius /= 100.0;
+		newRadius *= MAX_RADIUS/2.0;
+		newRadius += MAX_RADIUS/2.0; //Minimum radius
+		//Generate the balls outisde the box and send them flying in
+		//If a ball was amde succesfully.
+		vector<float> initVelocity(3);
+			initVelocity[1] = -1.0*MAX_VELOCITY/4.0;
+			initVelocity[0]= 0.0;
+			initVelocity[2] = 0.0;		
+		vector<float> vectorColor;
+			for (int j=0; j<3; j++)
+			{
+					float tempVariable = rand()%101;
+					tempVariable /= 100.0;
+					vectorColor.push_back(tempVariable);	//generates random Colour
 			}
-			
-			if( validPosition ) {
-				//If a ball was amde succesfully.
-				created = true;
-					vector<float> initVelocity;
-					for (int j=0; j<numDim; j++) {
-						float tempVar = rand()%101;
-						tempVar /= 100.0;
-						tempVar -= 0.5;
-						tempVar *= 2.0;
-						tempVar *= MAX_VELOCITY/2.0;
-						tempVar += MAX_VELOCITY/2.0;
-						initVelocity.push_back(tempVar);	//generates random velocity
-					}
 
-					vector<float> vectorColor;
-					for (int j=0; j<3; j++)
-					{
-						float tempVariable = rand()%101;
-						tempVariable /= 100.0;
-						vectorColor.push_back(tempVariable);	//generates random Colour
-					}
-
-
-				Ball* newBall = new Ball(initPos , initVelocity , newRadius , vectorColor );
-				ball.push_back(newBall);
-				//Handle threads. And all the associated jazz.
-				
-					mailBox.resize(mailBox.size() + 1); //Increase size by 1 . 
-
-					pthread_t newBallThread;
-					vecBallThread.push_back(newBallThread);
+		Ball* newBall = new Ball(initPos , initVelocity , newRadius , vectorColor );
+		ball.push_back(newBall);
+		//Handle threads. And all the associated jazz.
 		
-					
-					pthread_mutex_t threadMutex;
-					vecMutexBallPthreads.push_back(threadMutex);
-					pthread_mutex_init(&vecMutexBallPthreads[vecMutexBallPthreads.size() - 1] , NULL);
-				
+			queue<BallDetailsMessage> newBox;
+			mailBox.push_back(newBox); //Increase size by 1 . 
 
-					vecShouldBallUpdate.push_back(false);
-
-					pthread_cond_t newCondUpdateBegin;
-					vecCondBallUpdateBegin.push_back(newCondUpdateBegin);
-					pthread_cond_init(&vecCondBallUpdateBegin[vecCondBallUpdateBegin.size() - 1] , NULL);
-
-					pthread_mutex_t newMailBoxMutex;
-					vecMutexMailBox.push_back(newMailBoxMutex);
-					pthread_mutex_init(&vecMutexMailBox[vecMutexMailBox.size() - 1] , NULL);
-
-					pthread_cond_t newMailBoxCond;
-					vecCondMailBoxReceived.push_back(newMailBoxCond);
-					pthread_cond_init(&vecCondMailBoxReceived[vecCondMailBoxReceived.size() - 1] , NULL);
-
-
-				int newID = NUM_BALLS ; //Temporary.
-				BallThreadParameters* args = new BallThreadParameters(newID);
-				//Create only after all initializations have occured
-				int rc = pthread_create(&vecBallThread[vecBallThread.size() - 1] , NULL , ballThread , (void*)args);
-				if(rc) cout<< "HOLY MOTHER OF GOD . FATALITY \n";
+			pthread_mutex_t threadMutex;
+			pthread_mutex_init(&threadMutex , NULL);
+			vecMutexBallPthreads.push_back(threadMutex);
 			
-				cout << "Updating NUM_BALLS " << NUM_BALLS << "\n";
-				NUM_BALLS++;
+		
 
-			}
-		}
-		this->toggleIndicatorAddBall();
-		cout << "BALL CREATED " << this->getIndicatorAddBall() << "\n";
-		return;
+			vecShouldBallUpdate.push_back(false);
+
+			pthread_cond_t newCondUpdateBegin;
+			pthread_cond_init(&newCondUpdateBegin , NULL);
+			vecCondBallUpdateBegin.push_back(newCondUpdateBegin);
+			
+
+			pthread_mutex_t newMailBoxMutex;
+			pthread_mutex_init(&newMailBoxMutex , NULL);
+			vecMutexMailBox.push_back(newMailBoxMutex);
+			
+
+			pthread_cond_t newMailBoxCond;
+			pthread_cond_init(&newMailBoxCond , NULL);
+			vecCondMailBoxReceived.push_back(newMailBoxCond);
+
+			pthread_mutex_t tempMutex;
+			pthread_mutex_init(&tempMutex , NULL);
+			vecMutexThreadTerminate.push_back(tempMutex);
+			
+			
+			threadTerminate.push_back(false);
+
+
+			int newID = NUM_BALLS ; //Temporary.
+			BallThreadParameters* args = new BallThreadParameters(newID);
+			//Create only after all initializations have occured
+		
+			pthread_t newBallThread;
+			int rc = pthread_create(&newBallThread , NULL , ballThread , (void*)args);
+			vecBallThread.push_back(newBallThread);
+			if(rc) cout<< "HOLY MOTHER OF GOD . FATALITY \n";			
+			NUM_BALLS++;	
 }
 
 void ScreenSaver::deleteBall() {

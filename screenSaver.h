@@ -18,7 +18,7 @@ static int HEIGHT;
 static int DELTA_T;
 ///program specific stuff
 static int selectedBall = 0;
-static int NUM_BALLS;
+static volatile int NUM_BALLS;
 
 ///Stuff for ball generation
 static float MAX_RADIUS = 1.0;
@@ -44,6 +44,14 @@ static float ROTATE_Z = 0.0;
 static float Z_DISPLACE = 0.0;
 
 #define MAX_TRY 1000 //Used for ball generation wali cheez
+	///Default values for bounding box.
+	#ifdef THREE_D
+		vector<vector<float> > _cornersTHREE_D{{-BOUND,-BOUND,BOUND},{BOUND,-BOUND,BOUND},{BOUND,BOUND,BOUND},{-BOUND,BOUND,BOUND},{-BOUND,-BOUND,-BOUND},{BOUND,-BOUND,-BOUND},{BOUND,BOUND,-BOUND},{-BOUND,BOUND,-BOUND}};		//generates box  
+	#else
+		vector<vector<float> > _cornersTWO_D{{-BOUND,-BOUND,0.0},{BOUND,-BOUND,0.0},{BOUND,BOUND,0.0},{-BOUND,BOUND,0.0}};
+	#endif
+
+
 
 ///Include source code.
 
@@ -52,19 +60,22 @@ static float Z_DISPLACE = 0.0;
 #include "ball.h" //includes ball vector
 #include "ballThreads.cpp" //includes mailboxes and threading stuff.
 #include "ball.cpp" 
-#include "table.cpp" 
+#include "table.cpp"
 
 
 class ScreenSaver {
 	///Variables
+	bool alive;
 	bool isPaused;
 	bool isFullScreen;
 	bool indicatorAddBall;
 	bool indicatorDeleteBall;
+	int windowID;
 public:
 	
 	///Constructors and Destructors
 	ScreenSaver(int numBalls) {
+		alive = true;
 		isPaused = false;
 		isFullScreen = false;
 		indicatorAddBall = false;
@@ -72,7 +83,7 @@ public:
 		NUM_BALLS = numBalls; //Static variable set.
 		WIDTH = 640;
 		HEIGHT = 480;
-		DELTA_T = 3.0; //Arbitrary Number.
+		DELTA_T = 5.0; //Arbitrary Number.
 
 	}
 	~ScreenSaver() {
@@ -86,7 +97,8 @@ public:
 	void togglePaused() { isPaused = !isPaused; }
 	bool getIsFullScreen() { return isFullScreen ; }
 	void toggleFullScreen() { isFullScreen = !isFullScreen; }
-
+	bool isAlive() { return alive; }
+	void kill() { alive = false; }
 	bool getIndicatorAddBall() { return indicatorAddBall; }
 	bool getIndicatorDeleteBall() { return indicatorDeleteBall; }
 	void toggleIndicatorAddBall() { indicatorAddBall = !indicatorAddBall ; }

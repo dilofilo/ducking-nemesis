@@ -32,8 +32,10 @@ public:
 		mass = pow(radius, 3);
 	} //Constructor Done
 	~Ball() {
+		//delete[] myColour;
+	}	
 
-	}	///Set/Get functions
+	///Set/Get functions
 	float getxCentre() { return position[0] ; }
 	float getyCentre() { return position[1] ; }
 	float getzCentre() { return position[2] ; }

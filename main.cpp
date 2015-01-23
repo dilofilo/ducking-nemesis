@@ -1,5 +1,6 @@
 //Things needed to convert string to int
-#define TWO_D
+#define THREE_D
+#include <GL/gl.h>
 #include <GL/glut.h>
 #include <pthread.h>
 #include <math.h>
