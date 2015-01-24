@@ -55,6 +55,9 @@ public:
 	void setxVelocity(float _x) { velocity[0] = _x ; }
 	void setyVelocity(float _y) { velocity[1] = _y ; }
 	void setzVelocity(float _z) { velocity[2] = _z ; }
+	void VelocityIncreaser();
+	void VelocityDecreaser();
+
 
 	vector<float> getPosition() { return position; }
 	vector<float> getVelocity() { return velocity; }

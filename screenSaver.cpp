@@ -104,6 +104,7 @@ void modehandler(int ID){
 		}
 		
 	}
+	//glutSetWindow(mainScreenSaver->getWindowID());
 }
 
 void modehandler2(int ID) {
@@ -117,6 +118,7 @@ void modehandler2(int ID) {
 			break;
 		}
 	}
+	//glutSetWindow(mainScreenSaver->getWindowID());
 }
 
 // void gravityactivator(int ID) {
@@ -126,6 +128,7 @@ void modehandler2(int ID) {
 // 	gravity=0.0f;
 // }
 
+//GLUI Functions
 void Buttons(int ID) {
 	mainScreenSaver->exitter();
 
@@ -141,60 +144,42 @@ void Pauser(int ID)
 	mainScreenSaver->togglePaused();
 }
 
-void VelocityIncreaser(int ID)
-{
-	cout<<"Increase the Speed of the selected ball. \n";
-		if(selectedBall >= 0) {
-			// TODO Modify the velocity.
+void increaseVelocity(int ID) {
+	if (selectedBall>=0)
+		ball[selectedBall]->VelocityIncreaser();
 
-			float myxVel = ball[selectedBall]->getxVelocity();
-			float myyVel = ball[selectedBall]->getyVelocity();
-			float myzVel = ball[selectedBall]->getzVelocity();
-
-			///Ensure that your balls dont speed
-			myxVel = myxVel*1.1;
-				if(myxVel>MAX_VELOCITY) myxVel = MAX_VELOCITY;
-			myyVel = myyVel*1.1;
-				if(myyVel>MAX_VELOCITY) myyVel = MAX_VELOCITY;
-			if (Dimensional_state==3)
-			{
-				myzVel = myzVel*1.1;
-				if(myzVel>MAX_VELOCITY) myzVel = MAX_VELOCITY;
-			}
-			else
-			myzVel = 0.0f;
-			
-
-			ball[selectedBall]->setxVelocity(myxVel);
-			ball[selectedBall]->setyVelocity(myyVel);
-			ball[selectedBall]->setzVelocity(myzVel);
-
-		}
 }
 
-void VelocityDecreaser(int ID)
-{
-	cout<<"Decrease the Speed of the selected ball. \n";
-		/// Decrease the Speed of the selected ball.
-		if(selectedBall >= 0) {
-			// TODO Modify the velocity.
-			float myxVel = ball[selectedBall]->getxVelocity();
-			float myyVel = ball[selectedBall]->getyVelocity();
-			float myzVel = ball[selectedBall]->getyVelocity();
+void decreaseVelocity(int ID) {
+	if (selectedBall>=0)
+		ball[selectedBall]->VelocityDecreaser();
+}
 
-			myxVel = myxVel*0.9;
-			myyVel = myyVel*0.9;
-		//	#ifdef THREE_D
-			if (Dimensional_state==3)
-				myzVel = myzVel*0.9;
-			else
-			myzVel = 0.0f;
-			
-			ball[selectedBall]->setxVelocity(myxVel);
-			ball[selectedBall]->setyVelocity(myyVel);
-			ball[selectedBall]->setzVelocity(myzVel);
-		}
-	}
+void handleMenu(GLUI* glUserInterface)
+{
+
+	GLUI_Panel *mera_panel = glUserInterface->add_panel( "Interact Smarter");
+	radioGroup = glUserInterface->add_radiogroup_to_panel(mera_panel,&obj,3,modehandler);
+	glUserInterface->add_radiobutton_to_group( radioGroup, "Kabira's mode (the best)" );
+	glUserInterface->add_radiobutton_to_group( radioGroup, "Haroun's mode" );
+	glUserInterface->add_radiobutton_to_group( radioGroup, "Harman's mode");
+
+	GLUI_Panel *tera_panel = glUserInterface->add_panel( "Mode");
+	radioGroup2 = glUserInterface->add_radiogroup_to_panel(tera_panel,&obj2,3,modehandler2);
+	glUserInterface->add_radiobutton_to_group( radioGroup2, "2D" );
+	glUserInterface->add_radiobutton_to_group( radioGroup2, "3D (the best)" );
+
+	glUserInterface->add_button("toggle gravity",5, (GLUI_Update_CB) Grav);
+	glUserInterface->add_button("Pause",5, (GLUI_Update_CB) Pauser);
+	glUserInterface->add_button("Increase Velocity",5, (GLUI_Update_CB) increaseVelocity);
+	glUserInterface->add_button("Decrease Velocity",5, (GLUI_Update_CB) decreaseVelocity);
+	glUserInterface->sync_live();
+	//glUserInterface->add_checkbox("Kabira's Mode (the best)", &mode )
+
+	GLUI_Panel *merapanelpart2 = glUserInterface->add_panel ( "Exitter");
+	glUserInterface->add_button_to_panel( merapanelpart2, "hi", 4, (GLUI_Update_CB) Buttons);
+
+}
 
 ///Function that starts the entire process.
 void ScreenSaver::execute(int& argc , char** argv) {
@@ -221,32 +206,10 @@ void ScreenSaver::execute(int& argc , char** argv) {
 
 	//GLUI *glUserInterface = GLUI_Master.create_glui_subwindow( windowID,GLUI_SUBWINDOW_RIGHT );
 	
-
-
-	glUserInterface = GLUI_Master.create_glui("GLUT",0);
+	glUserInterface = GLUI_Master.create_glui("GLUT",0,5,5); 
+	handleMenu(glUserInterface);	//Creating the menu
 	//glUserInterface ->add_statictext("Choose Mode");
 	//glUserInterface->add_separator();
-
-	GLUI_Panel *mera_panel = glUserInterface->add_panel( "Interact Smarter");
-		radioGroup = glUserInterface->add_radiogroup_to_panel(mera_panel,&obj,3,modehandler);
-	glUserInterface->add_radiobutton_to_group( radioGroup, "Kabira's mode (the best)" );
-	glUserInterface->add_radiobutton_to_group( radioGroup, "Haroun's mode" );
-	glUserInterface->add_radiobutton_to_group( radioGroup, "Harman's mode");
-
-	GLUI_Panel *tera_panel = glUserInterface->add_panel( "Mode");
-		radioGroup2 = glUserInterface->add_radiogroup_to_panel(tera_panel,&obj2,3,modehandler2);
-	glUserInterface->add_radiobutton_to_group( radioGroup2, "2D" );
-	glUserInterface->add_radiobutton_to_group( radioGroup2, "3D (the best)" );
-
-	glUserInterface->add_button("toggle gravity",5, (GLUI_Update_CB) Grav);
-	glUserInterface->add_button("Pause",5, (GLUI_Update_CB) Pauser);
-	glUserInterface->add_button("Increase Velocity",5, (GLUI_Update_CB) VelocityIncreaser);
-	glUserInterface->add_button("Decrease Velocity",5, (GLUI_Update_CB) VelocityDecreaser);
-	glUserInterface->sync_live();
-	//glUserInterface->add_checkbox("Kabira's Mode (the best)", &mode )
-
-	GLUI_Panel *merapanelpart2 = glUserInterface->add_panel ( "Exitter");
-	glUserInterface->add_button_to_panel( merapanelpart2, "hi", 4, (GLUI_Update_CB) Buttons);
 	glUserInterface->set_main_gfx_window( windowID );//which window to send redisplay call to
 
 	glutTimerFunc(DELTA_T , timer , 0);
@@ -442,60 +405,16 @@ void handleSpecial(int key , int x , int y) {
 
 	if(key == GLUT_KEY_UP) {
 
-		/// Increse the Speed of the selected ball.
+		/// Increase the Speed of the selected ball.
 		
-		cout<<"Increase the Speed of the selected ball. \n";
-		if(selectedBall >= 0) {
-			// TODO Modify the velocity.
-
-			float myxVel = ball[selectedBall]->getxVelocity();
-			float myyVel = ball[selectedBall]->getyVelocity();
-			float myzVel = ball[selectedBall]->getzVelocity();
-
-			///Ensure that your balls dont speed
-			myxVel = myxVel*1.1;
-				if(myxVel>MAX_VELOCITY) myxVel = MAX_VELOCITY;
-			myyVel = myyVel*1.1;
-				if(myyVel>MAX_VELOCITY) myyVel = MAX_VELOCITY;
-			//#ifdef THREE_D
-			if (Dimensional_state==3)
-			{
-				myzVel = myzVel*1.1;
-				if(myzVel>MAX_VELOCITY) myzVel = MAX_VELOCITY;	
-			}
-			else
-			myzVel = 0.0f;
-			//#endif
-
-			ball[selectedBall]->setxVelocity(myxVel);
-			ball[selectedBall]->setyVelocity(myyVel);
-			ball[selectedBall]->setzVelocity(myzVel);
-
-		}
+		if (selectedBall>=0)
+			ball[selectedBall]->VelocityIncreaser();
 	}
 
 	if(key == GLUT_KEY_DOWN) {
-
-		cout<<"Decrease the Speed of the selected ball. \n";
-		/// Decrease the Speed of the selected ball.
-		if(selectedBall >= 0) {
-			// TODO Modify the velocity.
-			float myxVel = ball[selectedBall]->getxVelocity();
-			float myyVel = ball[selectedBall]->getyVelocity();
-			float myzVel = ball[selectedBall]->getyVelocity();
-
-			myxVel = myxVel*0.9;
-			myyVel = myyVel*0.9;
-			//#ifdef THREE_D
-			if (Dimensional_state==3)
-				myzVel = myzVel*0.9;
-			else
-				myzVel = 0.0f;
+		if (selectedBall>=0)
+			ball[selectedBall]->VelocityDecreaser();
 			
-			ball[selectedBall]->setxVelocity(myxVel);
-			ball[selectedBall]->setyVelocity(myyVel);
-			ball[selectedBall]->setzVelocity(myzVel);
-		}
 	}
 }
 
@@ -515,7 +434,8 @@ void display() {
   	///Render balls first because they are opaque
     
     glEnable(GL_LIGHTING);
-	for(int i=0; i<NUM_BALLS; i++) ball[i]->display();
+	for(int i=0; i<NUM_BALLS; i++) 
+		ball[i]->display();
 	glDisable(GL_LIGHTING);
 	
 	table->display();
@@ -570,7 +490,8 @@ void timer(int value) {
 	if( mainScreenSaver->isAlive()) { //Avoids poting redisplay after quit.
 		glutTimerFunc(DELTA_T , timer , 0);
 		glutPostRedisplay();
-	}else {
+	}
+	else {
 
 	}
 }
@@ -639,7 +560,7 @@ void ScreenSaver::generateBall() {
 				initPos.push_back(tempVar);	//generates random velocity
 			}
 			//#ifndef THREE_D
-			if (Dimensional_state==3){
+			if (Dimensional_state==2){
 
 
 				float tempVar=2.0;
@@ -679,7 +600,7 @@ void ScreenSaver::generateBall() {
 			initVelocity.push_back(tempVar);	//generates random velocity
 		}
 		//#ifndef THREE_D
-		if (Dimensional_state==3) {
+		if (Dimensional_state==2) {
 			float tempVar=0.0;
 			initVelocity.push_back(tempVar);
 		}
