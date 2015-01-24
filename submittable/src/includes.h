@@ -3,7 +3,7 @@
 #include <GL/gl.h>		//
 #include <GL/glut.h>	//... Image rendering libraries
 #include <GL/glui.h>	//... includes menu management
-#include <SDL/SDL.h>	//... used for texture loading
+#include <SDL/SDL.h>	//... used for texture loading (from .bmp files)
 #include <pthread.h>	//... used for threading, mutexing, conditional variables
 #include <cmath>		//... general purpose math
 #include <vector>		//... included for std::vector
@@ -34,15 +34,36 @@ vector<float> vecZero{ 0.0 , 0.0 , 0.0};
 		GLfloat emitLight[]         = {0.9, 0.9, 0.9, 0.01};
 		GLfloat Noemit[]            = {0.0, 0.0, 0.0, 1.0};
 	    // Light source position
-		GLfloat qaLightPosition[]   = {0.0, 0.0 , (GLfloat)2.0*BOUND, 0.5}; 
+		GLfloat qaLightPosition[]   = {0.0, (GLfloat)2.0*BOUND , (GLfloat)2.0*BOUND, 0.5}; 
 
 	///Ball's rendering parameters
-	static int NUM_SLICES = 50;
-	static int NUM_STACKS = 50;
+		static int NUM_SLICES = 50;
+		static int NUM_STACKS = 50;
+
+	///GLUI static variables
+		int obj=0;
+		int obj2=0;
+		int gravGui=0;
+		int buttonmanager=1;
+		int modeNO=0;
+		float rotation_matrix[16] = { 1.0, 0.0, 0.0, 0.0,
+	                              0.0, 1.0, 0.0, 0.0,
+	                              0.0, 0.0, 1.0, 0.0,
+	                              0.0, 0.0, 0.0, 1.0 };
+	    float coEfficient=1.0;
+	    GLUI_Rotation *rotatewala;
+	    GLUI_Spinner  *coefficientwala;
+
+		GLUI_RadioGroup *radioGroup;
+		GLUI_RadioGroup *radioGroup2;
+		GLUI *glUserInterface;
+	
+
 
 ///Physics Variables
-static float gravity = 0.0;
-static float coefficientRestitution = 0.8;
+	static float gravity = 0.0;
+	static float coefficientRestitution = 0.8;
+
 
 
 ///Threading Variables

@@ -1,8 +1,5 @@
-
 #ifndef MENU_CPP
 	#define MENU_CPP
-
-#include "menu.h"
 
 void shapeHandler(int ID){
 	switch(obj) {
@@ -61,8 +58,6 @@ void dimensionHandler(int ID) {
 	//glutSetWindow(mainScreenSaver->getWindowID());
 }
 
-
-//GLUI Functions
 void closeWindow(int ID) {
 	mainScreenSaver->exitter();
 
@@ -112,18 +107,17 @@ void enableFullscreen(int ID) {
 }
 
 void rotateView(int ID) {
-	//Do Nothing.
+	//Do Nothing. - Function is handled by the GLU window's display function.
 }
 
 void resetRotation(int ID) {
-	for (int i=0;i<16;i++)
-				{
-					rotation_matrix[i]=0.0;
-				}
-				rotation_matrix[0]=1.0;
-				rotation_matrix[5]=1.0;
-				rotation_matrix[10]=1.0;
-				rotation_matrix[15]=1.0;
+	for (int i=0;i<16;i++) {
+		rotation_matrix[i]=0.0;
+	}
+	rotation_matrix[0]=1.0;
+	rotation_matrix[5]=1.0;
+	rotation_matrix[10]=1.0;
+	rotation_matrix[15]=1.0;
 	rotatewala->reset();
 
 }
@@ -144,21 +138,21 @@ void Menu::createMenu() {
 
 void Menu::handleMenu(GLUI* glUserInterface)
 {
-	GLUI_Panel *mera_panel = glUserInterface->add_panel( "Interact Smarter");
-	radioGroup = glUserInterface->add_radiogroup_to_panel(mera_panel,&obj,3,shapeHandler);
+	GLUI_Panel *panel1 = glUserInterface->add_panel( "Interact Smarter");
+	radioGroup = glUserInterface->add_radiogroup_to_panel(panel1,&obj,3,shapeHandler);
 	glUserInterface->add_radiobutton_to_group( radioGroup, "Kabira's mode (the best)" );
 	glUserInterface->add_radiobutton_to_group( radioGroup, "Haroun's mode" );
 	glUserInterface->add_radiobutton_to_group( radioGroup, "Harman's mode");
 
-	GLUI_Panel *tera_panel = glUserInterface->add_panel( "Mode");
-	radioGroup2 = glUserInterface->add_radiogroup_to_panel(tera_panel,&obj2,3,dimensionHandler);
+	GLUI_Panel *panel2 = glUserInterface->add_panel( "Mode");
+	radioGroup2 = glUserInterface->add_radiogroup_to_panel(panel2,&obj2,3,dimensionHandler);
 	glUserInterface->add_radiobutton_to_group( radioGroup2, "2D" );
 	glUserInterface->add_radiobutton_to_group( radioGroup2, "3D (the best)" );
 
 	glUserInterface->add_button("toggle gravity",5, (GLUI_Update_CB) gravInducer);
 	glUserInterface->add_button("Pause",5, (GLUI_Update_CB) Pauser);
-	glUserInterface->add_button("Increase Velocity",5, (GLUI_Update_CB) increaseVelocity);
-	glUserInterface->add_button("Decrease Velocity",5, (GLUI_Update_CB) decreaseVelocity);
+	glUserInterface->add_button("Speed Up",5, (GLUI_Update_CB) increaseVelocity);
+	glUserInterface->add_button("Speed Down",5, (GLUI_Update_CB) decreaseVelocity);
 	glUserInterface->sync_live();
 	//glUserInterface->add_checkbox("Kabira's Mode (the best)", &mode )
 	glUserInterface->add_button("FullScreen",5, (GLUI_Update_CB) enableFullscreen);
@@ -175,8 +169,8 @@ void Menu::handleMenu(GLUI* glUserInterface)
 	coefficientwala->set_float_limits(0.0,1.0);
 
 
-	GLUI_Panel *merapanelpart2 = glUserInterface->add_panel ( "Exitter");
-	glUserInterface->add_button_to_panel( merapanelpart2, "hi", 4, (GLUI_Update_CB) closeWindow);
+	GLUI_Panel *panel1_part2 = glUserInterface->add_panel ( "Exitter");
+	glUserInterface->add_button_to_panel( panel1_part2, "Don't Kill Me!", 4, (GLUI_Update_CB) closeWindow);
 	glUserInterface->sync_live();
 }
 

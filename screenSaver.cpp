@@ -320,16 +320,21 @@ void display() {
 	//glPushMatrix();
 	gluLookAt( X_CAM , Y_CAM , Z_CAM , X_CAM_FOCAL , Y_CAM_FOCAL , Z_CAM_FOCAL , UP_X , UP_Y , UP_Z); // Focus camera at 0,0,0. ZCAMERA defined in main.cpp
 	//glPushMatrix();
-  		glTranslated(0.0,0.0,Z_DISPLACE);
+  	displaySkybox(); //Renders it like a background
+
+
+		glTranslated(0.0,0.0,Z_DISPLACE);
   		if(Dimensional_state==3) {
   			glMultMatrixf(rotation_matrix);
   		}
 	  	glRotatef( ROTATE_X, 1.0, 0.0, 0.0);
   		glRotatef( ROTATE_Y, 0.0, 1.0, 0.0);
   		glRotatef(ROTATE_Z , 0.0, 0.0, 1.0);
+
+
+  	
   	///Render balls first because they are opaque
     
-  	displaySkybox();
 
     glEnable(GL_LIGHTING);
 	for(int i=0; i<NUM_BALLS; i++) 
@@ -337,6 +342,7 @@ void display() {
 	glDisable(GL_LIGHTING);
 	
 	table->display();
+
 
 	//displaySkybox();
 	//glPopMatrix();

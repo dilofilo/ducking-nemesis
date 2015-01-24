@@ -17,7 +17,7 @@ using namespace std;
 static int WIDTH;
 static int HEIGHT;
 static float NEAR_CLIPPING_DISTANCE = 1.0f;
-static float FAR_CLIPPING_DISTANCE = 100.0f;
+static float FAR_CLIPPING_DISTANCE = 100000.0f;
 static int DELTA_T;
 ///program specific stuff
 static int selectedBall = 0;

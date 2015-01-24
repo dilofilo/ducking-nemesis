@@ -177,15 +177,24 @@ void Table::display() {
 	#endif
 }
 else
-{
-	
+{	
 	glColor3f (color[0] , color[1], color[2]);
-	glBegin(GL_POLYGON);
+	glBegin(GL_LINES);
 		glVertex3f( corners[0][0] , corners[0][1] , 0.0 );
 		glVertex3f( corners[1][0] , corners[1][1] , 0.0 );
+	glEnd();
+	glBegin(GL_LINES);
 		glVertex3f( corners[2][0] , corners[2][1] , 0.0 );
 		glVertex3f( corners[3][0] , corners[3][1] , 0.0 );
     glEnd();
+    glBegin(GL_LINES);
+    	glVertex3f( corners[1][0] , corners[1][1] , 0.0 );
+    	glVertex3f( corners[2][0] , corners[2][1] , 0.0 );
+    glEnd();
+    glBegin(GL_LINES);
+    	glVertex3f( corners[3][0] , corners[3][1] , 0.0 );
+    	glVertex3f( corners[0][0] , corners[0][1] , 0.0 );
+    glEnd();    
 }
  //#endif
 		

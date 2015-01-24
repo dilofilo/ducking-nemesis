@@ -1,27 +1,13 @@
 #ifndef MENU_H
 	#define MENU_H
-using namespace std;
-#include <GL/glut.h>
-#include <GL/glui.h>
 
-///GLUI wali things
-	int obj=0;
-	int obj2=0;
-	int gravGui=0;
-	int buttonmanager=1;
-	int modeNO=0;
-	float rotation_matrix[16] = { 1.0, 0.0, 0.0, 0.0,
-                              0.0, 1.0, 0.0, 0.0,
-                              0.0, 0.0, 1.0, 0.0,
-                              0.0, 0.0, 0.0, 1.0 };
-    float coEfficient=1.0;
-    GLUI_Rotation *rotatewala;
-    GLUI_Spinner  *coefficientwala;
-
-	GLUI_RadioGroup *radioGroup;
-	GLUI_RadioGroup *radioGroup2;
-	GLUI *glUserInterface;
-	
+//This class, and functions in the file and corresponding live variables (declared in includes.h) control the GLUI components - buttons etc.
+class Menu { //Class to handle creation of menu.
+public:
+	void createMenu();	
+	void handleMenu(GLUI* glUserInterface);
+}menu;
+	//Functions can't be inside a class because of GLUI specifications
 	void shapeHandler(int ID);
 	void dimensionHandler(int ID);
 	void closeWindow(int ID);
@@ -33,13 +19,6 @@ using namespace std;
 	void selectionRight(int ID);
 	void enableFullscreen(int ID); 
 	void rotateView(int ID);
-
-class Menu {
-public:
-	void createMenu();
-	
-	void handleMenu(GLUI* glUserInterface);
-}menu;
 	
 #endif
 

@@ -31,7 +31,6 @@ void ScreenSaver::init() {
 	glClearColor( 0.0 , 0.0 , 0.0 , 0.0);
 	///Call the lighting functions.
 	initLighting();
-	//initSkybox();
 
 	glFlush();
 }
@@ -320,6 +319,8 @@ void display() {
 	//glPushMatrix();
 	gluLookAt( X_CAM , Y_CAM , Z_CAM , X_CAM_FOCAL , Y_CAM_FOCAL , Z_CAM_FOCAL , UP_X , UP_Y , UP_Z); // Focus camera at 0,0,0. ZCAMERA defined in main.cpp
 	//glPushMatrix();
+  	displaySkybox(); //Display it like an ominous background - starfield.
+
   		glTranslated(0.0,0.0,Z_DISPLACE);
   		if(Dimensional_state==3) {
   			glMultMatrixf(rotation_matrix);
@@ -329,7 +330,6 @@ void display() {
   		glRotatef(ROTATE_Z , 0.0, 0.0, 1.0);
   	///Render balls first because they are opaque
     
-  	displaySkybox();
 
     glEnable(GL_LIGHTING);
 	for(int i=0; i<NUM_BALLS; i++) 
@@ -345,46 +345,36 @@ void display() {
 }
 
 void timer(int value) {
+	//GLUI requires
+		glutSetWindow(mainScreenSaver->getWindowID()); // Thank you, GLUI
+		if (gravGui) {
+			gravity=GRAVITY;
+		}
+		else{
+			gravity=0.0f;
+		}
 
-	glutSetWindow(mainScreenSaver->getWindowID());
-
-	if (gravGui) {
-		gravity=GRAVITY;
-	}
-	else{
-		gravity=0.0f;
-	}
-
-	///Code for updating stuff.
+	///Code for updating balls
 	if(! (mainScreenSaver->getIsPaused()) && mainScreenSaver->isAlive()) {
 		pthread_mutex_lock(&mutexStateVariableUpdate);
+		//Command every thread to begin updating itself
 		for(int i = 0; i<NUM_BALLS;i++) {
 				pthread_cond_signal(&vecCondBallUpdateBegin[i]);
 		}
+		//Wait for every ball to finish updating
 		while(numBallUpdates != 0 ) {
 			pthread_cond_wait(&condBallUpdateComplete , &mutexStateVariableUpdate);
 		}
-
-		//Add and delete ball Code
-
-		//Back to normal Code
+		
+		//Setup for next iteration
 		numBallUpdates = NUM_BALLS;
 		for(int i = 0; i<NUM_BALLS;i++) {
 			vecShouldBallUpdate[i] = true;
 		}
 		pthread_mutex_unlock(&mutexStateVariableUpdate);
-
 		//End of locked section
 	}
-	else { //Only works when paused.
-		if(mainScreenSaver->getIndicatorAddBall()) {
-			mainScreenSaver->addBall(); 
-		}
-		if(mainScreenSaver->getIndicatorDeleteBall()) {
-			mainScreenSaver->deleteBall();
-		}
-
-	}
+	//Handling exit request.
 	if( mainScreenSaver->isAlive()) { //Avoids poting redisplay after quit.
 		glutTimerFunc(DELTA_T , timer , 0);
 		glutPostRedisplay();
@@ -400,20 +390,24 @@ void reshape(int w , int h) {
 	if(mainScreenSaver->isAlive()) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		//Thank you, GLUI
 		int tx, ty, tw, th;
 		GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
 		glViewport( tx, ty, tw , th );
 
-
+		//Handling the reshaping of the window. - Alter the perspective, without changing the modelview matrix. 
+		//	Hence, the objects are rendered correctly.
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		gluPerspective(45.0f, (GLfloat)w / (GLfloat)h, NEAR_CLIPPING_DISTANCE, FAR_CLIPPING_DISTANCE);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
+		//Calling reshape of table and that of ball because thats how it should be.
 		table->reshape(w , h, WIDTH , HEIGHT);
 		for(int i=0; i< NUM_BALLS; i++) ball[i]->reshape(w , h, WIDTH , HEIGHT);
 
+		//Updating HEIGHT and WIDTH so that they may be used elsewhere if necesssary.
 		WIDTH = w;
 		HEIGHT = h;
 
