@@ -34,8 +34,8 @@ void ScreenSaver::init() {
 	glLoadIdentity();
 	gluPerspective( 45.0f , //FOV in yz plane.
 			(float)WIDTH/(float)HEIGHT , //ratio
-			1.0f , //Near clipping distance
-			10000.0f //Far clipping distance.
+			NEAR_CLIPPING_DISTANCE , //Near clipping distance
+			FAR_CLIPPING_DISTANCE //Far clipping distance.
 		);
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
@@ -219,11 +219,11 @@ void ScreenSaver::execute(int& argc , char** argv) {
 	glutKeyboardFunc(handleKeyboard);
 	glutSpecialFunc(handleSpecial);
 
-	GLUI *glUserInterface = GLUI_Master.create_glui_subwindow( windowID,GLUI_SUBWINDOW_RIGHT );
+	//GLUI *glUserInterface = GLUI_Master.create_glui_subwindow( windowID,GLUI_SUBWINDOW_RIGHT );
 	
 
 
-	//glUserInterface = GLUI_Master.create_glui("GLUT",0);
+	glUserInterface = GLUI_Master.create_glui("GLUT",0);
 	//glUserInterface ->add_statictext("Choose Mode");
 	//glUserInterface->add_separator();
 
@@ -285,12 +285,13 @@ void handleMouse(int button , int state , int x , int y) {
 		gluUnProject(winX, winY, 1.0, matModelView, matProjection, viewport, &m_end_x, &m_end_y, &m_end_z); 
 
 		//Maybe try to do m_start_z += Z_CAM?
+		m_start_z += Z_CAM;
+		m_end_z += Z_CAM;
+
 
 		cout<< m_start_x<<"\t"<<m_start_y<<"\t"<<m_start_z<<"\n";
 		cout<< m_end_x<<"\t"<<m_end_y<<"\t"<<m_end_z<<"\n";
 
-		m_start_z += Z_CAM;
-		m_end_z += Z_CAM;
 
 		float maxZCentre = numeric_limits<float>::min(); // MIN_INT
 		
@@ -587,7 +588,7 @@ void reshape(int w , int h) {
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluPerspective(45.0f, (GLfloat)w / (GLfloat)h, 0.1f, 100000.0f);
+		gluPerspective(45.0f, (GLfloat)w / (GLfloat)h, NEAR_CLIPPING_DISTANCE, FAR_CLIPPING_DISTANCE);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
