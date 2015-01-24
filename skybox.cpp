@@ -23,15 +23,16 @@ void loadTexture(char* fileName , int fileWidth , int fileHeight) {
 	}
 
 	//Generate texture
+	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1 , &skyBoxFace);
 	glBindTexture(GL_TEXTURE_2D , skyBoxFace);
 	glTexEnvf(GL_TEXTURE_ENV , GL_TEXTURE_ENV_MODE , GL_MODULATE);
-	glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
+	glTexParameterf(GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,GL_REPEAT );
-	gluBuild2DMipmaps( GL_TEXTURE_2D, 3, fileWidth, fileHeight ,GL_RGB, GL_UNSIGNED_BYTE, image );
+	//glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT );
+	//glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,GL_REPEAT );
+	//gluBuild2DMipmaps( GL_TEXTURE_2D, 3, fileWidth, fileHeight ,GL_RGB, GL_UNSIGNED_BYTE, image );
 	free(image); //Memory handled.
 }
 
@@ -47,6 +48,7 @@ void displaySkybox() {
 		glVertex3f( _cornersTHREE_D[2][0] , _cornersTHREE_D[2][1] , -2*_cornersTHREE_D[2][2]);
 		glTexCoord2d( 0.0 ,  1.0);
 		glVertex3f( _cornersTHREE_D[3][0] , _cornersTHREE_D[3][1] , -2*_cornersTHREE_D[3][2]);
+		glDisable(GL_TEXTURE_2D);
 	glEnd();
 	
 }

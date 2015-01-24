@@ -3,10 +3,23 @@
 
 #include "screenSaver.h"
 #include <limits>
- 
+#include <GL/glut.h>
+#include <GL/glui.h>
 using namespace std;
 
 #define BOUNDING_RADIUS 10.0
+
+///GLUI wali things
+	int obj=0;
+	int obj2=0;
+	int gravGui=0;
+	int buttonmanager=1;
+	int modeNO=0;
+
+	GLUI_RadioGroup *radioGroup;
+	GLUI_RadioGroup *radioGroup2;
+	GLUI *glUserInterface;
+
 
 void initLighting(); /// Function to start up the lighting effects.
 
@@ -47,6 +60,9 @@ void ScreenSaver::exitter() {
 	//killSkybox();
 	//delete table;
 	//Handle ball, table etc?
+	
+	glUserInterface->close();
+
 	glutDestroyWindow(windowID);
 }
 
@@ -65,6 +81,120 @@ void initLighting() {
      glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition); 
 }
 
+void modehandler(int ID){
+	switch(obj) {
+		case 0 : { 
+			NUM_SLICES=50;
+			NUM_STACKS=50;
+			break;
+
+		}
+		case 1 : {
+			NUM_SLICES=7;
+			NUM_STACKS=3;
+			cout<<"haroun\n";
+			break;
+
+		}
+		case 2 : {
+			NUM_SLICES=15;
+			NUM_STACKS=15;
+			cout<<"harman\n";
+			break;
+		}
+		
+	}
+}
+
+void modehandler2(int ID) {
+	switch(obj2) {
+		case 0 : {
+			Dimensional_state=2;
+			break;
+		}
+		case 1 : {
+			Dimensional_state=3;
+			break;
+		}
+	}
+}
+
+// void gravityactivator(int ID) {
+// if (gravGui) 
+// 	gravity = GRAVITY;
+// else 
+// 	gravity=0.0f;
+// }
+
+void Buttons(int ID) {
+	mainScreenSaver->exitter();
+
+}
+
+void Grav(int ID)
+{
+	gravGui=!gravGui;
+}
+
+void Pauser(int ID)
+{
+	mainScreenSaver->togglePaused();
+}
+
+void VelocityIncreaser(int ID)
+{
+	cout<<"Increase the Speed of the selected ball. \n";
+		if(selectedBall >= 0) {
+			// TODO Modify the velocity.
+
+			float myxVel = ball[selectedBall]->getxVelocity();
+			float myyVel = ball[selectedBall]->getyVelocity();
+			float myzVel = ball[selectedBall]->getzVelocity();
+
+			///Ensure that your balls dont speed
+			myxVel = myxVel*1.1;
+				if(myxVel>MAX_VELOCITY) myxVel = MAX_VELOCITY;
+			myyVel = myyVel*1.1;
+				if(myyVel>MAX_VELOCITY) myyVel = MAX_VELOCITY;
+			if (Dimensional_state==3)
+			{
+				myzVel = myzVel*1.1;
+				if(myzVel>MAX_VELOCITY) myzVel = MAX_VELOCITY;
+			}
+			else
+			myzVel = 0.0f;
+			
+
+			ball[selectedBall]->setxVelocity(myxVel);
+			ball[selectedBall]->setyVelocity(myyVel);
+			ball[selectedBall]->setzVelocity(myzVel);
+
+		}
+}
+
+void VelocityDecreaser(int ID)
+{
+	cout<<"Decrease the Speed of the selected ball. \n";
+		/// Decrease the Speed of the selected ball.
+		if(selectedBall >= 0) {
+			// TODO Modify the velocity.
+			float myxVel = ball[selectedBall]->getxVelocity();
+			float myyVel = ball[selectedBall]->getyVelocity();
+			float myzVel = ball[selectedBall]->getyVelocity();
+
+			myxVel = myxVel*0.9;
+			myyVel = myyVel*0.9;
+		//	#ifdef THREE_D
+			if (Dimensional_state==3)
+				myzVel = myzVel*0.9;
+			else
+			myzVel = 0.0f;
+			
+			ball[selectedBall]->setxVelocity(myxVel);
+			ball[selectedBall]->setyVelocity(myyVel);
+			ball[selectedBall]->setzVelocity(myzVel);
+		}
+	}
 
 ///Function that starts the entire process.
 void ScreenSaver::execute(int& argc , char** argv) {
@@ -88,6 +218,36 @@ void ScreenSaver::execute(int& argc , char** argv) {
 	glutMouseFunc(handleMouse);
 	glutKeyboardFunc(handleKeyboard);
 	glutSpecialFunc(handleSpecial);
+
+	GLUI *glUserInterface = GLUI_Master.create_glui_subwindow( windowID,GLUI_SUBWINDOW_RIGHT );
+	
+
+
+	//glUserInterface = GLUI_Master.create_glui("GLUT",0);
+	//glUserInterface ->add_statictext("Choose Mode");
+	//glUserInterface->add_separator();
+
+	GLUI_Panel *mera_panel = glUserInterface->add_panel( "Interact Smarter");
+		radioGroup = glUserInterface->add_radiogroup_to_panel(mera_panel,&obj,3,modehandler);
+	glUserInterface->add_radiobutton_to_group( radioGroup, "Kabira's mode (the best)" );
+	glUserInterface->add_radiobutton_to_group( radioGroup, "Haroun's mode" );
+	glUserInterface->add_radiobutton_to_group( radioGroup, "Harman's mode");
+
+	GLUI_Panel *tera_panel = glUserInterface->add_panel( "Mode");
+		radioGroup2 = glUserInterface->add_radiogroup_to_panel(tera_panel,&obj2,3,modehandler2);
+	glUserInterface->add_radiobutton_to_group( radioGroup2, "2D" );
+	glUserInterface->add_radiobutton_to_group( radioGroup2, "3D (the best)" );
+
+	glUserInterface->add_button("toggle gravity",5, (GLUI_Update_CB) Grav);
+	glUserInterface->add_button("Pause",5, (GLUI_Update_CB) Pauser);
+	glUserInterface->add_button("Increase Velocity",5, (GLUI_Update_CB) VelocityIncreaser);
+	glUserInterface->add_button("Decrease Velocity",5, (GLUI_Update_CB) VelocityDecreaser);
+	glUserInterface->sync_live();
+	//glUserInterface->add_checkbox("Kabira's Mode (the best)", &mode )
+
+	GLUI_Panel *merapanelpart2 = glUserInterface->add_panel ( "Exitter");
+	glUserInterface->add_button_to_panel( merapanelpart2, "hi", 4, (GLUI_Update_CB) Buttons);
+	glUserInterface->set_main_gfx_window( windowID );//which window to send redisplay call to
 
 	glutTimerFunc(DELTA_T , timer , 0);
 	glutMainLoop();
@@ -124,8 +284,13 @@ void handleMouse(int button , int state , int x , int y) {
 		gluUnProject(winX, winY, 0.0, matModelView, matProjection, viewport, &m_start_x, &m_start_y, &m_start_z); 
 		gluUnProject(winX, winY, 1.0, matModelView, matProjection, viewport, &m_end_x, &m_end_y, &m_end_z); 
 
+		//Maybe try to do m_start_z += Z_CAM?
+
 		cout<< m_start_x<<"\t"<<m_start_y<<"\t"<<m_start_z<<"\n";
 		cout<< m_end_x<<"\t"<<m_end_y<<"\t"<<m_end_z<<"\n";
+
+		m_start_z += Z_CAM;
+		m_end_z += Z_CAM;
 
 		float maxZCentre = numeric_limits<float>::min(); // MIN_INT
 		
@@ -158,9 +323,11 @@ void handleMouse(int button , int state , int x , int y) {
 				float myNumerator = pow(matX,2) + pow(matY,2) + pow(matZ,2);
 
 
-				float perpDist = myNumerator/myDenominator;
+				//Perpendicular distance = myNumerator/myDenominator.
+					//Intersects if perDist <= radius^2.
+					//Alternate used becase of floating point errors
 
-				if(perpDist <= pow(myRadius,2)) {
+				if(myNumerator <= pow(myRadius,2)*myDenominator) {
 					checkIntersecting = true;
 				}
 
@@ -186,27 +353,26 @@ void handleMouse(int button , int state , int x , int y) {
 
 void handleKeyboard(unsigned char key, int x, int y) {
 
-	#ifdef THREE_D
-	if(key=='w' || key=='W') {
-		ROTATE_X += 0.5;
-	}	
-	else if(key=='s' || key=='S') {
-		ROTATE_X -= 0.5;
-	}	
-	else if(key=='d' || key=='D') {
-		ROTATE_Y += 0.5;
-	}	
-	else if(key=='a' || key=='A') {
-		ROTATE_Y -= 0.5;
-	}	
-	else if(key=='e' || key=='E')  {
-		ROTATE_Z += 0.5;
-	}	
-	else if(key=='q' || key=='Q')  {
-		ROTATE_Z -= 0.5;
+	if (Dimensional_state==3) {
+		if(key=='w' || key=='W') {
+			ROTATE_X += 0.5;
+		}	
+		else if(key=='s' || key=='S') {
+			ROTATE_X -= 0.5;
+		}	
+		else if(key=='d' || key=='D') {
+			ROTATE_Y += 0.5;
+		}	
+		else if(key=='a' || key=='A') {
+			ROTATE_Y -= 0.5;
+		}	
+		else if(key=='e' || key=='E')  {
+			ROTATE_Z += 0.5;
+		}	
+		else if(key=='q' || key=='Q')  {
+			ROTATE_Z -= 0.5;
+		}
 	}
-	else 
-		#endif
 	if(key=='f' || key=='F') {
 		if (mainScreenSaver->getIsFullScreen()) {
 			//Reshape window
@@ -247,10 +413,7 @@ void handleKeyboard(unsigned char key, int x, int y) {
 		mainScreenSaver->togglePaused();
 	}
 	else if( key== 'g' || key == 'G' ) {
-		if ( gravity >0.0 )
-			gravity =0.0f;
-		else 
-			gravity = GRAVITY;
+		gravGui = !gravGui;
 	}
 }
 
@@ -280,7 +443,7 @@ void handleSpecial(int key , int x , int y) {
 
 		/// Increse the Speed of the selected ball.
 		
-		cout<<"Increse the Speed of the selected ball. \n";
+		cout<<"Increase the Speed of the selected ball. \n";
 		if(selectedBall >= 0) {
 			// TODO Modify the velocity.
 
@@ -293,12 +456,15 @@ void handleSpecial(int key , int x , int y) {
 				if(myxVel>MAX_VELOCITY) myxVel = MAX_VELOCITY;
 			myyVel = myyVel*1.1;
 				if(myyVel>MAX_VELOCITY) myyVel = MAX_VELOCITY;
-			#ifdef THREE_D
-			myzVel = myzVel*1.1;
-				if(myzVel>MAX_VELOCITY) myzVel = MAX_VELOCITY;
-			#else
+			//#ifdef THREE_D
+			if (Dimensional_state==3)
+			{
+				myzVel = myzVel*1.1;
+				if(myzVel>MAX_VELOCITY) myzVel = MAX_VELOCITY;	
+			}
+			else
 			myzVel = 0.0f;
-			#endif
+			//#endif
 
 			ball[selectedBall]->setxVelocity(myxVel);
 			ball[selectedBall]->setyVelocity(myyVel);
@@ -319,11 +485,12 @@ void handleSpecial(int key , int x , int y) {
 
 			myxVel = myxVel*0.9;
 			myyVel = myyVel*0.9;
-			#ifdef THREE_D
+			//#ifdef THREE_D
+			if (Dimensional_state==3)
 				myzVel = myzVel*0.9;
-			#else
-			myzVel = 0.0f;
-			#endif
+			else
+				myzVel = 0.0f;
+			
 			ball[selectedBall]->setxVelocity(myxVel);
 			ball[selectedBall]->setyVelocity(myyVel);
 			ball[selectedBall]->setzVelocity(myzVel);
@@ -334,7 +501,7 @@ void handleSpecial(int key , int x , int y) {
 
 void display() {
   	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	glLoadIdentity();
-
+  	cout << "hi\n";
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
 	glPushMatrix();
@@ -346,10 +513,13 @@ void display() {
   		glRotatef(ROTATE_Z , 0.0, 0.0, 1.0);
 
   	///Render balls first because they are opaque
+    
     glEnable(GL_LIGHTING);
 	for(int i=0; i<NUM_BALLS; i++) ball[i]->display();
 	glDisable(GL_LIGHTING);
+	
 	table->display();
+
 	//displaySkybox();
 	glPopMatrix();
 	glPopMatrix();
@@ -357,6 +527,13 @@ void display() {
 }
 
 void timer(int value) {
+
+	if (gravGui) {
+		gravity=GRAVITY;
+	}
+	else{
+		gravity=0.0f;
+	}
 
 	///Code for updating stuff.
 	if(! (mainScreenSaver->getIsPaused()) && mainScreenSaver->isAlive()) {
@@ -401,10 +578,15 @@ void reshape(int w , int h) {
 	
 	if(mainScreenSaver->isAlive()) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+
+		int tx, ty, tw, th;
+		GLUI_Master.get_viewport_area( &tx, &ty, &tw, &th );
+		glViewport( tx, ty, tw , th );
+
+
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		gluPerspective(45.0f, (GLfloat)w/ (GLfloat)h, 0.1f, 100000.0f);
+		gluPerspective(45.0f, (GLfloat)w / (GLfloat)h, 0.1f, 100000.0f);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
@@ -421,22 +603,25 @@ void reshape(int w , int h) {
 
 ///Function that initializes the table* (included in table.h)
 void ScreenSaver::generateTable() {
-	#ifdef THREE_D
+	//#ifdef THREE_D
+	if (Dimensional_state==3)
 		table = new Table(_cornersTHREE_D);							//generates new ball
-	#else
+	else
 		table = new Table(_cornersTWO_D);
-	#endif 
+	//#endif 
 
 }
 
 ///Function that initializes n ball randomly.
 void ScreenSaver::generateBall() {
 	srand(time(NULL));
-	#ifdef THREE_D
-		int numDim=3;
-	#else
-		int numDim=2;
-	#endif
+	//#ifdef THREE_D
+	int numDim;
+	if (Dimensional_state==3)
+		numDim=3;
+	else
+		numDim=2;
+	//#endif
 	vector<pair<vector<float>,float> > positionRadius;		//stores all positions and radii
 	for (int i=0;i<NUM_BALLS;i++)
 	{
@@ -451,10 +636,14 @@ void ScreenSaver::generateBall() {
 				tempVar *= 2.0*(BOUND - MAX_RADIUS);
 				initPos.push_back(tempVar);	//generates random velocity
 			}
-			#ifndef THREE_D
+			//#ifndef THREE_D
+			if (Dimensional_state==3){
+
+
 				float tempVar=2.0;
 				initPos.push_back(tempVar);
-			#endif	
+			}
+			//#endif	
 			float newRadius = rand()%101;						//random radius	
 				newRadius /= 100.0;
 				newRadius *= MAX_RADIUS/2.0;
@@ -487,10 +676,12 @@ void ScreenSaver::generateBall() {
 			tempVar += MAX_VELOCITY/2.0;
 			initVelocity.push_back(tempVar);	//generates random velocity
 		}
-		#ifndef THREE_D
+		//#ifndef THREE_D
+		if (Dimensional_state==3) {
 			float tempVar=0.0;
 			initVelocity.push_back(tempVar);
-		#endif
+		}
+		//#endif
 		vector<float> vectorColor;
 		for (int j=0; j<3; j++)
 		{

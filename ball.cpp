@@ -2,10 +2,7 @@
 	#define BALL_CPP
 
 
-#define PI 3.14159265359
-static int NUM_SLICES = 40;
-static int NUM_STACKS = 40;
-#define OFFSET 0.001
+
 #include "ball.h"
 #include <unistd.h>
 #include "equationSolver.cpp"
@@ -92,7 +89,11 @@ void Ball::handleWallCollision(Table* _table) {
 		if(this->getyVelocity()<=0)
 			this->setyVelocity(-1.0* coefficientRestitution * this->getyVelocity());										//checks for collision with bottom wall
 	}
-	#ifdef THREE_D
+	//#ifdef THREE_D
+	if (Dimensional_state==3)
+	{
+
+
 	if ((this->getzCentre() + DELTA_T*this->getzVelocity()  + this->getRadius()) >= _table->getTopRightFrontCorner()[2]) {
 	 	if(this->getzVelocity()>=0)
 	 		this->setzVelocity(-1.0* coefficientRestitution * this->getzVelocity());										//checks for collision with front wall
@@ -101,7 +102,8 @@ void Ball::handleWallCollision(Table* _table) {
 		if(this->getzVelocity()<=0)
 			this->setzVelocity(-1.0* coefficientRestitution * this->getzVelocity());										//checks for collision with back wall
 	}
-	#endif
+}
+	//#endif
 }
 
 #define preciseDeltaT (DELTA_T/20.0)

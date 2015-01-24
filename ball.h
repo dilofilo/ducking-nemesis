@@ -5,6 +5,10 @@ vector<float> vecZero{ 0.0 , 0.0 , 0.0};
 static float gravity = 0.0;
 #define GRAVITY 0.001;
 static float coefficientRestitution = 0.8;
+#define PI 3.14159265359
+static int NUM_SLICES = 50;
+static int NUM_STACKS = 50;
+#define OFFSET 0.001
 
 class Ball {
 private:

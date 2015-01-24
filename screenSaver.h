@@ -15,6 +15,7 @@ using namespace std;
 
 static int WIDTH;
 static int HEIGHT;
+static float SUBWINDOW_WIDTH = 75.0;
 static int DELTA_T;
 ///program specific stuff
 static int selectedBall = 0;
@@ -45,11 +46,10 @@ static float Z_DISPLACE = 0.0;
 
 #define MAX_TRY 1000 //Used for ball generation wali cheez
 	///Default values for bounding box.
-	#ifdef THREE_D
-		vector<vector<float> > _cornersTHREE_D{{-BOUND,-BOUND,BOUND},{BOUND,-BOUND,BOUND},{BOUND,BOUND,BOUND},{-BOUND,BOUND,BOUND},{-BOUND,-BOUND,-BOUND},{BOUND,-BOUND,-BOUND},{BOUND,BOUND,-BOUND},{-BOUND,BOUND,-BOUND}};		//generates box  
-	#else
-		vector<vector<float> > _cornersTWO_D{{-BOUND,-BOUND,0.0},{BOUND,-BOUND,0.0},{BOUND,BOUND,0.0},{-BOUND,BOUND,0.0}};
-	#endif
+	//#ifdef THREE_D
+	vector<vector<float> > _cornersTHREE_D{{-BOUND,-BOUND,BOUND},{BOUND,-BOUND,BOUND},{BOUND,BOUND,BOUND},{-BOUND,BOUND,BOUND},{-BOUND,-BOUND,-BOUND},{BOUND,-BOUND,-BOUND},{BOUND,BOUND,-BOUND},{-BOUND,BOUND,-BOUND}};		//generates box  
+	vector<vector<float> > _cornersTWO_D{{-BOUND,-BOUND,0.0},{BOUND,-BOUND,0.0},{BOUND,BOUND,0.0},{-BOUND,BOUND,0.0}};
+	//#endif
 
 
 

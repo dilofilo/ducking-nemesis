@@ -1,5 +1,5 @@
 //Things needed to convert string to int
-#define THREE_D
+static int Dimensional_state=3;
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <pthread.h>
@@ -18,6 +18,9 @@
 
 int main(int argc, char** argv) {
 	//Convert string to int.
+
+
+
 	string numBall_str = argv[1];
 	istringstream buffer(numBall_str);
 	int nBalls; buffer >> nBalls;
