@@ -5,6 +5,15 @@
 #include <limits>
 using namespace std;
 
+//############################# THE VIRTUAL GHOST OF HAROUN SHALL GIVE YOU A TODO LIST.
+// This needs to be cut into multiple files.
+// 		Haroun's ghost suggests -
+//				1: Init wale functions , exitter wale functions and execute, generateBall, generateTable.
+//				2: Display, Reshape functions
+//				3: handlerFunctions and misc.
+// ######## GET RID OF ADD BALL and DELETE BALL. 
+
+
 #define BOUNDING_RADIUS 0.5
 
 

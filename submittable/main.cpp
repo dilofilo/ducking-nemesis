@@ -1,4 +1,22 @@
-//Things needed to convert string to int
+
+
+//############################# THE VIRTUAL GHOST OF HAROUN SHALL GIVE YOU A TODO LIST.
+// This requires a rewrite.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 static int Dimensional_state=3;
 #include <GL/gl.h>
 #include <GL/glut.h>

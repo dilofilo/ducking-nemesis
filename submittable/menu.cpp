@@ -1,6 +1,8 @@
 #ifndef MENU_CPP
 	#define MENU_CPP
 
+//############################# THE VIRTUAL GHOST OF HAROUN SHALL GIVE YOU A TODO LIST.
+// This requires comments..
 void shapeHandler(int ID){
 	switch(obj) {
 		case 0 : { 

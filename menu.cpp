@@ -55,6 +55,8 @@ void dimensionHandler(int ID) {
 		}
 		case 1 : {
 			Dimensional_state=3;
+			for(int i=0; i<NUM_BALLS; i++)
+				ball[i]->setzVelocity(MAX_VELOCITY/2.0);
 			break;
 		}
 	}

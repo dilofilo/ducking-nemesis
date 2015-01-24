@@ -1,16 +1,12 @@
 #ifndef SCREEN_SAVER_H
 	#define SCREEN_SAVER_H
-//C++ includes
 
-#include <GL/glut.h>
-#include <GL/glui.h>
-#include <pthread.h>
-#include <math.h>
-#include <vector>
-#include <queue>
-#include <time.h>
-#include <iostream>
-using namespace std;
+//############################# THE VIRTUAL GHOST OF HAROUN SHALL GIVE YOU A TODO LIST.
+// This requires segregation.
+// 			Put the variables into include.h
+//	Remve the includes
+// ########OCD the functions <---- IMPORTANT 
+
 
 ///Static Global Variables - Initialized in the class ScreenSaver's constructor.
 

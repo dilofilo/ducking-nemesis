@@ -5,6 +5,8 @@
 #include <math.h>
 using namespace std;
 
+//############################# THE VIRTUAL GHOST OF HAROUN SHALL GIVE YOU A TODO LIST.
+// This requires nothing. get rid of this file.
 //GL stuff
 #define Z_CAMERA 10.0
 #define DELTA_T 1.0
