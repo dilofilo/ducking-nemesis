@@ -501,7 +501,6 @@ void handleSpecial(int key , int x , int y) {
 
 void display() {
   	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	glLoadIdentity();
-  	cout << "hi\n";
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
 	glPushMatrix();
@@ -527,6 +526,8 @@ void display() {
 }
 
 void timer(int value) {
+
+	glutSetWindow(mainScreenSaver->getWindowID());
 
 	if (gravGui) {
 		gravity=GRAVITY;

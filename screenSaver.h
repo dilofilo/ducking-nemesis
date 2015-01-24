@@ -93,6 +93,7 @@ public:
 		delete table;
 	}
 	///Functional functions
+	int getWindowID() { return windowID;}
 	bool getIsPaused() { return isPaused; }
 	void togglePaused() { isPaused = !isPaused; }
 	bool getIsFullScreen() { return isFullScreen ; }
