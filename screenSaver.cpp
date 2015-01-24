@@ -3,22 +3,9 @@
 
 #include "screenSaver.h"
 #include <limits>
-#include <GL/glut.h>
-#include <GL/glui.h>
 using namespace std;
 
 #define BOUNDING_RADIUS 0.5
-
-///GLUI wali things
-	int obj=0;
-	int obj2=0;
-	int gravGui=0;
-	int buttonmanager=1;
-	int modeNO=0;
-
-	GLUI_RadioGroup *radioGroup;
-	GLUI_RadioGroup *radioGroup2;
-	GLUI *glUserInterface;
 
 
 void initLighting(); /// Function to start up the lighting effects.
@@ -54,16 +41,11 @@ void ScreenSaver::exitter() {
 		pthread_mutex_lock(&vecMutexThreadTerminate[i]);
 			threadTerminate[i] = true;
 		pthread_mutex_unlock(&vecMutexThreadTerminate[i]);
-		//delete ball[i];
-		
 	}
-	//killSkybox();
-	//delete table;
-	//Handle ball, table etc?
 	
 	glUserInterface->close();
-
 	glutDestroyWindow(windowID);
+	killSkybox();
 }
 
 void initLighting() {
@@ -81,105 +63,6 @@ void initLighting() {
      glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition); 
 }
 
-void modehandler(int ID){
-	switch(obj) {
-		case 0 : { 
-			NUM_SLICES=50;
-			NUM_STACKS=50;
-			break;
-
-		}
-		case 1 : {
-			NUM_SLICES=7;
-			NUM_STACKS=3;
-			cout<<"haroun\n";
-			break;
-
-		}
-		case 2 : {
-			NUM_SLICES=15;
-			NUM_STACKS=15;
-			cout<<"harman\n";
-			break;
-		}
-		
-	}
-	//glutSetWindow(mainScreenSaver->getWindowID());
-}
-
-void modehandler2(int ID) {
-	switch(obj2) {
-		case 0 : {
-			Dimensional_state=2;
-			break;
-		}
-		case 1 : {
-			Dimensional_state=3;
-			break;
-		}
-	}
-	//glutSetWindow(mainScreenSaver->getWindowID());
-}
-
-// void gravityactivator(int ID) {
-// if (gravGui) 
-// 	gravity = GRAVITY;
-// else 
-// 	gravity=0.0f;
-// }
-
-//GLUI Functions
-void Buttons(int ID) {
-	mainScreenSaver->exitter();
-
-}
-
-void Grav(int ID)
-{
-	gravGui=!gravGui;
-}
-
-void Pauser(int ID)
-{
-	mainScreenSaver->togglePaused();
-}
-
-void increaseVelocity(int ID) {
-	if (selectedBall>=0)
-		ball[selectedBall]->VelocityIncreaser();
-
-}
-
-void decreaseVelocity(int ID) {
-	if (selectedBall>=0)
-		ball[selectedBall]->VelocityDecreaser();
-}
-
-void handleMenu(GLUI* glUserInterface)
-{
-
-	GLUI_Panel *mera_panel = glUserInterface->add_panel( "Interact Smarter");
-	radioGroup = glUserInterface->add_radiogroup_to_panel(mera_panel,&obj,3,modehandler);
-	glUserInterface->add_radiobutton_to_group( radioGroup, "Kabira's mode (the best)" );
-	glUserInterface->add_radiobutton_to_group( radioGroup, "Haroun's mode" );
-	glUserInterface->add_radiobutton_to_group( radioGroup, "Harman's mode");
-
-	GLUI_Panel *tera_panel = glUserInterface->add_panel( "Mode");
-	radioGroup2 = glUserInterface->add_radiogroup_to_panel(tera_panel,&obj2,3,modehandler2);
-	glUserInterface->add_radiobutton_to_group( radioGroup2, "2D" );
-	glUserInterface->add_radiobutton_to_group( radioGroup2, "3D (the best)" );
-
-	glUserInterface->add_button("toggle gravity",5, (GLUI_Update_CB) Grav);
-	glUserInterface->add_button("Pause",5, (GLUI_Update_CB) Pauser);
-	glUserInterface->add_button("Increase Velocity",5, (GLUI_Update_CB) increaseVelocity);
-	glUserInterface->add_button("Decrease Velocity",5, (GLUI_Update_CB) decreaseVelocity);
-	glUserInterface->sync_live();
-	//glUserInterface->add_checkbox("Kabira's Mode (the best)", &mode )
-
-	GLUI_Panel *merapanelpart2 = glUserInterface->add_panel ( "Exitter");
-	glUserInterface->add_button_to_panel( merapanelpart2, "hi", 4, (GLUI_Update_CB) Buttons);
-
-}
 
 ///Function that starts the entire process.
 void ScreenSaver::execute(int& argc , char** argv) {
@@ -197,20 +80,15 @@ void ScreenSaver::execute(int& argc , char** argv) {
 
 	init();
 	threadInit();
+	initSkybox();
 
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutMouseFunc(handleMouse);
 	glutKeyboardFunc(handleKeyboard);
-	glutSpecialFunc(handleSpecial);
-
+	glutSpecialFunc(handleSpecial); 
 	//GLUI *glUserInterface = GLUI_Master.create_glui_subwindow( windowID,GLUI_SUBWINDOW_RIGHT );
-	
-	glUserInterface = GLUI_Master.create_glui("GLUT",0,5,5); 
-	handleMenu(glUserInterface);	//Creating the menu
-	//glUserInterface ->add_statictext("Choose Mode");
-	//glUserInterface->add_separator();
-	glUserInterface->set_main_gfx_window( windowID );//which window to send redisplay call to
+	menu.createMenu();	
 
 	glutTimerFunc(DELTA_T , timer , 0);
 	glutMainLoop();
@@ -228,12 +106,20 @@ void handleMouse(int button , int state , int x , int y) {
 	} else if (button == 4) {
 		if (Z_CAM - Z_DISPLACE < 10.0*BOUND) Z_DISPLACE -= 0.5;
 	}
+
+	else if((state==GLUT_DOWN) && (button == GLUT_RIGHT_BUTTON)) {
+			ball[selectedBall]->setIsSelected(false);
+			selectedBall = 0;
+		}
+
+
 	else if((state==GLUT_DOWN) && (button == GLUT_LEFT_BUTTON)) {
 
 		/// Mouse Click Detected!	
 		/// Check the Ball that was clicked and mark it as selected.
 
 
+		
 		cout<<"The coordinates of the click are \t"<<x<<"\t"<<y<<endl;
 
 		double matModelView[16], matProjection[16]; 
@@ -248,8 +134,8 @@ void handleMouse(int button , int state , int x , int y) {
 		gluUnProject(winX, winY, 1.0, matModelView, matProjection, viewport, &m_end_x, &m_end_y, &m_end_z); 
 
 		//Maybe try to do m_start_z += Z_CAM?
-		m_start_z += Z_CAM;
-		m_end_z += Z_CAM;
+		//m_start_z += Z_CAM;
+		//m_end_z += Z_CAM;
 
 
 		cout<< m_start_x<<"\t"<<m_start_y<<"\t"<<m_start_z<<"\n";
@@ -337,6 +223,13 @@ void handleKeyboard(unsigned char key, int x, int y) {
 			ROTATE_Z -= 0.5;
 		}
 	}
+
+	if( (key=='c') || (key =='C'))
+	{
+		cout<<"Request to chnge color"<<endl;
+		ball[selectedBall]->changeColor();
+	}
+
 	if(key=='f' || key=='F') {
 		if (mainScreenSaver->getIsFullScreen()) {
 			//Reshape window
@@ -420,19 +313,24 @@ void handleSpecial(int key , int x , int y) {
 
 
 void display() {
-  	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	glLoadIdentity();
+  	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	//glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 
 	glLoadIdentity();
-	glPushMatrix();
+
+	//glPushMatrix();
 	gluLookAt( X_CAM , Y_CAM , Z_CAM , X_CAM_FOCAL , Y_CAM_FOCAL , Z_CAM_FOCAL , UP_X , UP_Y , UP_Z); // Focus camera at 0,0,0. ZCAMERA defined in main.cpp
-	glPushMatrix();
+	//glPushMatrix();
   		glTranslated(0.0,0.0,Z_DISPLACE);
+  		if(Dimensional_state==3) {
+  			glMultMatrixf(rotation_matrix);
+  		}
 	  	glRotatef( ROTATE_X, 1.0, 0.0, 0.0);
   		glRotatef( ROTATE_Y, 0.0, 1.0, 0.0);
   		glRotatef(ROTATE_Z , 0.0, 0.0, 1.0);
-
   	///Render balls first because they are opaque
     
+  	displaySkybox();
+
     glEnable(GL_LIGHTING);
 	for(int i=0; i<NUM_BALLS; i++) 
 		ball[i]->display();
@@ -441,8 +339,8 @@ void display() {
 	table->display();
 
 	//displaySkybox();
-	glPopMatrix();
-	glPopMatrix();
+	//glPopMatrix();
+	//glPopMatrix();
 	glutSwapBuffers();
 }
 

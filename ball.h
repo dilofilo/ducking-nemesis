@@ -57,7 +57,7 @@ public:
 	void setzVelocity(float _z) { velocity[2] = _z ; }
 	void VelocityIncreaser();
 	void VelocityDecreaser();
-
+	void changeColor();
 
 	vector<float> getPosition() { return position; }
 	vector<float> getVelocity() { return velocity; }

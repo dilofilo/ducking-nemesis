@@ -62,15 +62,15 @@ void Ball::reshape(int w , int h , int oldWidth , int oldHeight ) {
 	}*/	
 }
 
-void Ball::displace(float dt) {
-	this->setxCentre(this->getxCentre() + dt*this->getxVelocity());
+void Ball::displace(float dt) {														//Updates Position of Ball
+	this->setxCentre(this->getxCentre() + dt*this->getxVelocity());					
 	this->setyCentre(this->getyCentre() + dt*this->getyVelocity());
 	this->setzCentre(this->getzCentre() + dt*this->getzVelocity());
 
 	this->setyVelocity(this->getyVelocity() - DELTA_T*gravity);
 }
 
-void Ball::VelocityIncreaser()
+void Ball::VelocityIncreaser()														//Handles Velocity Increase Requests
 {
 	//cout<<"Increase the Speed of the selected ball. \n";
 		//if(selectedBall >= 0) {
@@ -101,7 +101,21 @@ void Ball::VelocityIncreaser()
 		//}
 }
 
-void Ball::VelocityDecreaser()
+	
+	void Ball :: changeColor()
+	{
+		for (int j=0; j<3; j++)
+		{
+			float tempVariable = rand()%101;
+			tempVariable /= 100.0;
+			myColour[j] = tempVariable; 	//generates random Colour
+		        color[j] = tempVariable;
+		}
+	}
+
+
+
+void Ball::VelocityDecreaser()														//Handles Velocity Increase Requests
 {
 	//cout<<"Decrease the Speed of the selected ball. \n";
 		/// Decrease the Speed of the selected ball.
@@ -109,7 +123,7 @@ void Ball::VelocityDecreaser()
 			// TODO Modify the velocity.
 			float myxVel = this->getxVelocity();
 			float myyVel = this->getyVelocity();
-			float myzVel = this->getyVelocity();
+			float myzVel = this->getzVelocity();
 
 			myxVel = myxVel*0.9;
 			myyVel = myyVel*0.9;
@@ -161,39 +175,39 @@ void Ball::handleWallCollision(Table* _table) {
 	//#endif
 }
 
-#define preciseDeltaT (DELTA_T/20.0)
+//#define preciseDeltaT (DELTA_T/20.0)
 
 
 ///Deprecated
-void Ball::pullApart(vector<float> targetPosition, vector<float> targetVelocity, float targetRadius)
-{
-	vector<float> tempVelocity=this->getVelocity();
-	vector<float> tempPos=this->getPosition();
-	//	targetPosition=addVectors(targetPosition,ScalarMult(targetVelocity,-1.0*DELTA_T));
-	// vector<float> deltaPos = addVectors(tempPos , ScalarMult( targetPosition, -1.0));
+// void Ball::pullApart(vector<float> targetPosition, vector<float> targetVelocity, float targetRadius)
+// {
+// 	vector<float> tempVelocity=this->getVelocity();
+// 	vector<float> tempPos=this->getPosition();
+// 	//	targetPosition=addVectors(targetPosition,ScalarMult(targetVelocity,-1.0*DELTA_T));
+// 	// vector<float> deltaPos = addVectors(tempPos , ScalarMult( targetPosition, -1.0));
 	
 	
-	vector<float> deltaPos = addVectors( tempPos , ScalarMult(targetPosition , -1.0)); 
-	float distSquare = dotProduct(deltaPos , deltaPos);
-	float deltaPosMagnitude = sqrt( dotProduct( deltaPos , deltaPos) );
-	deltaPos = ScalarMult( deltaPos, 1.0 / deltaPosMagnitude );
-	bool checkWall1=false;
-	bool checkWall2=false;
+// 	vector<float> deltaPos = addVectors( tempPos , ScalarMult(targetPosition , -1.0)); 
+// 	float distSquare = dotProduct(deltaPos , deltaPos);
+// 	float deltaPosMagnitude = sqrt( dotProduct( deltaPos , deltaPos) );
+// 	deltaPos = ScalarMult( deltaPos, 1.0 / deltaPosMagnitude );
+// 	bool checkWall1=false;
+// 	bool checkWall2=false;
 
 
-	while(distSquare <= pow( this->getRadius() + targetRadius, 2) ) {
+// 	while(distSquare <= pow( this->getRadius() + targetRadius, 2) ) {
 
-		tempPos=addVectors(tempPos, ScalarMult(deltaPos,1.0*preciseDeltaT));
-		targetPosition=addVectors(targetPosition, ScalarMult(deltaPos,-1.0*preciseDeltaT));
-		deltaPos = addVectors(tempPos , ScalarMult( targetPosition, -1.0));
-		distSquare = dotProduct(deltaPos , deltaPos);
-	}
-	this->setPosition(tempPos);
-}
+// 		tempPos=addVectors(tempPos, ScalarMult(deltaPos,1.0*preciseDeltaT));
+// 		targetPosition=addVectors(targetPosition, ScalarMult(deltaPos,-1.0*preciseDeltaT));
+// 		deltaPos = addVectors(tempPos , ScalarMult( targetPosition, -1.0));
+// 		distSquare = dotProduct(deltaPos , deltaPos);
+// 	}
+// 	this->setPosition(tempPos);
+// }
 
 
 
-void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targetVelocity , float targetMass , float targetRadius) {
+void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targetVelocity , float targetMass , float targetRadius) {			//Resolves Ball Collisions
 	//this->setVelocity()
 	vector<float> newPos = addVectors(this->getPosition() , ScalarMult(this->getVelocity() , DELTA_T)); // Position in next iteration
 	vector<float> deltaPos = addVectors(newPos , ScalarMult(targetPosition , -1.0));
@@ -204,6 +218,13 @@ void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targ
 		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass , coefficientRestitution).first); /// checks and updates the balls velocity if it collides with some other ball
 		this-> timeSinceCollision = 100; //Display changes according to timeSinceCollision
 	}
+
+	#ifdef DEBUG
+		float x= this->getMass();
+		float y= this->getMass() * pow(this->getVelocity(),2) * 0.5;
+		string temp_output= "Mass =" + to_string(x) + " Energy= " + to_string(y);
+		cout<<temp_output<<"\n";
+	#endif
 
 }
 

@@ -15,7 +15,7 @@ struct BallThreadParameters {
 	int ID;
 	BallThreadParameters(int x) { ID = x;}
 };
-
+  
 
 struct BallDetailsMessage {
 	int receiverID;
@@ -49,7 +49,7 @@ std::vector< std::queue<BallDetailsMessage> > mailBox;
 	vector<pthread_mutex_t> vecMutexThreadTerminate;
 	vector<bool> threadTerminate;
 
-	pthread_mutex_t numBallLock;
+//	pthread_mutex_t numBallLock;
 
 ///A function that modularly posts messages.
 void sendMessage(BallDetailsMessage &msg) {
@@ -159,7 +159,7 @@ void threadKill() {
 
 ///Function called for initializing all the thread-related variables
 void threadInit() {
-	pthread_mutex_init(&numBallLock , NULL);
+	//pthread_mutex_init(&numBallLock , NULL);
 	numBallUpdates = NUM_BALLS;
 	vecMutexBallPthreads.resize(NUM_BALLS);
 	//vecCondBallUpdateComplete.resize(NUM_BALLS);

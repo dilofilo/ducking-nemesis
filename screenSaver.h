@@ -3,6 +3,7 @@
 //C++ includes
 
 #include <GL/glut.h>
+#include <GL/glui.h>
 #include <pthread.h>
 #include <math.h>
 #include <vector>
@@ -62,7 +63,8 @@ static float NEG_MIN_FLOAT = -10000.0f;
 #include "ballThreads.cpp" //includes mailboxes and threading stuff.
 #include "ball.cpp" 
 #include "table.cpp"
-//#include "skybox.cpp"
+#include "menu.h"
+#include "skybox.cpp"
 
 class ScreenSaver {
 	///Variables
@@ -124,7 +126,7 @@ public:
 	//End of Class
 };
 
-	//Wish I could have been in the class.
+
 
 	///Control functions
 	void display();

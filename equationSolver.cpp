@@ -7,42 +7,42 @@
 #include <queue>
 
 ///deprecated
-float* old_solveBallCollision(float vXBallA , float vYBallA , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
-{
-	/// Returns an array of four float numbers corresponding to VXA, VYA, VXB, 
-	float vBallANormal,vBallAPerp,vBallBNormal,vBallBPerp;
-	float vBallANormalFin,vBallAPerpFin,vBallBNormalFin,vBallBPerpFin;
-	float vXBallAFin,vYBallAFin,vXBallBFin,vYBallBFin;
-	float perpLength;
-	perpLength=sqrt(deltaY*deltaY+deltaX*deltaX);
+// float* old_solveBallCollision(float vXBallA , float vYBallA , float massA ,  float vXBallB ,  float vYBallB , float massB , float deltaX , float deltaY)
+// {
+// 	/// Returns an array of four float numbers corresponding to VXA, VYA, VXB, 
+// 	float vBallANormal,vBallAPerp,vBallBNormal,vBallBPerp;
+// 	float vBallANormalFin,vBallAPerpFin,vBallBNormalFin,vBallBPerpFin;
+// 	float vXBallAFin,vYBallAFin,vXBallBFin,vYBallBFin;
+// 	float perpLength;
+// 	perpLength=sqrt(deltaY*deltaY+deltaX*deltaX);
 	
-	float sinTheta=deltaY/perpLength;
-	float cosTheta=deltaX/perpLength;
+// 	float sinTheta=deltaY/perpLength;
+// 	float cosTheta=deltaX/perpLength;
 
-	vBallANormal=vXBallA*cosTheta+vYBallA*sinTheta;
-	vBallAPerp=vYBallA*cosTheta - vXBallA*sinTheta;
-	vBallBNormal=vXBallB*cosTheta+vYBallB*sinTheta;
-	vBallBPerp=vYBallB*cosTheta- vXBallB*sinTheta;
+// 	vBallANormal=vXBallA*cosTheta+vYBallA*sinTheta;
+// 	vBallAPerp=vYBallA*cosTheta - vXBallA*sinTheta;
+// 	vBallBNormal=vXBallB*cosTheta+vYBallB*sinTheta;
+// 	vBallBPerp=vYBallB*cosTheta- vXBallB*sinTheta;
 
-	vBallAPerpFin=vBallAPerp;
-	vBallBPerpFin=vBallBPerp;
-	vBallANormalFin=((massA-massB)*vBallANormal+2*massB*vBallBNormal)/(massA+massB);
-	vBallBNormalFin=((massB-massA)*vBallBNormal+2*massA*vBallANormal)/(massA+massB);
+// 	vBallAPerpFin=vBallAPerp;
+// 	vBallBPerpFin=vBallBPerp;
+// 	vBallANormalFin=((massA-massB)*vBallANormal+2*massB*vBallBNormal)/(massA+massB);
+// 	vBallBNormalFin=((massB-massA)*vBallBNormal+2*massA*vBallANormal)/(massA+massB);
 
-	vXBallAFin = vBallANormalFin*cosTheta - vBallAPerpFin*sinTheta;
-	vYBallAFin= vBallANormalFin*sinTheta + vBallAPerpFin*cosTheta;
-	vXBallBFin= vBallBNormalFin*cosTheta - vBallBPerpFin*sinTheta;
-	vYBallBFin= vBallBNormalFin*sinTheta + vBallBPerpFin*cosTheta;
+// 	vXBallAFin = vBallANormalFin*cosTheta - vBallAPerpFin*sinTheta;
+// 	vYBallAFin= vBallANormalFin*sinTheta + vBallAPerpFin*cosTheta;
+// 	vXBallBFin= vBallBNormalFin*cosTheta - vBallBPerpFin*sinTheta;
+// 	vYBallBFin= vBallBNormalFin*sinTheta + vBallBPerpFin*cosTheta;
 
-	float* vFin=new float[4];
-	vFin[0]=vXBallAFin;
-	vFin[1]=vYBallAFin;
-	vFin[2]=vXBallBFin;
-	vFin[3]=vYBallBFin;
+// 	float* vFin=new float[4];
+// 	vFin[0]=vXBallAFin;
+// 	vFin[1]=vYBallAFin;
+// 	vFin[2]=vXBallBFin;
+// 	vFin[3]=vYBallBFin;
 
-	return vFin;
+// 	return vFin;
 
-}
+// }
 
 
 /**
@@ -84,19 +84,11 @@ pair< vector<float> , vector<float> > solveBallCollision( vector<float> velocity
 	velocities.second.resize(velocityB.size());
 	vector<float> deltaPos = addVectors( posA , ScalarMult(posB , -1.0)); 
 	float deltaPosMagnitude = sqrt( dotProduct( deltaPos , deltaPos) );
-	deltaPos = ScalarMult( deltaPos, 1.0 / deltaPosMagnitude );
-	///Have fun with this code.
-	//velocities.first  = addVectors(velocityA , ScalarMult( deltaPos , ( ScalarMult( addVectors( ScalarMult( velocityA , 1.0 - e ) , ScalarMult( ScalarMult( velocityB , 1.0 + e) , -1.0) ) ) , (massB/(massA + massB))))));
-	//velocities.second = addVectors(velocityB , ScalarMult( deltaPos , ( ScalarMult( addVectors( ScalarMult( velocityB , 1.0 - e ) , ScalarMult( ScalarMult( velocityA , 1.0 + e) , -1.0) ) , (massA/(massA + massB))))));
-	
-	//velocities.first  = addVectors( velocityA , ScalarMult( deltaPos , dotProduct( deltaPos , addVectors(ScalarMult( velocityA , 1.0-e ) , ScalarMult( velocityB , -1.0 - e ) ) )*( massB/(massA+massB) ) ));
-	//velocities.second = addVectors( velocityB , ScalarMult( deltaPos , dotProduct( deltaPos , addVectors(ScalarMult( velocityA , -1.0-e) , ScalarMult( velocityB , 1.0 - e )  ) )*( massA/(massA+massB) ) ));
-
-	//velocities.first = addVectors(velocityA, ScalarMult(deltaPos, (dotProduct(deltaPos,(ScalarMult(addVectors(velocityB,ScalarMult(velocityA,-1.0)),2*massB/(massA+massB)))))));
-	//velocities.second = addVectors(velocityA, ScalarMult(deltaPos, (dotProduct(deltaPos,(ScalarMult(addVectors(velocityA,ScalarMult(velocityB,-1.0)),2*massA/(massA+massB)))))));
+	deltaPos = ScalarMult( deltaPos, 1.0 / deltaPosMagnitude );					//Unit vector in direction of common normal
 
 	velocities.first =  addVectors( velocityA , ScalarMult( deltaPos, ( dotProduct(deltaPos, addVectors( ScalarMult(velocityB,massB*(1.0+e)/(massA+massB)), ScalarMult(velocityA,-1.0*(1.0+e)*massB/(massA+massB)))))));  
 	velocities.second = addVectors( velocityB , ScalarMult( deltaPos, ( dotProduct(deltaPos, addVectors( ScalarMult(velocityA,massA*(1.0+e)/(massA+massB)), ScalarMult(velocityB,-1.0*(1.0+e)*massA/(massA+massB)))))));
+	
 	return velocities;
 }
 

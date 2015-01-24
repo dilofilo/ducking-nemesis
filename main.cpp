@@ -12,6 +12,7 @@ static int Dimensional_state=3;
 #include <iostream>
 
 #include "screenSaver.h"
+#include "menu.cpp"
 #include "screenSaver.cpp"
 
 
