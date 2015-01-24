@@ -44,7 +44,7 @@ static float ROTATE_X = 0.0;
 static float ROTATE_Y = 0.0;
 static float ROTATE_Z = 0.0;
 static float Z_DISPLACE = 0.0;
-
+static float NEG_MIN_FLOAT = -10000.0f;
 #define MAX_TRY 1000 //Used for ball generation wali cheez
 	///Default values for bounding box.
 	//#ifdef THREE_D

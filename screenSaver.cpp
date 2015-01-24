@@ -7,7 +7,7 @@
 #include <GL/glui.h>
 using namespace std;
 
-#define BOUNDING_RADIUS 10.0
+#define BOUNDING_RADIUS 0.5
 
 ///GLUI wali things
 	int obj=0;
@@ -293,7 +293,7 @@ void handleMouse(int button , int state , int x , int y) {
 		cout<< m_end_x<<"\t"<<m_end_y<<"\t"<<m_end_z<<"\n";
 
 
-		float maxZCentre = numeric_limits<float>::min(); // MIN_INT
+		float maxZCentre = NEG_MIN_FLOAT; // NEG_MIN_FLOAT is a very negative number.
 		
 		float myDenominator = pow((m_start_x - m_end_x),2) + pow((m_start_y - m_end_y),2) + pow((m_start_z - m_end_z),2);
 
