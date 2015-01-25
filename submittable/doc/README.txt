@@ -38,7 +38,9 @@ Compilation and Execution Modes:
 
 	Compiling the Documentation :
 
-		"make doc" in the Assignment's folder
+		"make documentation" in the Assignment's folder to compile the .tex file and give a .pdf file corresponding to the documentation.
+
+		"make changes" in the Assignment's folder to compile the .tex file and give a .pdf file corresponding to the changes made.
 
 	Compiling the Project :
 
@@ -46,27 +48,27 @@ Compilation and Execution Modes:
 
 		"make execute num_threads=n" : 		Launches the program in 2D mode. 
 
-		"make fancy num_threads=n" :   		Launches the program in 2D mode. 
-
 		"make clean" :  			   		Removes all the .o (object) and .out (executable) files. 
 
-		"make debugger" 			   		Creates a gdb-supported executable executable file.
+		"make debugger" : 			   		Creates a gdb-supported executable executable file.
 
-		"make debug" : 				   		Launches an executable with output statements.	
+		"make debug num_threads=n" : 		Launches an executable with output statements.	
 
-		"make balldebug num_threads=n" 		Launches an executable with output statements in ball.cpp.
+		"make balldebug num_threads=n" :	Launches an executable with output statements in ball.cpp.
 
-		"make initdebug num_threads=n" 		Launches an executable with output statements in init.cpp.
+		"make initdebug num_threads=n" 	:	Launches an executable with output statements in init.cpp.
 
-		"make skyboxdebug num_threads=n" 	Launches an executable with output statements in skybox.cpp.
+		"make skyboxdebug num_threads=n" :	Launches an executable with output statements in skybox.cpp.
 
-		"make tabledebug num_threads=n" 	Launches an executable with output statements in table.cpp.
+		"make tabledebug num_threads=n" :	Launches an executable with output statements in table.cpp.
 
-		"make threaddebug num_threads=n"	Launches an executable with output statements in thread.cpp.
+		"make threaddebug num_threads=n" :	Launches an executable with output statements in thread.cpp.
 
-		"make solvedebug num_threads=n"		Launches an executable with output statements in solve.cpp.
+		"make solvedebug num_threads=n"	:	Launches an executable with output statements in solve.cpp.
 
-		"make handlerdebug num_threads=n"	Launches an executable with output statements in handler.cpp.
+		"make handlerdebug num_threads=n" :	Launches an executable with output statements in handler.cpp.
+
+
 
 ########################################################################################
 User Interface :

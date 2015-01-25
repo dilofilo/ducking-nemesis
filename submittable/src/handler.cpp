@@ -33,9 +33,7 @@ void handleMouse(int button , int state , int x , int y) {
 
 		/// Mouse Click Detected!	
 		/// Check the Ball that was clicked and mark it as selected.
-
-
-		
+	
 
 		double matModelView[16], matProjection[16]; 
 		int viewport[4]; 
