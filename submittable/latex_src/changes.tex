@@ -1,0 +1,51 @@
+\documentclass[]{article}
+
+\usepackage{sectsty}
+
+\usepackage[parfill]{parskip}
+
+\usepackage{hyperref}
+
+\usepackage[T1]{fontenc}
+
+\usepackage[T1]{fontenc}
+
+\sectionfont{\fontsize{10}{10}\selectfont}
+
+
+\begin{document}
+
+
+\author{
+  Haroun Habeeb\\
+  \texttt{2013CS10225}
+  \and
+  Kabir Chhabra\\
+  \texttt{2013CS50287}
+  \and
+  Harman Kumar\\
+  \texttt{2013CS10224}
+}
+
+\title{Changes}
+\maketitle
+
+\begin{abstract}
+\noindent This document enumerates the changes with respect ot the previous design document. It is segregated by section.
+\end{abstract}
+
+\section{ \bf Threading :}
+Earlier the implementation followed a barrier synchronization model. We have modified it to now use a One-to-One Synchronization model. This was done using a message queue, which we have called mailBox.
+
+\section{ \bf User Interface : }
+Apart from the key-mappings that were intended, we have provided the ability to zoom within certain limits. We have also implemented a Graphical User Interface, using the GLUI library. The GLUI allows you to control the physical parameters, rotation, fullscreen mode. The GLUI window is available only in the windowed mode.
+
+\section{ \bf Physics Used :}
+Support for gravity along the Y-axis was provided. The value of Coefficient of restitution (initially set to 1 for completely elastic collisions) can be changed to a value between 0 and 1 to simulate collisions that are closer to the real-life model.
+
+\section{ \bf Graphics :}
+A background has been provided. The background is a texture which is loaded using SDL and other functions provided by glut .The table/cube is drawn as a wire frame. The balls have lighting effects.
+
+\section{ \bf Project Structure :}
+There have been revamps in our project structure. Comments describing the role of the functions and variables were written, modularity was incorporated and object oriented programming paradigms were embodied.
+\end{document}

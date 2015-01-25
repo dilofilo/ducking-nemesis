@@ -1,6 +1,26 @@
 #ifndef BALL_CPP
 	#define BALL_CPP
 
+#include "ball.h"
+
+	///Rendering Variables
+	//Lighting
+		GLfloat qaBlack[] 			= {0.0, 0.0, 0.0, 1.0}; //Black Color
+		GLfloat qaGreen[] 			= {0.0, 1.0, 0.0, 1.0}; //Green Color
+		GLfloat qaWhite[] 			= {1.0, 1.0, 1.0, 1.0}; //White Color
+		GLfloat qaRed[] 			= {1.0, 0.0, 0.0, 1.0}; //Red 	Color
+
+	    // Set lighting intensity and color
+		GLfloat qaAmbientLight[]    = {0.2, 0.2, 0.2, 1.0};
+		GLfloat qaDiffuseLight[]    = {0.8, 0.8, 0.8, 1.0};
+		GLfloat qaSpecularLight[]   = {1.0, 1.0, 1.0, 1.0};
+		GLfloat emitLight[]         = {0.9, 0.9, 0.9, 0.01};
+		GLfloat Noemit[]            = {0.0, 0.0, 0.0, 1.0};
+	    // Light source position
+		GLfloat qaLightPosition[]   = { (GLfloat)2.0*BOUND, (GLfloat)2.0*BOUND, (GLfloat)2.0*BOUND, 0.5}; //0.5 is arbitrary
+
+
+
 void Ball::changeColor()
 {
 	for (int j=0; j<3; j++)
@@ -12,9 +32,6 @@ void Ball::changeColor()
 	}
 }
 
-void Ball::drawBlink() {
-	//TODO
-}
 
 void Ball::ballMaterial() {
 
@@ -24,12 +41,31 @@ void Ball::ballMaterial() {
 	 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaWhite);
 	    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
     	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
-	} 
+	}
 	else {
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, myColour);
-	    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, myColour);
-	    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
-	    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
+		if(timeSinceCollision == 0) {
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, myColour);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, myColour);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
+	    	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
+		}
+		//Collision Effect
+		else if ( timeSinceCollision % 5 != 0) { // 5 is an arbitrary number.
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaBlack);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaBlack);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaBlack);
+	    	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);				
+	    	timeSinceCollision -- ;
+		}
+		else {
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, myColour);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, myColour);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
+	    	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);				
+	    	timeSinceCollision -- ;
+		}
+
+
 	}
 }
 
@@ -49,10 +85,12 @@ void Ball::reshape(int w , int h , int oldWidth , int oldHeight ) {
 }
 
 void Ball::displace(float dt) {	//Updates Position of Ball - also, handles gravity.
+	if( Dimensional_state == 2) {
+		this->setzVelocity(0.0f);
+	}
 	this->setxCentre(this->getxCentre() + dt*this->getxVelocity());					
 	this->setyCentre(this->getyCentre() + dt*this->getyVelocity());
 	this->setzCentre(this->getzCentre() + dt*this->getzVelocity());
-
 	this->setyVelocity(this->getyVelocity() - DELTA_T*gravity);
 }
 
@@ -145,7 +183,7 @@ void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targ
 	
 	if( (distSquare <= pow( this->getRadius() + targetRadius , 2)) &&( speedAlongNormal >= 0.0) ) {
 		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass , coefficientRestitution).first); /// checks and updates the balls velocity if it collides with some other ball
-		this-> timeSinceCollision = 100; //Display changes according to timeSinceCollision
+		this-> setTimeSinceCollision(BLINK_TIME); //Display changes according to timeSinceCollision
 	}
 
 	#if defined(DEBUG) || defined(BALL_DEBUG)

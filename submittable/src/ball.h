@@ -1,6 +1,9 @@
  #ifndef BALL_H
 	#define BALL_H
 
+#include "includes.h"
+#include "table.h"
+#include "equationSolver.h"
 class Ball {
 private:
 	///Physical Parameters
@@ -62,7 +65,7 @@ public:
 	void 			setRadius(float _r) { radius = _r; }
 	float 			getMass() { return mass; }
 	void 			setMass(float _m) { mass = _m ;}
-	
+	void 			setTimeSinceCollision(int _t) { timeSinceCollision = _t; }
 	//Colors
 	void 			changeColor();
 	vector<float> 	getColor() { return color; }
@@ -92,7 +95,7 @@ public:
 	void 			handleBallCollision(vector<float> targetPosition , vector<float> targetVelocity , float targetMass , float targetRadius);
 
 	//Graphics functions
-	void 			drawBlink();
+	void 			ballMaterial();
 	void 			display();
 	void 			reshape(int w, int h , int oldWidth , int oldHeight);
 	

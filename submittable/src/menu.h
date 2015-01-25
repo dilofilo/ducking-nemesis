@@ -1,9 +1,8 @@
 #ifndef MENU_H
 	#define MENU_H
 
-//############################# THE VIRTUAL GHOST OF HAROUN SHALL GIVE YOU A TODO LIST.
-// This requires nothing
-
+#include "includes.h"
+#include "screenSaver.h"
 
 //This class, and functions in the file and corresponding live variables (declared in includes.h) control the GLUI components - buttons etc.
 class Menu { //Class to handle creation of menu.

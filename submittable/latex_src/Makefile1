@@ -1,0 +1,55 @@
+LATEX=latex
+DVIPS=dvips
+PS2PDF=ps2pdf14
+BIBTEX=bibtex
+
+LATEX_OPTS=-interaction=nonstopmode -halt-on-error
+DVIPS_OPTS=-Ppdf -t letter
+PS2PDF_OPTS=-dPDFSETTINGS=/prepress -dSubsetFonts=true -dEmbedAllFonts=true
+NUM=""
+
+RERUN = "(There were undefined references|Rerun to get (cross-references|the bars) right)"
+RERUNBIB = "No file.*\.bbl|Citation.*undefined"
+
+
+.PHONY: all clean
+
+
+all: COP290_Assignment_1 references.bbl
+
+COP290_Assignment_1: COP290_Assignment_1.pdf *.tex
+
+COP290_Assignment_1.pdf : COP290_Assignment_1.ps
+	$(PS2PDF) $(PS2PDF_OPTS) $^
+
+COP290_Assignment_1.ps: COP290_Assignment_1.dvi
+	$(DVIPS) $(DVIPS_OPTS) $^
+
+COP290_Assignment_1.dvi: COP290_Assignment_1.tex $(wildcard *.tex)
+	$(LATEX) $(LATEX_OPTS) COP290_Assignment_1.tex
+	
+	@if(grep "There were undefined references" COP290_Assignment_1.log > /dev/null);\
+	then \
+		$(BIBTEX) COP290_Assignment_1; \
+		$(LATEX) $(LATEX_OPTS) COP290_Assignment_1.tex; \
+	fi
+	
+	@if(grep "Rerun" COP290_Assignment_1.log > /dev/null);\
+	then \
+		$(LATEX) $(LATEX_OPTS) COP290_Assignment_1.tex;\
+	fi
+	rm -f COP290_Assignment_1.log
+
+references.bbl: references.bib
+	if [ -n COP290_Assignment_1.aux ]; \
+	then \
+		$(LATEX) $(LATEX_OPTS) COP290_Assignment_1.tex;\
+	fi
+	$(BIBTEX) COP290_Assignment_1
+
+again:
+	$(LATEX) $(LATEX_OPTS) COP290_Assignment_1.tex
+
+
+clean:
+	+rm -fv COP290_Assignment_1.{dvi,ps,pdf,aux,log,bbl,blg}

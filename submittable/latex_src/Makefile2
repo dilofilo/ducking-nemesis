@@ -1,0 +1,55 @@
+LATEX=latex
+DVIPS=dvips
+PS2PDF=ps2pdf14
+BIBTEX=bibtex
+
+LATEX_OPTS=-interaction=nonstopmode -halt-on-error
+DVIPS_OPTS=-Ppdf -t letter
+PS2PDF_OPTS=-dPDFSETTINGS=/prepress -dSubsetFonts=true -dEmbedAllFonts=true
+NUM=""
+
+RERUN = "(There were undefined references|Rerun to get (cross-references|the bars) right)"
+RERUNBIB = "No file.*\.bbl|Citation.*undefined"
+
+
+.PHONY: all clean
+
+
+all: changes references.bbl
+
+changes: changes.pdf *.tex
+
+changes.pdf : changes.ps
+	$(PS2PDF) $(PS2PDF_OPTS) $^
+
+changes.ps: changes.dvi
+	$(DVIPS) $(DVIPS_OPTS) $^
+
+changes.dvi: changes.tex $(wildcard *.tex)
+	$(LATEX) $(LATEX_OPTS) changes.tex
+	
+	@if(grep "There were undefined references" changes.log > /dev/null);\
+	then \
+		$(BIBTEX) changes; \
+		$(LATEX) $(LATEX_OPTS) changes.tex; \
+	fi
+	
+	@if(grep "Rerun" changes.log > /dev/null);\
+	then \
+		$(LATEX) $(LATEX_OPTS) changes.tex;\
+	fi
+	rm -f changes.log
+
+references.bbl: references.bib
+	if [ -n changes.aux ]; \
+	then \
+		$(LATEX) $(LATEX_OPTS) changes.tex;\
+	fi
+	$(BIBTEX) changes
+
+again:
+	$(LATEX) $(LATEX_OPTS) changes.tex
+
+
+clean:
+	+rm -fv changes.{dvi,ps,pdf,aux,log,bbl,blg}

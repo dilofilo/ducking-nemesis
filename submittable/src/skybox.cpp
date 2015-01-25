@@ -1,6 +1,12 @@
-#include <SDL/SDL.h>
+#ifndef SKYBOX_CPP
+	#define SKYBOX_CPP
+	
 
-static GLuint skyBoxFace;	// This is what contains the texture.
+//skyBoxFace is declared in inc
+#include "skybox.h"
+#include "screenSaver.h"
+	static GLuint skyBoxFace;	// This is what contains the texture.
+
 
 unsigned int loadTexture(char* filename) {
 	unsigned int id;
@@ -80,7 +86,7 @@ GLuint generateTexture() {
 
 
 //Draws faces of the cube.
-	//NOTE : presently forced to draw a plain background because it looks cooler.
+	//NOTE : presently forced to draw a background because it looks cooler.
 void drawFaces() {
 	glBindTexture(GL_TEXTURE_2D ,  skyBoxFace);
 	glBegin(GL_QUADS); 									//Front
@@ -167,6 +173,8 @@ void killSkybox() {
 }
 
 void initSkybox() {
-	skyBoxFace = loadTexture("starfield.bmp"); //ALTER THIS CORRECTLY - THE FILE IS NOT IN THIS DIRECTORY. FIND IT IN /rsc. FIGURE OUT HOW TO ACCESS IT. DON'T JUGAAD.
+	skyBoxFace = loadTexture("../rsc/starfield.bmp");
 	glBindTexture(GL_TEXTURE_2D , skyBoxFace);
 }
+
+#endif

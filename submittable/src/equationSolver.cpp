@@ -1,6 +1,7 @@
 #ifndef EQUATION_SOLVER_CPP
 	#define EQUATION_SOLVER_CPP
 
+#include "includes.h"
 ///Some vector based functions which are required to solve the system of equations. 
 
 vector<float> addVectors( vector<float> a , vector<float> b) { // returns a+b

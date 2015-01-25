@@ -1,9 +1,16 @@
 #ifndef TABLE_CPP
 	#define TABLE_CPP
 
-//#include "table.h"
+#include "table.h"
 
-//Deprecated
+///Default values for bounding box.
+	static float BOUND 						= 10.0;
+	vector<vector<float> > _cornersTHREE_D{{-BOUND,-BOUND,BOUND},{BOUND,-BOUND,BOUND},{BOUND,BOUND,BOUND},{-BOUND,BOUND,BOUND},{-BOUND,-BOUND,-BOUND},{BOUND,-BOUND,-BOUND},{BOUND,BOUND,-BOUND},{-BOUND,BOUND,-BOUND}};		//generates box  
+	vector<vector<float> > _cornersTWO_D{{-BOUND,-BOUND,0.0},{BOUND,-BOUND,0.0},{BOUND,BOUND,0.0},{-BOUND,BOUND,0.0}};
+
+
+
+//Unused
 void Table::randomizeColor() {
 	srand(time(NULL));
 		for (int j=0; j<3; j++) {
@@ -117,7 +124,7 @@ void Table::drawCrosses() {
 		glVertex3f( corners[1][0] , corners[1][1] , corners[1][2]);
 	glEnd();
 }
-///Deprecated - looked bad
+//Deprecated - looked bad
 void Table::translucentWalls() {
 	#if defined(TABLE_DEBUG) || defined(DEBUG)
 	glColor4f(0.1,0.1 ,0.5 , 0.3);
@@ -198,7 +205,7 @@ void Table::solveLighting() {
 //
 void Table::display() {
 	
-	solveLighting();
+	this->solveLighting();
 	glColor4f(color[0] , color[1] , color[2] , 1.0);
 	
 	if (Dimensional_state==3)

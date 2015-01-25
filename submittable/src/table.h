@@ -1,6 +1,7 @@
 #ifndef TABLE_H
 	#define TABLE_H
 
+#include "includes.h"
 
 ///A class that handles the box/table of the screenSaver.
 class Table {
@@ -42,6 +43,7 @@ class Table {
 			void drawCrosses();
 			void translucentWalls();
 			void drawSurface();
+			void solveLighting();
 		//Called upon resizing of the window.
 		void reshape( int w , int h , int oldWidth , int oldHeight);
 };

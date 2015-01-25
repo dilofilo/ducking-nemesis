@@ -1,21 +1,29 @@
 #ifndef BALL_THREADS_CPP
 	#define BALL_THREADS_CPP
 
+#include "ballThreads.h"
 ///This struct can be used to pass more data if ever required.
-struct BallThreadParameters {
-	int ID;
-	BallThreadParameters(int x) { ID = x;}
-};
+
+
+		struct BallThreadParameters {
+			int ID;
+		BallThreadParameters(int x) { ID = x;}
+		};
   
-///The message that will be sent
-struct BallDetailsMessage {
-	int receiverID;
-	int senderID;
-	std::vector<float> senderVelocity;
-	std::vector<float> senderPosition;
-	float senderMass;
-	float senderRadius;
-};
+///The message that will be sent between threads
+		struct BallDetailsMessage {
+			int receiverID;
+			int senderID;
+			std::vector<float> senderVelocity;
+			std::vector<float> senderPosition;
+			float senderMass;
+			float senderRadius;
+		};
+
+
+
+///Threading Variables
+
 
 ///A function that modularly posts messages.
 void sendMessage(BallDetailsMessage &msg) {
@@ -47,6 +55,11 @@ void* ballThread(void* args) {
 	int ID = arg->ID;
 	float myMass = ball[ID]->getMass();
 	float myRadius = ball[ID]->getRadius();
+	
+	#if defined(DEBUG) || defined(THREAD_DEBUG)
+		cout << ID << " created \n";
+	#endif
+
 	while(true) {
 		//Thread for exitting from the thread.
 		pthread_mutex_lock(&vecMutexThreadTerminate[ID] );
@@ -102,7 +115,7 @@ void* ballThread(void* args) {
 			}
 			
 			//Ensure that ball isn't speeding
-			float ratio = ball[ID]->getSpeed() / MAX_VELOCITY;
+			float ratio = (ball[ID]->getSpeed() / MAX_VELOCITY);
 			if ( ratio >= 1.0) {
 				ball[ID]->slowDown(ratio);
 			}
@@ -131,6 +144,8 @@ void threadInit() {
 
 	threadTerminate.resize(NUM_BALLS,false);
 	vecMutexThreadTerminate.resize(NUM_BALLS);
+	//Memory has been allocated
+
 
 	pthread_mutex_init(&mutexStateVariableUpdate , NULL);
 	for(int i = 0; i< NUM_BALLS ; i++) {
@@ -143,6 +158,11 @@ void threadInit() {
 
 		pthread_mutex_init(&vecMutexThreadTerminate[i] , NULL);
 	}
+	//Memory has been initialized
+
+	#if defined(DEBUG) || defined(THREAD_DEBUG)
+		cout << "Initialization Successful \n";
+	#endif
 
 	for(int i = 0 ; i<NUM_BALLS ; i++) {
 		BallThreadParameters* args = new BallThreadParameters(i);
@@ -151,6 +171,7 @@ void threadInit() {
 				cout << "THREAD CREATION FAILED. YOU SHOULD PROBABLY NEVER SEE THIS MESSAGE.\n"	;
 			}
 	}
+	//Threads have been started
 }
 
 #endif
