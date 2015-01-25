@@ -9,7 +9,7 @@ class Menu { //Class to handle creation of menu.
 public:
 	void createMenu();	
 	void handleMenu(GLUI* glUserInterface);
-}menu;
+};
 	//Functions can't be inside a class because of GLUI specifications
 	void shapeHandler(int ID);
 	void dimensionHandler(int ID);

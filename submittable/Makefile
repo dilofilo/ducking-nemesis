@@ -30,43 +30,44 @@ skyboxDebug: -DSKYBOX_DEBUG
 
 #make file modes
 debugger: $(OUTPUT)runDebugger
-	cd $(OUTPUT); ./runDebugger $(num_threads) 
+	cd $(OUTPUT); ./finalDebugger $(num_threads) 
 	  
 debug: $(OUTPUT)runDebug
-	cd $(OUTPUT); ./runDebug $(num_threads)	> log.txt
+	cd $(OUTPUT); ./finalDebug $(num_threads)
 
 balldebug: $(OUTPUT)runballDebug
-	cd $(OUTPUT); ./runDebug $(num_threads) > log.txt
+	cd $(OUTPUT); ./finalDebug $(num_threads)
 
 tabledebug: $(OUTPUT)runtableDebug
-	cd $(OUTPUT); ./runDebug $(num_threads) > log.txt
+	cd $(OUTPUT); ./finalDebug $(num_threads)
 
 threaddebug: $(OUTPUT)runthreadDebug
-	cd $(OUTPUT); ./runDebug $(num_threads) > log.txt
+	cd $(OUTPUT); ./finalDebug $(num_threads)
 
 solvedebug: $(OUTPUT)runsolveDebug
-	cd $(OUTPUT); ./runDebug $(num_threads) > log.txt
+	cd $(OUTPUT); ./finalDebug $(num_threads)
 
 handlerdebug: $(OUTPUT)runhandlerDebug
-	cd $(OUTPUT); ./runDebug $(num_threads) > log.txt
+	cd $(OUTPUT); ./finalDebug $(num_threads)
 
 initdebug: $(OUTPUT)runinitDebug
-	cd $(OUTPUT); ./runDebug $(num_threads) > log.txt
+	cd $(OUTPUT); ./finalDebug $(num_threads)
 
 skyboxdebug: $(OUTPUT)runskyboxDebug
-	cd $(OUTPUT); ./runDebug $(num_threads) > log.txt
+	cd $(OUTPUT); ./finalDebug $(num_threads)
 
 execute: $(OUTPUT)runMain
-	cd $(OUTPUT); ./runMain $(num_threads)
+	cd $(OUTPUT); ./finalMain $(num_threads)
 
 documentation: 
-	cd latex_src && make -f Makefile1
-	make -f Makefile2 
+	cd latex_src/assign1_documentation && make -f Makefile1 > junk.txt dmesg -n 1
+changes:
+	cd latex_src/assign1_changes && make -f Makefile2 > junk.txt dmesg -n 1
 
 
 
-clean:	$(OUTPUT)runClean
-	cd $(OUTPUT); 
+clean:
+	cd $(OUTPUT); rm * 
 	
 
 $(OUTPUT)runDebugger: $(OBJECT)table.o $(OBJECT)skybox.o $(OBJECT)render.o $(OBJECT)menu.o $(OBJECT)main.o $(OBJECT)initialisation.o $(OBJECT)handler.o $(OBJECT)equationSolver.o $(OBJECT)ballThreads.o $(OBJECT)ball.o
@@ -107,30 +108,39 @@ $(OUTPUT)runMain: $(OBJECT)table.o $(OBJECT)skybox.o $(OBJECT)render.o $(OBJECT)
 $(OBJECT)ball.o: $(SOURCE)ball.cpp $(SOURCE)ball.h
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)ball.cpp -o ball.o $(LIBRARIES)
 	mv ball.o $(OBJECT)ball.o
+
 $(OBJECT)ballThreads.o: $(SOURCE)ballThreads.cpp $(SOURCE)ballThreads.h
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)ballThreads.cpp -o ballThreads.o $(LIBRARIES)
 	mv ballThreads.o $(OBJECT)ballThreads.o
+
 $(OBJECT)equationSolver.o: $(SOURCE)equationSolver.cpp $(SOURCE)equationSolver.h
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)equationSolver.cpp -o equationSolver.o $(LIBRARIES)
 	mv equationSolver.o $(OBJECT)equationSolver.o
+
 $(OBJECT)handler.o: $(SOURCE)handler.cpp $(SOURCE)screenSaver.h
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)handler.cpp -o handler.o $(LIBRARIES)
 	mv handler.o $(OBJECT)handler.o
+
 $(OBJECT)initialisation.o: $(SOURCE)initialisation.cpp $(SOURCE)screenSaver.h
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)initialisation.cpp -o initialisation.o $(LIBRARIES)
 	mv initialisation.o $(OBJECT)initialisation.o
+
 $(OBJECT)main.o: $(SOURCE)main.cpp $(SOURCE)includes.h $(SOURCE)screenSaver.h $(SOURCE)ball.h $(SOURCE)table.h $(SOURCE)ballThreads.h $(SOURCE)skybox.h $(SOURCE)menu.h
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)main.cpp -o main.o $(LIBRARIES)
 	mv main.o $(OBJECT)main.o
+
 $(OBJECT)menu.o: $(SOURCE)menu.cpp $(SOURCE)menu.h
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)menu.cpp -o menu.o $(LIBRARIES)
 	mv menu.o $(OBJECT)menu.o
+
 $(OBJECT)render.o: $(SOURCE)render.cpp $(SOURCE)screenSaver.h
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)render.cpp -o render.o $(LIBRARIES)
 	mv render.o $(OBJECT)render.o
+
 $(OBJECT)skybox.o: $(SOURCE)skybox.cpp $(SOURCE)skybox.h 
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)skybox.cpp -o skybox.o $(LIBRARIES)
 	mv skybox.o $(OBJECT)skybox.o
+	
 $(OBJECT)table.o: $(SOURCE)table.cpp $(SOURCE)table.h 
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)table.cpp -o table.o $(LIBRARIES)
 	mv table.o $(OBJECT)table.o

@@ -17,6 +17,9 @@
 #include "skybox.h"
 #include "menu.h"
 
+
+extern ScreenSaver* mainScreenSaver;
+
 int main(int argc, char** argv) {
 	//Convert string to int.
 	if( argc < 2) {

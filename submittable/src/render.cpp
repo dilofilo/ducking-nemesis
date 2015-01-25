@@ -3,6 +3,29 @@
 
 #include "screenSaver.h"
 #include "ballThreads.h"
+#include "menu.h"
+
+extern int gravGui;
+extern float rotation_matrix[16];
+
+extern	float X_CAM 						;
+extern  float Y_CAM 						;
+extern 	float Z_CAM 						;
+
+extern pthread_mutex_t mutexStateVariableUpdate;
+extern vector<pthread_cond_t> vecCondBallUpdateBegin;
+extern int numBallUpdates;
+extern pthread_cond_t condBallUpdateComplete;
+extern vector<bool> vecShouldBallUpdate;
+extern float FOV_Y;
+extern float NEAR_CLIPPING_DISTANCE;
+extern float FAR_CLIPPING_DISTANCE;
+extern int Dimensional_state;
+extern float gravity;
+
+extern ScreenSaver* mainScreenSaver;
+extern Menu menu;
+
 void display() {
   	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	//glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW); // Object space to R*R*R space 

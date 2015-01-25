@@ -2,6 +2,16 @@
 	#define HANDLER_CPP
 
 #include "screenSaver.h"
+#include "table.h"
+#include "menu.h"	
+	extern float Z_CAM;
+	extern float BOUND;
+	extern int gravGui;
+	extern int selectedBall;
+	extern float NEG_MIN_FLOAT;
+	extern int Dimensional_state;
+	extern ScreenSaver* mainScreenSaver;
+
 
 void handleMouse(int button , int state , int x , int y) {
 
@@ -26,7 +36,6 @@ void handleMouse(int button , int state , int x , int y) {
 
 
 		
-		cout<<"The coordinates of the click are \t"<<x<<"\t"<<y<<endl;
 
 		double matModelView[16], matProjection[16]; 
 		int viewport[4]; 
@@ -44,6 +53,7 @@ void handleMouse(int button , int state , int x , int y) {
 		//m_end_z += Z_CAM;
 
 		#if defined(DEBUG) || defined(HANDLER_DEBUG)
+			cout<<"The coordinates of the click are \t"<<x<<"\t"<<y<<endl;
 			cout<< m_start_x<<"\t"<<m_start_y<<"\t"<<m_start_z<<"\n";
 			cout<< m_end_x<<"\t"<<m_end_y<<"\t"<<m_end_z<<"\n";
 		#endif

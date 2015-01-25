@@ -2,24 +2,45 @@
 	#define BALL_THREADS_CPP
 
 #include "ballThreads.h"
+#include "screenSaver.h"
+	extern volatile int NUM_BALLS;
+	extern float DELTA_T;
+	extern float MAX_VELOCITY;
+
 ///This struct can be used to pass more data if ever required.
-
-
-		struct BallThreadParameters {
-			int ID;
-		BallThreadParameters(int x) { ID = x;}
-		};
+	struct BallThreadParameters {
+		int ID;
+	BallThreadParameters(int x) { ID = x;}
+	};
   
 ///The message that will be sent between threads
-		struct BallDetailsMessage {
-			int receiverID;
-			int senderID;
-			std::vector<float> senderVelocity;
-			std::vector<float> senderPosition;
-			float senderMass;
-			float senderRadius;
-		};
+	struct BallDetailsMessage {
+		int receiverID;
+		int senderID;
+		std::vector<float> senderVelocity;
+		std::vector<float> senderPosition;
+		float senderMass;
+		float senderRadius;
+	};
 
+
+///The parameters passed into every thread are in this form. It can be changed if necessary
+	std::vector<pthread_t> vecBallThread;					//Threads
+	std::vector<pthread_mutex_t> vecMutexBallPthreads;		//Lock for every thread
+
+	vector<bool> threadTerminate;							//Termination Boolean
+	vector<pthread_mutex_t> vecMutexThreadTerminate;		//Termination Mutex
+
+	std::vector< std::queue<BallDetailsMessage> > mailBox; 	//Mailbox for each thread.
+	std::vector<pthread_mutex_t> vecMutexMailBox;			//Lock for every ball's mailbox
+	std::vector<pthread_cond_t> vecCondMailBoxReceived;		//Conditional variable for mailbox
+	
+	//Interaction between timer and each thread.
+	pthread_mutex_t mutexStateVariableUpdate;				//Lock for timer to update booleans
+	std::vector<bool> vecShouldBallUpdate;					//Boolean indicator
+	int numBallUpdates;								//Number of balls indicator to avoid an O(n) check
+	std::vector<pthread_cond_t> vecCondBallUpdateBegin;		//Conditional variables to begin the update of every thread - Sent to every worker thread
+	pthread_cond_t condBallUpdateComplete;					//Conditional variable for update completition - Sent to parent thread
 
 
 ///Threading Variables

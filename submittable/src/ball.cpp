@@ -2,7 +2,12 @@
 	#define BALL_CPP
 
 #include "ball.h"
+#include "table.h"
+#include "screenSaver.h"
 
+	extern float BOUND;
+	extern float DELTA_T;
+	extern float MAX_VELOCITY;
 	///Rendering Variables
 	//Lighting
 		GLfloat qaBlack[] 			= {0.0, 0.0, 0.0, 1.0}; //Black Color
@@ -19,7 +24,13 @@
 	    // Light source position
 		GLfloat qaLightPosition[]   = { (GLfloat)2.0*BOUND, (GLfloat)2.0*BOUND, (GLfloat)2.0*BOUND, 0.5}; //0.5 is arbitrary
 
-
+	extern int NUM_SLICES;
+	extern int NUM_STACKS;
+	extern int Dimensional_state;
+	extern float gravity;
+	extern float coefficientRestitution;
+	extern int BLINK_TIME;
+vector<Ball*> ball; 
 
 void Ball::changeColor()
 {
@@ -87,6 +98,7 @@ void Ball::reshape(int w , int h , int oldWidth , int oldHeight ) {
 void Ball::displace(float dt) {	//Updates Position of Ball - also, handles gravity.
 	if( Dimensional_state == 2) {
 		this->setzVelocity(0.0f);
+		this->setzCentre(0.0f);
 	}
 	this->setxCentre(this->getxCentre() + dt*this->getxVelocity());					
 	this->setyCentre(this->getyCentre() + dt*this->getyVelocity());

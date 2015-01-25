@@ -30,34 +30,6 @@ using namespace std;
 #endif
 ///Global Variables
 
-static float NEG_MIN_FLOAT 	= -10000.0f;
-vector<float> vecUnity	{ 1.0 , 1.0 , 1.0};
-vector<float> vecZero	{ 0.0 , 0.0 , 0.0};
-
-
-
-///GUI Variables
-
-	static int Dimensional_state=2;
-
-	///Ball's rendering parameters
-		static int KABIR_SLICES 	= 50;
-		static int KABIR_STACKS 	= 50;
-		static int H_SLICES			= 7;
-		static int H_STACKS			= 3;
-		static int HARMAN_SLICES	= 10;
-		static int HARMAN_STACKS	= 7; 
-		static int NUM_SLICES 		= KABIR_SLICES;
-		static int NUM_STACKS 		= KABIR_STACKS;
-		static int BLINK_TIME 		= 10;
-	
-
-		
-	
-///Physics Variables
-		static float gravity 					= 0.0;
-		static float coefficientRestitution 	= 1.0;
-
 
 
 

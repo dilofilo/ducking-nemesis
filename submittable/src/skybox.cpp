@@ -1,12 +1,15 @@
 #ifndef SKYBOX_CPP
 	#define SKYBOX_CPP
 	
-
+//Changes
 //skyBoxFace is declared in inc
 #include "skybox.h"
 #include "screenSaver.h"
-	static GLuint skyBoxFace;	// This is what contains the texture.
 
+	static GLuint skyBoxFace;	// This is what contains the texture.
+	extern float X_CAM 						;
+	extern float Y_CAM 						;
+	extern float Z_CAM 						;
 
 unsigned int loadTexture(char* filename) {
 	unsigned int id;

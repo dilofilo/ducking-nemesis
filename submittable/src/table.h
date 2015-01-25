@@ -11,7 +11,7 @@ class Table {
 		float myColour[4];
 	///Corners are assumed to start at the "BOTTOMLEFT" and rotate counterclockwise to the "TOPLEFT"
 	public:	
-		Table(vector< vector<float> > _corners , vector<float> _color = vecUnity ) {
+		Table(vector< vector<float> > _corners , vector<float> _color ) {
 			corners = _corners;
 			color = _color;
 				myColour[3] = 1.0;
@@ -49,6 +49,5 @@ class Table {
 };
 
 ///Global Variable used by the entire program.
-Table* table;
 
 #endif

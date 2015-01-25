@@ -2,6 +2,94 @@
 	#define INITIALISATION_CPP
 
 #include "screenSaver.h"
+#include "ball.h"
+#include "menu.h"
+#include "table.h"
+#include "ballThreads.h"
+
+		extern vector<pthread_t> vecBallThread;
+		extern vector<pthread_mutex_t> vecMutexThreadTerminate;
+		extern vector<bool> threadTerminate;
+
+	//Table's variables
+		extern vector<vector<float> > _cornersTHREE_D;
+		extern vector<vector<float> > _cornersTWO_D;
+		extern float BOUND;
+	//GLUI variables
+		extern	GLUI 			*glUserInterface;
+
+	//Lighting
+		extern GLfloat qaBlack[4]; //Black Color
+		extern GLfloat qaGreen[4]; //Green Color
+		extern GLfloat qaWhite[4]; //White Color
+		extern GLfloat qaRed[4] ; //Red 	Color
+
+	    // Set lighting intensity and color
+		extern GLfloat qaAmbientLight[4]  ;
+		extern GLfloat qaDiffuseLight[4] ;
+		extern GLfloat qaSpecularLight[4] ;
+		extern GLfloat emitLight[4]  ;
+		extern GLfloat Noemit[4];
+	    // Light source position
+		extern GLfloat qaLightPosition[4]; //0.5 is arbitrary
+
+
+	///Stuff for ball generation
+	float MAX_RADIUS 				= 1.0;
+	float MAX_VELOCITY 				= 0.05;
+	float DELTA_T;
+
+	///Camera related variables
+	float X_CAM 						= 0.0;
+	float Y_CAM 						= 0.0;
+	float Z_CAM 						= 50.0;
+
+	float X_CAM_FOCAL				= 0.0;
+	float Y_CAM_FOCAL 				= 0.0;
+	float Z_CAM_FOCAL 				= 0.0;
+	float UP_X 						= 0.0;
+	float UP_Y 						= 1.0;
+	float UP_Z 						= 0.0;
+
+	///R^3 space rendering variables
+	float ROTATE_X 					= 0.0;
+	float ROTATE_Y 					= 0.0;
+	float ROTATE_Z 					= 0.0;
+	float Z_DISPLACE 				= 0.0;
+
+
+    int WIDTH;
+	int HEIGHT;
+	float NEAR_CLIPPING_DISTANCE 	= 1.0f;
+	float FAR_CLIPPING_DISTANCE 		= 100.0f;
+	float FOV_Y						= 45.0f;
+
+	int selectedBall 				= 0;
+	volatile int NUM_BALLS;
+
+	float NEG_MIN_FLOAT 	= -10000.0f;
+	///GUI Variables
+	int Dimensional_state=3;
+	///Ball's rendering parameters
+		int KABIR_SLICES 	= 50;
+		int KABIR_STACKS 	= 50;
+		int H_SLICES			= 7;
+		int H_STACKS			= 3;
+		int HARMAN_SLICES	= 10;
+		int HARMAN_STACKS	= 7; 
+		int NUM_SLICES 		= KABIR_SLICES;
+		int NUM_STACKS 		= KABIR_STACKS;
+		int BLINK_TIME 		= 10;
+	
+	///Physics Variables
+		float gravity 					= 0.0;
+		float coefficientRestitution 	= 1.0;
+
+	ScreenSaver* mainScreenSaver;
+	extern Menu menu;
+
+
+
 
 ///Function that setps up glut's camera and rendering mode etc.
 void ScreenSaver::init() {
@@ -94,10 +182,11 @@ void ScreenSaver::exitter() {
 ///Function that initializes the table* (included in table.h)
 void ScreenSaver::generateTable() {
 	//#ifdef THREE_D
+	vector<float> white	{ 1.0 , 1.0 , 1.0};
 	if (Dimensional_state==3)
-		table = new Table(_cornersTHREE_D);							//generates new ball
+		table = new Table(_cornersTHREE_D , white);							//generates new ball
 	else
-		table = new Table(_cornersTWO_D);
+		table = new Table(_cornersTWO_D , white);
 	//#endif 
 
 }

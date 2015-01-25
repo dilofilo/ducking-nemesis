@@ -2,10 +2,13 @@
 	#define MENU_CPP
 
 #include "menu.h"
-
+#include "screenSaver.h"
 ///GLUI static variables
+	
+	Menu menu;
+
 	int obj						= 0;
-	int obj2					= 0;
+	int obj2					= 1;
 	int gravGui					= 0;
 	int buttonmanager			= 1;
 	int modeNO					= 0;
@@ -21,28 +24,47 @@
 	GLUI_RadioGroup *radioGroup;
 	GLUI_RadioGroup *radioGroup2;
 	GLUI 			*glUserInterface;
+	extern int Dimensional_state;
+	extern int NUM_SLICES;
+	extern int NUM_STACKS;
+	extern int KABIR_SLICES;
+	extern int KABIR_STACKS;
+	extern int H_SLICES;
+	extern int H_STACKS;
+	extern int HARMAN_SLICES;
+	extern int HARMAN_STACKS;
+	extern float MAX_VELOCITY;
+	extern int selectedBall;
+	extern float coefficientRestitution;
 
-
+	extern ScreenSaver* mainScreenSaver;
 ///Functions for handling menu buttons
 void shapeHandler(int ID){							//For giving different shapes to the Balls
 	switch(obj) {
 		case 0 : { 
 			NUM_SLICES=KABIR_SLICES;
 			NUM_STACKS=KABIR_STACKS;
+			#if defined(DEBUG) || defined(MENU_DEBUG)
+				cout << "kabir\n";
+			#endif
 			break;
 
 		}
 		case 1 : {
 			NUM_SLICES=H_SLICES;
 			NUM_STACKS=H_STACKS;
-			cout<<"haroun\n";
+			#if defined(DEBUG) || defined(MENU_DEBUG)
+				cout<<"haroun\n";
+			#endif
 			break;
 
 		}
 		case 2 : {
 			NUM_SLICES=HARMAN_SLICES;
 			NUM_STACKS=HARMAN_STACKS;
-			cout<<"harman\n";
+			#if defined(DEBUG) || defined(MENU_DEBUG)
+				cout<<"harman\n";
+			#endif
 			break;
 		}
 		
@@ -58,10 +80,10 @@ void dimensionHandler(int ID) {						//For switching from 2D to 3D and vice-vers
 			{
 				ball[i]->setzVelocity(0.0);
 				ball[i]->setzCentre(0.0);
-				ROTATE_X=0;
-				ROTATE_Y=0;
-				ROTATE_Z=0;
-				
+				ROTATE_X=0.0;
+				ROTATE_Y=0.0;
+				ROTATE_Z=0.0;
+				rotateVar->reset();
 				for (int i=0;i<16;i++)				//setting rotation matrix to the identity matrix
 				{
 					rotation_matrix[i]=0.0;
@@ -76,6 +98,10 @@ void dimensionHandler(int ID) {						//For switching from 2D to 3D and vice-vers
 		}
 		case 1 : {
 			Dimensional_state=3;
+			rotateVar->reset();
+			ROTATE_X=0.0;
+			ROTATE_Y=0.0;
+			ROTATE_Z=0.0;
 			for(int i=0; i<NUM_BALLS;i++) {
 				float tempVar = rand()%101;
 				tempVar /= 100.0;
@@ -150,6 +176,10 @@ void resetRotation(int ID) {						//To reset the cube to its original position
 	rotation_matrix[5]=1.0;
 	rotation_matrix[10]=1.0;
 	rotation_matrix[15]=1.0;
+	ROTATE_X=0.0;
+	ROTATE_Y=0.0;
+	ROTATE_Z=0.0;
+
 	rotateVar->reset();
 
 }

@@ -8,36 +8,31 @@
 #include "skybox.h"
 #include "menu.h"
 
-    static int WIDTH;
-	static int HEIGHT;
-	static float NEAR_CLIPPING_DISTANCE 	= 1.0f;
-	static float FAR_CLIPPING_DISTANCE 		= 100.0f;
-	static float FOV_Y						= 45.0f;
-///program specific stuff
-	static int selectedBall 				= 0;
-	static volatile int NUM_BALLS;
+	extern vector<Ball*> ball;
+	extern Table* table;
 
-	///Stuff for ball generation
-	static float MAX_RADIUS 				= 1.0;
-	static float MAX_VELOCITY 				= 0.05;
-	static int DELTA_T;
 
-	///Camera related variables
-	static float X_CAM 						= 0.0;
-	static float Y_CAM 						= 0.0;
-	static float Z_CAM 						= 50.0;
-	static float X_CAM_FOCAL				= 0.0;
-	static float Y_CAM_FOCAL 				= 0.0;
-	static float Z_CAM_FOCAL 				= 0.0;
-	static float UP_X 						= 0.0;
-	static float UP_Y 						= 1.0;
-	static float UP_Z 						= 0.0;
+	///program specific stuff
+
+	extern volatile int NUM_BALLS;
+	extern int WIDTH;
+	extern int HEIGHT;
+	extern float DELTA_T;
+	extern float X_CAM_FOCAL;
+	extern float Y_CAM_FOCAL;
+	extern float Z_CAM_FOCAL;
+	extern float UP_X;
+	extern float UP_Y;
+	extern float UP_Z;
 
 	///R^3 space rendering variables
-	static float ROTATE_X 					= 0.0;
-	static float ROTATE_Y 					= 0.0;
-	static float ROTATE_Z 					= 0.0;
-	static float Z_DISPLACE 				= 0.0;
+	extern float ROTATE_X;
+	extern float ROTATE_Y;
+	extern float ROTATE_Z;
+	extern float Z_DISPLACE;
+
+
+
 
 
 class ScreenSaver {
@@ -107,5 +102,4 @@ public:
 	void 		handleSpecial(int key , int x , int y);
 
 
-ScreenSaver* mainScreenSaver;
 #endif

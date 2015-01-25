@@ -2,12 +2,13 @@
 	#define TABLE_CPP
 
 #include "table.h"
+Table* table;
 
 ///Default values for bounding box.
-	static float BOUND 						= 10.0;
+	float BOUND 						= 10.0;
 	vector<vector<float> > _cornersTHREE_D{{-BOUND,-BOUND,BOUND},{BOUND,-BOUND,BOUND},{BOUND,BOUND,BOUND},{-BOUND,BOUND,BOUND},{-BOUND,-BOUND,-BOUND},{BOUND,-BOUND,-BOUND},{BOUND,BOUND,-BOUND},{-BOUND,BOUND,-BOUND}};		//generates box  
 	vector<vector<float> > _cornersTWO_D{{-BOUND,-BOUND,0.0},{BOUND,-BOUND,0.0},{BOUND,BOUND,0.0},{-BOUND,BOUND,0.0}};
-
+	extern int Dimensional_state;
 
 
 //Unused

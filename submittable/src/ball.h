@@ -4,6 +4,7 @@
 #include "includes.h"
 #include "table.h"
 #include "equationSolver.h"
+
 class Ball {
 private:
 	///Physical Parameters
@@ -18,7 +19,7 @@ private:
 	int 			timeSinceCollision;
 public:
 
-	Ball(vector<float> pos = vecZero , vector<float> velo = vecZero , float _radius = 0.1 , vector<float> _color = vecZero) {
+	Ball(vector<float> pos  , vector<float> velo  , float _radius  , vector<float> _color ) {
 		position = pos;
 		velocity = velo;
 		radius = _radius;
@@ -101,6 +102,5 @@ public:
 	
 };
 
-vector<Ball*> ball; 
 
 #endif
