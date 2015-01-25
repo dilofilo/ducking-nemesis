@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include "equationSolver.cpp"
 
+#define BLINK_TIME 25
 
 
 //Variables for lighting and stuff.
@@ -22,7 +23,7 @@
 	GLfloat emitLight[]         = {0.9, 0.9, 0.9, 0.01};
 	GLfloat Noemit[]            = {0.0, 0.0, 0.0, 1.0};
 	    // Light source position
-	GLfloat qaLightPosition[]   = {0.0, 0.0 , (GLfloat)2.0*BOUND, 0.5}; 
+	GLfloat qaLightPosition[]   = {(GLfloat)2.0*BOUND, (GLfloat)2.0*BOUND , (GLfloat)2.0*BOUND, 0.5}; 
 
 
 
@@ -34,14 +35,38 @@ void Ball::display() {
 	 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaWhite);
 	    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
     	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
-	} 
-	else {
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, myColour);
-	    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, myColour);
-	    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
-	    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
 	}
 
+	else {
+
+		if(timeSinceCollision == 0)
+		{
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, myColour);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, myColour);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
+	    	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);
+		}
+
+		else if ( timeSinceCollision % 10 != 0)
+		{
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, qaBlack);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, qaBlack);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaBlack);
+	    	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);				
+	    	timeSinceCollision -- ;
+		}
+
+		else 
+		{
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, myColour);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, myColour);
+		    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, qaWhite);
+	    	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20);				
+	    	timeSinceCollision -- ;
+		}
+
+
+	}
 	glColor4f(color[0] , color[1] , color[2] , 1.0);
 
 	glPushMatrix();
@@ -215,8 +240,8 @@ void Ball::handleBallCollision(vector<float> targetPosition , vector<float> targ
 	float distSquare = dotProduct(deltaPos , deltaPos);
 	
 	if( (distSquare <= pow( this->getRadius() + targetRadius , 2)) &&( speedAlongNormal >= 0.0) ) {
-		this->setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass , coefficientRestitution).first); /// checks and updates the balls velocity if it collides with some other ball
-		this-> timeSinceCollision = 100; //Display changes according to timeSinceCollision
+		this-> setTimeSinceCollision(BLINK_TIME);    		//Display changes according to timeSinceCollision
+		this-> setVelocity(solveBallCollision(this->getVelocity(), targetVelocity, newPos, targetPosition, this->getMass(), targetMass , coefficientRestitution).first); /// checks and updates the balls velocity if it collides with some other ball	
 	}
 
 	#ifdef DEBUG

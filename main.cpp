@@ -2,6 +2,7 @@
 static int Dimensional_state=3;
 #include <GL/gl.h>
 #include <GL/glut.h>
+#include <GL/glui.h>
 #include <pthread.h>
 #include <math.h>
 #include <vector>
