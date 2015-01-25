@@ -60,14 +60,16 @@ execute: $(OUTPUT)runMain
 	cd $(OUTPUT); ./finalMain $(num_threads)
 
 documentation: 
-	cd latex_src/assign1_documentation && make -f Makefile1 > junk.txt dmesg -n 1
+	cd latex_src/assign1_documentation && make -f Makefile1
 changes:
-	cd latex_src/assign1_changes && make -f Makefile2 > junk.txt dmesg -n 1
+	cd latex_src/assign1_changes && make -f Makefile2
 
 
 
 clean:
-	cd $(OUTPUT); rm * 
+	cd $(OBJECT); rm *;
+	cd ..;
+	cd $(OUTPUT); rm * ;
 	
 
 $(OUTPUT)runDebugger: $(OBJECT)table.o $(OBJECT)skybox.o $(OBJECT)render.o $(OBJECT)menu.o $(OBJECT)main.o $(OBJECT)initialisation.o $(OBJECT)handler.o $(OBJECT)equationSolver.o $(OBJECT)ballThreads.o $(OBJECT)ball.o
@@ -140,7 +142,7 @@ $(OBJECT)render.o: $(SOURCE)render.cpp $(SOURCE)screenSaver.h
 $(OBJECT)skybox.o: $(SOURCE)skybox.cpp $(SOURCE)skybox.h 
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)skybox.cpp -o skybox.o $(LIBRARIES)
 	mv skybox.o $(OBJECT)skybox.o
-	
+
 $(OBJECT)table.o: $(SOURCE)table.cpp $(SOURCE)table.h 
 	$(COMPILE) $(CFLAGS) -c $(SOURCE)table.cpp -o table.o $(LIBRARIES)
 	mv table.o $(OBJECT)table.o
